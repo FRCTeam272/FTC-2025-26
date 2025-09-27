@@ -32,6 +32,8 @@ public class MeepMeepTestingCleanExample {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
+        //TODO - Write Actions using coordinate names. Use .waitSeconds as a placeholder for robot actions (shooting, intaking, etc) Comment your code!!!!
+
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(startX, startY, startH)) //starting coordinates
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(preloadX,preloadY),preloadH) //drive to preload shooting position
