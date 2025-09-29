@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -45,13 +46,18 @@ public class BlueFarTest extends LinearOpMode {
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
-        Action goToShootPreload = drive.actionBuilder(StartPose)
+        //drive to preload shooting position
+        TrajectoryActionBuilder goToShootPreload = drive.actionBuilder(StartPose)
                 .strafeToLinearHeading(new Vector2d(preloadX,preloadY),preloadH) //drive to preload shooting position
-                .build();
+                ;
+        Action GoToShootPreload = goToShootPreload.build(); //notice the uppercase name of the Action vs the lower case name of the trajectory!
 
-        Action goToIntakeLoad1 = drive.actionBuilder(drive.localizer.getPose())
+        //drive to position to loading 1st set of artifacts
+        TrajectoryActionBuilder goToIntakeLoad1 = goToShootPreload.endTrajectory().fresh() // instead of StartPose, it works from where the last trajectory ended
                 .strafeToLinearHeading(new Vector2d(load1X,load1Y),load1H) //drive to position to loading 1st set of artifacts
-                .build();
+                ;
+        Action GoToIntakeLoad1 = goToIntakeLoad1.build();
+
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
@@ -75,14 +81,14 @@ public class BlueFarTest extends LinearOpMode {
                 // drive to shoot preload while spinning up motor wheel at the same time
                 new ParallelAction(
                         new SleepAction(3), // placeholder for spinning up shooter flywheel Action
-                        goToShootPreload
+                        GoToShootPreload
                 ),
 
                 // shoot 3 Artifacts from far position
                 new SleepAction(2), //placeholder for ShootArtifactFar
 
                 // drive to intake Load 1
-                goToIntakeLoad1,
+                GoToIntakeLoad1,
 
                 // spin up Intake
                 new SleepAction(1) //spin up Intake Placeholder
