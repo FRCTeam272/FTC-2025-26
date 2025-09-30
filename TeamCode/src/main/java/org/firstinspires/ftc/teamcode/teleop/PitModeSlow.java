@@ -50,7 +50,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+@TeleOp(name = "PitMode Slow", group = "Robot")
 //@Disabled
 public class PitModeSlow extends OpMode {
     // This declares the four motors needed
@@ -142,7 +142,7 @@ public class PitModeSlow extends OpMode {
         double backLeftPower = forward - right + rotate;
 
         double maxPower = 1.0;
-        double maxSpeed = 0.5;  // make this slower for outreaches
+        double maxSpeed = 0.3;  // make this slower for outreaches
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
