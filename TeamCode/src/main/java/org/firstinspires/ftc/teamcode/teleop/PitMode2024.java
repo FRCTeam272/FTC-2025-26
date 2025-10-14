@@ -52,7 +52,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 @TeleOp(name = "PitMode", group = "Robot")
 //@Disabled
-public class PitMode extends OpMode {
+public class PitMode2024 extends OpMode {
     // This declares the four motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
@@ -95,14 +95,14 @@ public class PitMode extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("Press Y to reset Yaw");
+        telemetry.addLine("Press X to reset Yaw");
         telemetry.addLine("Hold left bumper to drive in robot relative");
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
 
         // If you press the X button, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
-        if (gamepad1.y) {
+        if (gamepad1.x) {
             imu.resetYaw();
         }
         // If you press the left bumper, you get a drive from the point of view of the robot
