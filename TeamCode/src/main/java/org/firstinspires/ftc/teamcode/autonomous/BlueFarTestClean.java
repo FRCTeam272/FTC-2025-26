@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive2024;
 
 
 @Config
-@Autonomous (name="BlueFarTest", group="Auto")
+@Autonomous (name="BlueFarTestClean", group="Auto")
 public class BlueFarTestClean extends LinearOpMode {
 
     //TODO - Coordinate List (Pasted from MeepMeep!)

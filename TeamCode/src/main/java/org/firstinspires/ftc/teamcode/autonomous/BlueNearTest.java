@@ -10,13 +10,16 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive2024;
 
 
+//@Disabled
+
 @Config
-@Autonomous (name="BlueFarTest", group="Auto")
+@Autonomous (name="BlueNearTest", group="Auto")
 public class BlueNearTest extends LinearOpMode {
 
     //TODO - Coordinate List (Pasted from MeepMeep!)
@@ -82,13 +85,13 @@ public class BlueNearTest extends LinearOpMode {
         // because robot will do other actions timed by where in the trajectory it is
 
         //drive to preload shooting position
-        TrajectoryActionBuilder goToShootPreload = drive.actionBuilder(StartPose)
-                .strafeToLinearHeading(new Vector2d(startX,startY),startH) //drive to preload shooting position
-                ;
-        Action GoToShootPreload = goToShootPreload.build(); //notice the uppercase name of the Action vs the lower case name of the trajectory!
+//        TrajectoryActionBuilder goToShootPreload = drive.actionBuilder(StartPose)
+//                .strafeToLinearHeading(new Vector2d(preloadX,preloadY),preloadH) //drive to preload shooting position
+//                ;
+//        Action GoToShootPreload = goToShootPreload.build(); //notice the uppercase name of the Action vs the lower case name of the trajectory!
 
         //drive to position to load 1st set of artifacts
-        TrajectoryActionBuilder goPickupLoad1 = goToShootPreload.endTrajectory().fresh() // instead of StartPose, it works from where the last trajectory ended
+        TrajectoryActionBuilder goPickupLoad1 = drive.actionBuilder((StartPose)) // instead of StartPose, it works from where the last trajectory ended
                 .strafeToLinearHeading(new Vector2d(pickup1X,pickup1Y),pickup1H) //drive to position to loading 1st set of artifacts
                 ;
         Action GoPickupLoad1 = goPickupLoad1.build();
@@ -162,10 +165,10 @@ public class BlueNearTest extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
 
-                // drive to launch preload
+                // shoot preload
                 new ParallelAction(
-                        new SleepAction(3), // placeholder for intake and launcher
-                        GoToShootPreload
+                        new SleepAction(3) // placeholder for intake and launcher
+
                 ),
 
                 // drive to intake starting point for Load 1
@@ -208,7 +211,7 @@ public class BlueNearTest extends LinearOpMode {
                 ),
 
                 // drive to ending position
-                EndingPose,
+                EndingPose
 
 
 

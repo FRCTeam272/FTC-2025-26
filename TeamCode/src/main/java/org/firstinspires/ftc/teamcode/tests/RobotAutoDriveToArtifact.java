@@ -75,7 +75,7 @@ public class RobotAutoDriveToArtifact extends LinearOpMode {
     public void runOpMode() {
         // --- VISION INITIALIZATION ---
         colorLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
+                .setTargetColorRange(ColorRange.ARTIFACT_GREEN )
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
                 .setDrawContours(true)

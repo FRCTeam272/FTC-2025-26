@@ -328,10 +328,10 @@ public class BlueFarTest extends LinearOpMode {
                 ),
 
 
-                new SleepAction(2),//placeholder for launcher
+                new SleepAction(2) //placeholder for launcher
 
 
-                Gotoend
+//                Gotoend
 
 
 
