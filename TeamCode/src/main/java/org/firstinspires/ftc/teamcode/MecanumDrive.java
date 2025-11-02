@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
@@ -60,7 +61,7 @@ public final class MecanumDrive {
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.UP;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
         // drive model parameters
         public double inPerTick = 1;
@@ -138,7 +139,7 @@ public final class MecanumDrive {
             imu = lazyImu.get();
 
             // TODO: reverse encoders if needed
-            //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
             this.pose = pose;
         }
@@ -216,6 +217,8 @@ public final class MecanumDrive {
         }
     }
 
+    public double initialHeading = 0;//14133 Updates
+
     public MecanumDrive(HardwareMap hardwareMap, Pose2d pose) {
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
@@ -243,9 +246,16 @@ public final class MecanumDrive {
         lazyImu = new LazyHardwareMapImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
+        //reset absolute imu position - 14133 updates
+        resetImuAbsolute();
+
+        //reset initial heading value - 14133 updates
+        initialHeading = Math.toDegrees(pose.heading.log());
+
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new DriveLocalizer(pose);
+        //localizer = new OTOSLocalizer(hardwareMap, pose);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
@@ -494,4 +504,46 @@ public final class MecanumDrive {
                 defaultVelConstraint, defaultAccelConstraint
         );
     }
+
+    //14133 Updates
+
+    public double getHeading(){
+        return lazyImu.get().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+Math.toRadians(initialHeading);
+    }
+    public void resetHeadingRelative(double setFrontOfRobotToFacingHeading){
+        resetImuAbsolute();
+        initialHeading = setFrontOfRobotToFacingHeading;
+    }
+    public void resetHeadingRelative(){
+        resetHeadingRelative(0);
+    }
+
+    public void resetImuAbsolute(){
+        lazyImu.get().resetYaw();
+    }
+
+    public void driveFieldCentric(double xPow, double yPow, double rotPow, double speed, Telemetry telemetry) {
+        if (Math.abs(xPow) < .05 && Math.abs(yPow) < .05) {
+            setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), rotPow * speed));
+            return;
+        }
+
+        double targetTheta = Math.atan2(Math.toRadians(yPow), Math.toRadians(xPow));
+        double robotTheta = getHeading();
+        double diffTheta = Math.toDegrees(targetTheta) - Math.toDegrees(robotTheta);
+        if (telemetry != null)
+            telemetry.addLine("Target " + Math.toDegrees(targetTheta) + " Robot " + Math.toDegrees(robotTheta) + " Difference " + diffTheta);
+        xPow = Math.cos(Math.toRadians(diffTheta)) * speed;
+        yPow = Math.sin(Math.toRadians(diffTheta)) * speed;
+        rotPow = rotPow * speed;
+        rotPow = rotPow * speed;
+        if (telemetry != null) {
+            telemetry.addLine("XPOW: " + xPow);
+            telemetry.addLine("YPOW" + yPow);
+            telemetry.addLine("ROT POW" + rotPow);
+            telemetry.addLine("DIFF " + Math.toDegrees(diffTheta));
+        }
+        setDrivePowers(new PoseVelocity2d(new Vector2d(xPow, yPow), rotPow));
+    }
+    //end 14133 Updates
 }

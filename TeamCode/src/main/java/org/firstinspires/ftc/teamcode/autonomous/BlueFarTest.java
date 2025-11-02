@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
-import org.firstinspires.ftc.teamcode.MecanumDrive2024;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 
 
@@ -123,7 +123,7 @@ public class BlueFarTest extends LinearOpMode {
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
-        MecanumDrive2024 drive = new MecanumDrive2024(hardwareMap, StartPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
 
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,

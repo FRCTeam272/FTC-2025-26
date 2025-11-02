@@ -12,12 +12,15 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive2024;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
 @Config
 @Autonomous (name="BlueFarTestClean", group="Auto")
 public class BlueFarTestClean extends LinearOpMode {
+
+    private MatchSettings matchSettings;
 
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
@@ -39,9 +42,15 @@ public class BlueFarTestClean extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        matchSettings = new MatchSettings(blackboard);
+
+        // Initialize blackboard with default values to ensure clean state
+        // This prevents stale data from previous runs from affecting the current run
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
-        MecanumDrive2024 drive = new MecanumDrive2024(hardwareMap, StartPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
