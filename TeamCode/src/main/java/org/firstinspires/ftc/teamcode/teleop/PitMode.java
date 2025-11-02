@@ -79,10 +79,10 @@ public class PitMode extends OpMode {
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
-//        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
