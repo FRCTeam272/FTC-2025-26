@@ -38,6 +38,7 @@ public class MotifAuto extends LinearOpMode {
 
         telemetry.addData("Starting Position", StartPose);
         telemetry.addData("Alliance Color", matchSettings.getAllianceColor());
+        telemetry.addData("Motif", matchSettings.getMotif());
         telemetry.update();
 
         waitForStart();
