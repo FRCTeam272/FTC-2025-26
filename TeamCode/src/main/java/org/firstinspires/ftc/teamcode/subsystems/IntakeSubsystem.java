@@ -164,6 +164,21 @@ public class IntakeSubsystem extends SubsystemBase {
         return possession;
     }
 
+    public boolean notFrontPossession() { // returns true if there is not an artifact in distance
+        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
+        return !possession;
+    }
+
+    public boolean notMidPossession() { // returns true if there is not an artifact in distance
+        possession = midColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
+        return !possession;
+    }
+
+    public boolean notRearPossession() { // returns true if there is not an artifact in distance
+        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
+        return !possession;
+    }
+
     // IN-BOUND METHODS ==========================\\
     public void inboundFront() {
         frontIntake.setPower(intaking);
@@ -178,6 +193,20 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void inboundRear() {
+        rearIntake.setPower(intaking);
+    }
+
+    public void intakeFromFront() {
+        frontIntake.setPower(intaking);
+        frontMidIntake.setPower(intaking);
+        rearMidIntake.setPower(outtaking);
+        rearIntake.setPower(outtaking);
+    }
+
+    public void intakeFromRear() {
+        frontIntake.setPower(outtaking);
+        frontMidIntake.setPower(outtaking);
+        rearMidIntake.setPower(intaking);
         rearIntake.setPower(intaking);
     }
 

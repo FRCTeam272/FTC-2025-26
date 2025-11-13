@@ -90,6 +90,12 @@ public class LauncherSubsystem extends SubsystemBase {
         return Math.abs(avgVelocity - targetVelocity) < 100;
     }
 
+    public boolean notAtSpeed() {
+        double avgVelocity = (launcherRight.getVelocity() + launcherLeft.getVelocity()) / 2.0;
+        double targetVelocity = rpmToTicksPerSecond(targetRPM);
+        return Math.abs(avgVelocity - targetVelocity) > 100;
+    }
+
     //============== UTIL ==============\\
 
     private double rpmToTicksPerSecond(double rpm) {
