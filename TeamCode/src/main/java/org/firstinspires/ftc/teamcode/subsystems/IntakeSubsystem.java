@@ -211,6 +211,13 @@ public class IntakeSubsystem extends SubsystemBase {
         rearIntake.setPower(intaking);
     }
 
+    public void inboundAll() {
+        frontIntake.setPower(intaking);
+        frontMidIntake.setPower(intaking);
+        rearMidIntake.setPower(intaking);
+        rearIntake.setPower(intaking);
+    }
+
     // OUT-BOUND METHODS ==========================\\
     public void outboundFront() {
         frontIntake.setPower(outtaking);

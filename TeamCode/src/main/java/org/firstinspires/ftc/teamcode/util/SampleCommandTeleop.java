@@ -58,8 +58,9 @@ public abstract class SampleCommandTeleop extends LinearOpMode {
      * This method is run if the Teleop is manually stopped
      */
     public abstract void onStop();
+
     private void telemetry(){
         //robot.printTelemetry(telemetry);
-        //telemetry.update();
+        telemetry.update();
     }
 }
