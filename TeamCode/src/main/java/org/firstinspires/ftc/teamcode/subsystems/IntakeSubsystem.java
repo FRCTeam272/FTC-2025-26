@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
@@ -49,10 +50,10 @@ public class IntakeSubsystem extends SubsystemBase {
         rearMidIntake = hardwareMap.get(CRServo.class, "rearMidIntake");
         rearIntake = hardwareMap.get(CRServo.class, "rearIntake");
 
-        frontIntake.setDirection(CRServo.Direction.FORWARD);
-        frontMidIntake.setDirection(CRServo.Direction.FORWARD);
-        rearMidIntake.setDirection(CRServo.Direction.REVERSE);
-        rearIntake.setDirection(CRServo.Direction.REVERSE);
+        frontIntake.setDirection(CRServo.Direction.REVERSE);
+        frontMidIntake.setDirection(CRServo.Direction.REVERSE);
+        rearMidIntake.setDirection(CRServo.Direction.FORWARD);
+        rearIntake.setDirection(CRServo.Direction.FORWARD);
 
         // ================== SENSORS ================== \\
         frontColorSens = hardwareMap.get(RevColorSensorV3.class, "frontColor");

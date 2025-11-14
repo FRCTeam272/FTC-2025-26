@@ -16,14 +16,14 @@ public abstract class SampleCommandTeleop extends LinearOpMode {
     public Telemetry telemetry;
     public GamepadEx g1;
     public GamepadEx g2;
-    public BaseRobot robot;
+    //public BaseRobot robot;
 
     @Override
     public void runOpMode() throws InterruptedException {
         g1 = new GamepadEx(gamepad1);
         g2 = new GamepadEx(gamepad2);
 
-        robot = new BaseRobot(hardwareMap, new Pose2d(0,0,0));
+        //robot = new BaseRobot(hardwareMap, new Pose2d(0,0,0));
         onInit();
         waitForStart();
         onStart();
@@ -59,7 +59,7 @@ public abstract class SampleCommandTeleop extends LinearOpMode {
      */
     public abstract void onStop();
     private void telemetry(){
-        robot.printTelemetry(telemetry);
-        telemetry.update();
+        //robot.printTelemetry(telemetry);
+        //telemetry.update();
     }
 }

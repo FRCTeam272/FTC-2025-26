@@ -38,10 +38,10 @@ public class IntakeServoTest extends SampleCommandTeleop {
     public void onLoop() {
 
         // Print Instructions every loop
-        telemetry.addLine("INTAKE CONTROLS");
-        telemetry.addLine("Press Y to Intake from Front");
-        telemetry.addLine("Press A to Intake from Rear");
-        telemetry.addLine("Press X to Stop");
+//        telemetry.addLine("INTAKE CONTROLS");
+//        telemetry.addLine("Press Y to Intake from Front");
+//        telemetry.addLine("Press A to Intake from Rear");
+//        telemetry.addLine("Press X to Stop");
     }
 
     @Override
