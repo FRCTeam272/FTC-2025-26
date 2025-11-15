@@ -8,22 +8,30 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.BaseRobot;
+import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 // Thanks to https://github.com/14468-undefined/14468-DECODE-V2/blob/master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/ColorfulTelemetry.java
 
 public abstract class SampleCommandTeleop extends LinearOpMode {
 
-    public Telemetry telemetry;
     public GamepadEx g1;
     public GamepadEx g2;
     //public BaseRobot robot;
+    public IntakeSubsystem intake;
+    public DriveSubsystem drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
         g1 = new GamepadEx(gamepad1);
         g2 = new GamepadEx(gamepad2);
 
+
+
         //robot = new BaseRobot(hardwareMap, new Pose2d(0,0,0));
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
+        drive = new DriveSubsystem(hardwareMap, new Pose2d(0,0,0));
+
         onInit();
         waitForStart();
         onStart();
@@ -33,7 +41,6 @@ public abstract class SampleCommandTeleop extends LinearOpMode {
             g2.readButtons();
             CommandScheduler.getInstance().run();
 
-            //telemetry();
         }
         onStop();
         CommandScheduler.getInstance().reset();
@@ -59,8 +66,4 @@ public abstract class SampleCommandTeleop extends LinearOpMode {
      */
     public abstract void onStop();
 
-    private void telemetry(){
-        //robot.printTelemetry(telemetry);
-        //telemetry.update();
-    }
 }

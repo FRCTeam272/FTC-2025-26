@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.tests;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
 @TeleOp
 public class IntakeServoTest extends SampleCommandTeleop {
     private IntakeSubsystem intake;
+
 
     @Override
     public void onInit() {
@@ -41,12 +43,12 @@ public class IntakeServoTest extends SampleCommandTeleop {
     @Override
     public void onLoop() {
 
-        // Print Instructions every loop
-//        telemetry.addLine("INTAKE CONTROLS");
-//        telemetry.addLine("Press Y to Intake from Front");
-//        telemetry.addLine("Press A to Intake from Rear");
-//        telemetry.addLine("Press B to Intake to Middle");
-//        telemetry.addLine("Press X to Stop");
+//         Print Instructions every loop
+        telemetry.addLine("INTAKE CONTROLS");
+        telemetry.addLine("Press Y to Intake from Front");
+        telemetry.addLine("Press A to Intake from Rear");
+        telemetry.addLine("Press B to Intake to Middle");
+        telemetry.addLine("Press X to Stop");
     }
 
     @Override
