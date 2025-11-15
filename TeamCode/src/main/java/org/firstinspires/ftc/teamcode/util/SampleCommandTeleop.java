@@ -33,7 +33,7 @@ public abstract class SampleCommandTeleop extends LinearOpMode {
             g2.readButtons();
             CommandScheduler.getInstance().run();
 
-            telemetry();
+            //telemetry();
         }
         onStop();
         CommandScheduler.getInstance().reset();
@@ -61,6 +61,6 @@ public abstract class SampleCommandTeleop extends LinearOpMode {
 
     private void telemetry(){
         //robot.printTelemetry(telemetry);
-        telemetry.update();
+        //telemetry.update();
     }
 }
