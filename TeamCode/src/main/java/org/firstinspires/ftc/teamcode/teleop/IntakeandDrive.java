@@ -23,13 +23,21 @@ public class IntakeandDrive extends SampleCommandTeleop {
     public void onStart() {
 
         // DRIVE SPEED CONTROLS
-        if (g1.gamepad.right_bumper) {
+        g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whileHeld(() -> {
             driveSpeed = .5;
-        } else if (g1.gamepad.right_bumper && g1.gamepad.left_bumper) {
-            driveSpeed =.25;
-        } else {
+        });
+        g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whileHeld(() -> {
+            driveSpeed = .2;
+        });
+
+        g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(() -> {
             driveSpeed = 1;
-        }
+        });
+        g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(() -> {
+            driveSpeed = 1;
+        });
+
+        // DRIVE YAW RESET
 
         g1.getGamepadButton(GamepadKeys.Button.Y).whenActive(()->drive.drive.resetHeadingRelative());
 
@@ -56,6 +64,7 @@ public class IntakeandDrive extends SampleCommandTeleop {
 
     @Override
     public void onLoop() {
+
 
     }
 
