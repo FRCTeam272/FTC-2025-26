@@ -15,13 +15,13 @@ public class IntakeFromFrontCommand extends SequentialCommandGroup {
                 new ParallelCommandGroup( //turn on all intake servos to intake from front
                         new InstantCommand(intake::inboundFront),
                         new InstantCommand(intake::inboundMidFront),
-                        new InstantCommand(intake::outboundMidRear),
-                        new InstantCommand(intake::outboundRear)
+                        new InstantCommand(intake::outboundMidRear)
+
                 ),
                 new WaitUntilCommand(intake::rearPossession), // wait until the rear sensor detects artifact
                 new ParallelCommandGroup( // and turn off rear intake servos
-                        new InstantCommand(intake::stopMidRear),
-                        new InstantCommand(intake::stopRear)
+                        new InstantCommand(intake::stopMidRear)
+
                 ),
                 new WaitUntilCommand(intake::midPossession), // wait until mid sensor detects artifact
                 new WaitUntilCommand(intake::frontPossession), // and then wait again until front sensor detects artifact

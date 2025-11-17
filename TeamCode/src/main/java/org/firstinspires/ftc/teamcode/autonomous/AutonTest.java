@@ -24,20 +24,21 @@ public class AutonTest extends LinearOpMode {
 
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
+
     // Starting Coordinates
     double startX = 0;
     double startY = 0;
-    double startH = Math.toRadians(180);
+    double startH = Math.toRadians(0);
 
     // Shoot Preload
     double preloadX = 12;
     double preloadY = 12;
-    double preloadH = Math.toRadians(180);
+    double preloadH = Math.toRadians(0);
 
     // Pickup Load1
     double load1X = 24;
     double load1Y = 24;
-    double load1H = Math.toRadians(180);
+    double load1H = Math.toRadians(0);
 
     @Override
     public void runOpMode() throws InterruptedException {
