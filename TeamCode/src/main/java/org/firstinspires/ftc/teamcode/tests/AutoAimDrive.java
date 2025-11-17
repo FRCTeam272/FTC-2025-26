@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-
+@Disabled
 @TeleOp
 public class AutoAimDrive extends OpMode {
     MecanumDrive drive;

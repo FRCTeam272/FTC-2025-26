@@ -42,20 +42,22 @@ public class FieldCentricOtos extends OpMode {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        double fastpower = 1;
+        double fastpower = 2;
 
     }
 
     public void moveRobot() {
 
         if (gamepad1.left_bumper) {
-            fastpower = 2;
-        } else {
             fastpower = 1;
+        } else if (gamepad1.right_bumper) {
+            fastpower = 6;
+        } else {
+            fastpower = 2;
         }
 
-        double forward = -gamepad1.left_stick_y / fastpower; //inverted y-axis
-        double strafe = gamepad1.left_stick_x / fastpower;
+        double forward = -gamepad1.left_stick_x / fastpower; //inverted y-axis
+        double strafe = -gamepad1.left_stick_y / fastpower;
         double rotate = gamepad1.right_stick_x / fastpower;
 
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
@@ -138,7 +140,7 @@ public class FieldCentricOtos extends OpMode {
         // clockwise (negative rotation) from the robot's orientation, the offset
         // would be {-5, 10, -90}. These can be any value, even the angle can be
         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-1.6, 0, 180);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-1.75, 0, 180);
         myOtos.setOffset(offset);
 
         // Here we can set the linear and angular scalars, which can compensate for

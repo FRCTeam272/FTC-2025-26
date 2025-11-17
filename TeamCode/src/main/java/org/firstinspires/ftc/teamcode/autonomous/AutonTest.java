@@ -28,17 +28,17 @@ public class AutonTest extends LinearOpMode {
     // Starting Coordinates
     double startX = 0;
     double startY = 0;
-    double startH = Math.toRadians(0);
+    double startH = Math.toRadians(90);
 
     // Shoot Preload
     double preloadX = 12;
     double preloadY = 12;
-    double preloadH = Math.toRadians(0);
+    double preloadH = Math.toRadians(90);
 
     // Pickup Load1
     double load1X = 24;
     double load1Y = 24;
-    double load1H = Math.toRadians(0);
+    double load1H = Math.toRadians(180);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,6 +52,7 @@ public class AutonTest extends LinearOpMode {
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
+        drive.localizer.setPose(StartPose);
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is

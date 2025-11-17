@@ -51,6 +51,7 @@ public class BlueFarTestClean extends LinearOpMode {
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
+        drive.localizer.setPose(StartPose);
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
