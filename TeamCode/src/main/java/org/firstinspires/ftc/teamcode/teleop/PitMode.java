@@ -70,11 +70,9 @@ public class PitMode extends OpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
         backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
 
-        // We set the left motors in reverse which is needed for drive trains where the left
-        // motors are opposite to the right ones.
-        //frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        //backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        // Reverse motors as needed
+
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
