@@ -56,11 +56,14 @@ public class FieldCentricOtos extends OpMode {
             fastpower = 2;
         }
 
-        double forward = -gamepad1.left_stick_x / fastpower; //inverted y-axis
-        double strafe = -gamepad1.left_stick_y / fastpower;
+        double forward = -gamepad1.left_stick_x / fastpower; //inverted x-axis because on the field x is forward
+        double strafe = -gamepad1.left_stick_y / fastpower;  //inverted y-axis because it's always inv & strafing on field is y
         double rotate = gamepad1.right_stick_x / fastpower;
 
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
+
+
+
         double heading = Math.toRadians(pos.h);
         double headingDegrees = pos.h; // for telemetry
 
@@ -86,8 +89,6 @@ public class FieldCentricOtos extends OpMode {
         telemetry.addData("Robot Xpos: ", pos.x);
         telemetry.addData("Robot Ypos: ", pos.y);
         telemetry.addData("Robot Heading: ", headingDegrees);
-        telemetry.addData("Forward Speed: ", globalForward);
-        telemetry.addData("Strafe Speed: ", globalStrafe);
 
     }
 
@@ -98,9 +99,11 @@ public class FieldCentricOtos extends OpMode {
 
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
 
-        // Reset the tracking if the user requests it
+        SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, 0);
+
+        // Reset the yaw if the user requests it
         if (gamepad1.y) {
-            myOtos.resetTracking();
+            myOtos.setPosition(resetYawPos);
         }
 
         telemetry.addData("Robot X: ", myOtos.getPosition().x);

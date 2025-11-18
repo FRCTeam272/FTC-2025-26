@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -39,9 +40,15 @@ public class IntakeSubsystem extends SubsystemBase {
     //=========== TELEMETRY ===========\\
     private final Telemetry telemetry;
 
-    public IntakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
+    // CREATE MATCH SETTINGS / MOTIF ==============\\
+    MatchSettings.Motif motif;
+
+    public final MatchSettings matchSettings;
+
+    public IntakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
 
         this.telemetry = telemetry;
+        this.matchSettings = matchSettings;
 
         // ================== SERVOS ================== \\
         frontIntake = hardwareMap.get(CRServo.class, "frontIntake");
@@ -215,6 +222,13 @@ public class IntakeSubsystem extends SubsystemBase {
         frontMidIntake.setPower(intaking);
         rearMidIntake.setPower(intaking);
         rearIntake.setPower(intaking);
+    }
+
+    public void thruAll() {
+        frontIntake.setPower(intaking);
+        frontMidIntake.setPower(intaking);
+        rearMidIntake.setPower(outtaking);
+        rearIntake.setPower(outtaking);
     }
 
     // OUT-BOUND METHODS ==========================\\
