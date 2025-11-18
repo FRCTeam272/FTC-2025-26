@@ -22,10 +22,10 @@ public class IntakeFromRearCommand extends SequentialCommandGroup {
                         new InstantCommand(intake::stopMidFront)
                 ),
                 new WaitUntilCommand(intake::midPossession), // wait until mid sensor detects artifact
+                new InstantCommand(intake::stopMidRear),
                 new WaitUntilCommand(intake::rearPossession), // and then wait again until rear sensor detects artifact
                 new ParallelCommandGroup( //and stop the rest of the intake servos and return
-                        new InstantCommand(intake::stopRear),
-                        new InstantCommand(intake::stopMidRear)
+                        new InstantCommand(intake::stopRear)
                 )
         );
 

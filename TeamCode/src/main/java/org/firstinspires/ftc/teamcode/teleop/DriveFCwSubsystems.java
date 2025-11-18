@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
-@Disabled
+
 @TeleOp
 public class DriveFCwSubsystems extends SampleCommandTeleop {
     public MatchSettings matchSettings;

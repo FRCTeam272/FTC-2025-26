@@ -24,10 +24,11 @@ public class IntakeFromFrontCommand extends SequentialCommandGroup {
 
                 ),
                 new WaitUntilCommand(intake::midPossession), // wait until mid sensor detects artifact
+                new InstantCommand(intake::stopMidFront),
                 new WaitUntilCommand(intake::frontPossession), // and then wait again until front sensor detects artifact
                 new ParallelCommandGroup( //and stop the rest of the intake servos and return
-                        new InstantCommand(intake::stopFront),
-                        new InstantCommand(intake::stopMidFront)
+                        new InstantCommand(intake::stopFront)
+
                 )
         );
 
