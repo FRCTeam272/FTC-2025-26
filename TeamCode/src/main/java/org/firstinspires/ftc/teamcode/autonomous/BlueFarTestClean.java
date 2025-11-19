@@ -13,6 +13,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.commands.IntakeFromFrontCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeFromRearCommand;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
@@ -21,6 +24,11 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 public class BlueFarTestClean extends LinearOpMode {
 
     private MatchSettings matchSettings;
+
+    private MecanumDrive drive;
+    private IntakeSubsystem intake;
+
+    private IntakeFromFrontCommand intakeFromFrontCommand;
 
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
@@ -39,10 +47,16 @@ public class BlueFarTestClean extends LinearOpMode {
     double load1Y = -30;
     double load1H = Math.toRadians(270);
 
+    // Drive to Pickup Load1
+    double getload1X = 35;
+    double getload1Y = -45;
+    double getload1H = Math.toRadians(270);
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         matchSettings = new MatchSettings(blackboard);
+        blackboard.clear(); //do not save match settings between matches
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
@@ -52,6 +66,10 @@ public class BlueFarTestClean extends LinearOpMode {
         Pose2d StartPose = new Pose2d(startX,startY,startH);
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
         drive.localizer.setPose(StartPose);
+
+        IntakeSubsystem intake = new IntakeSubsystem(hardwareMap, telemetry, matchSettings);
+
+        intakeFromFrontCommand = new IntakeFromFrontCommand(intake);
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
@@ -67,6 +85,12 @@ public class BlueFarTestClean extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(load1X,load1Y),load1H) //drive to position to loading 1st set of artifacts
                 ;
         Action GoToIntakeLoad1 = goToIntakeLoad1.build();
+
+        //get load one
+        TrajectoryActionBuilder  intakeload1= goToIntakeLoad1.endTrajectory().fresh() // instead of StartPose, it works from where the last trajectory ended
+                .strafeToLinearHeading(new Vector2d(getload1X,getload1Y),getload1H) //drive to position to loading 1st set of artifacts
+                ;
+        Action Intakeload1 = intakeload1.build();
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -90,15 +114,21 @@ public class BlueFarTestClean extends LinearOpMode {
 
                 // drive to shoot preload while spinning up motor wheel at the same time
                 new ParallelAction(
-                        new SleepAction(3), // placeholder for spinning up shooter flywheel Action
+                        new SleepAction(1), // placeholder for spinning up shooter flywheel Action
                         GoToShootPreload
                 ),
 
                 // shoot 3 Artifacts from far position
-                new SleepAction(2), //placeholder for ShootArtifactFar
+                new SleepAction(1), //placeholder for ShootArtifactFar
 
                 // drive to intake Load 1
                 GoToIntakeLoad1,
+
+
+                new ParallelAction(
+                        Intakeload1,
+                        new SleepAction(2)
+                ),
 
                 // spin up Intake
                 new SleepAction(1) //spin up Intake Placeholder
@@ -106,6 +136,9 @@ public class BlueFarTestClean extends LinearOpMode {
                 // Drive forward intaking Artifacts
 
         ));
+
+        // Stores ending pose for use by Teleop
+        matchSettings.setStoredPose(drive.localizer.getPose());
 
     }
 }

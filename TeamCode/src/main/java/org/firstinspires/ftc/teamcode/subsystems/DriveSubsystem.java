@@ -49,16 +49,20 @@ public class DriveSubsystem {
         // the origin. If your robot does not start at the origin, or you have
         // another source of location information (eg. vision odometry), you can set
         // the OTOS location to match and it will continue to track from there.
-        // SET THIS TO ALLIANCE DEPENDENT HEADING or GET FROM AUTON (to be implemented)
-        SparkFunOTOS.Pose2D bluePosition = new SparkFunOTOS.Pose2D(0, 0, 270);
-        SparkFunOTOS.Pose2D redPosition = new SparkFunOTOS.Pose2D(0, 0, 90);
+        // SET THIS TO ALLIANCE DEPENDENT HEADING or GET FROM AUTON
 
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            myOtos.setPosition(bluePosition);
-        } else {
+        SparkFunOTOS.Pose2D storedPose = matchSettings.getStoredPose(); //get from Auton
+
+        SparkFunOTOS.Pose2D bluePosition = new SparkFunOTOS.Pose2D(0, -24, 270); // default blue for practice
+        SparkFunOTOS.Pose2D redPosition = new SparkFunOTOS.Pose2D(0, 24, 90); // default red for practice
+
+        if (storedPose != null) {
+            myOtos.setPosition(storedPose);
+        } else if (alliance == MatchSettings.AllianceColor.RED) {
             myOtos.setPosition(redPosition);
+        } else {
+            myOtos.setPosition(bluePosition);
         }
-
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
@@ -76,7 +80,6 @@ public class DriveSubsystem {
 //        double allianceSteering = 1;
 //        double correctedYaw = 0;
 
-        alliance = matchSettings.getAllianceColor();
     }
 
     public void FieldCentricAllianceBased(Gamepad gamepad1, Telemetry telemetry) {

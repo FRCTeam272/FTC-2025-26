@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -13,6 +16,7 @@ import java.util.Objects;
 public class MatchSettings {
     private static final String MOTIF_KEY = "motif";
     private static final String ALLIANCE_COLOR_KEY = "allianceColor";
+    private static final String STORED_POSE_KEY = "storedPose";
     private final HashMap<String, Object> blackboard;
 
     public MatchSettings(HashMap<String, Object> blackboard) {
@@ -77,6 +81,37 @@ public class MatchSettings {
         if (motif != null) {
             blackboard.put(MOTIF_KEY, motif.name().toLowerCase());
         }
+    }
+
+    /**
+     * Retrieves the stored robot pose from the previous OpMode.
+     * in SparkFun Otos Pose format
+     * @return The stored pose, or null if no pose was stored
+     */
+    public SparkFunOTOS.Pose2D getStoredPose() {
+        double[] poseArray = (double[]) blackboard.get(STORED_POSE_KEY);
+        if (poseArray != null && poseArray.length == 3) {
+            return new SparkFunOTOS.Pose2D(poseArray[0], poseArray[1], Math.toDegrees(poseArray[2]));
+        }
+        return null;
+    }
+
+    /**
+     * Stores the actual robot Roadrunner Auton end pose for use by subsequent OpModes.
+     * This pose will be used as the starting position for the next OpMode.
+     *
+     * @param pose The actual robot pose to store
+     */
+    public void setStoredPose(Pose2d pose) {
+        if (pose != null) {
+            // Store pose as array: [x, y, heading]
+            double[] poseArray = {pose.position.x, pose.position.y, pose.heading.toDouble()};
+            blackboard.put(STORED_POSE_KEY, poseArray);
+        }
+    }
+
+    public void clearStoredPose() {
+        blackboard.remove(STORED_POSE_KEY);
     }
 
     public enum AllianceColor {
