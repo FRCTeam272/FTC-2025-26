@@ -57,10 +57,17 @@ public class IntakeSubsystem extends SubsystemBase {
     MatchSettings.ArtifactColor colorInSlotMid = MatchSettings.ArtifactColor.UNKNOWN;
     MatchSettings.ArtifactColor colorInSlotRear = MatchSettings.ArtifactColor.UNKNOWN;
 
-    private static final double HSV_GREEN_MIN_H = 60;
-    private static final double HSV_GREEN_MAX_H = 180;
-    private static final double HSV_PURPLE_MIN_H = 250;
-    private static final double HSV_PURPLE_MAX_H = 320;
+//    private static final double HSV_GREEN_MIN_H = 60; //Old values
+//    private static final double HSV_GREEN_MAX_H = 180;
+//    private static final double HSV_PURPLE_MIN_H = 250;
+//    private static final double HSV_PURPLE_MAX_H = 320;
+//    private static final double HSV_MIN_SAT = 0.3;
+//    private static final double HSV_MIN_VAL = 0.1;
+
+    private static final double HSV_GREEN_MIN_H = 150;
+    private static final double HSV_GREEN_MAX_H = 163;
+    private static final double HSV_PURPLE_MIN_H = 165;
+    private static final double HSV_PURPLE_MAX_H = 240;
     private static final double HSV_MIN_SAT = 0.3;
     private static final double HSV_MIN_VAL = 0.1;
 
@@ -97,37 +104,41 @@ public class IntakeSubsystem extends SubsystemBase {
         midColorSens = hardwareMap.get(RevColorSensorV3.class, "midColor");
         rearColorSens = hardwareMap.get(RevColorSensorV3.class, "rearColor");
 
+        frontColorSens.setGain(10);
+        midColorSens.setGain(10);
+        rearColorSens.setGain(10);
+
     }
 
     //============== CONTROL METHODS ==============\\
 
     // COLOR SENSOR METHODS ==========================\\
 
-//    private MatchSettings.ArtifactColor colorDetected(RevColorSensorV3 sensor) { // Returns color detected if there is one
-//        NormalizedRGBA colors = sensor.getNormalizedColors();
-//        float[] hsv = new float[3];
-//        android.graphics.Color.RGBToHSV(
-//                (int) (colors.red * 255),
-//                (int) (colors.green * 255),
-//                (int) (colors.blue * 255),
-//                hsv
-//        );
-//        float hue = hsv[0];
-//        float sat = hsv[1];
-//        float val = hsv[2];
-//
-//        boolean isGreen = (hue >= HSV_GREEN_MIN_H && hue <= HSV_GREEN_MAX_H);
-//        boolean isPurple = (hue >= HSV_PURPLE_MIN_H && hue <= HSV_PURPLE_MAX_H);
-//        boolean strongColor = sat >= HSV_MIN_SAT && val >= HSV_MIN_VAL;
-//
-////        if (strongColor && isGreen) {
-////            return MatchSettings.ArtifactColor.GREEN;
-////        } else if (strongColor && isPurple) {
-////            return MatchSettings.ArtifactColor.PURPLE;
-////        } else {
-////            return MatchSettings.ArtifactColor.UNKNOWN;
-////        }
-//
+    private MatchSettings.ArtifactColor colorDetected(RevColorSensorV3 sensor) { // Returns color detected if there is one
+        NormalizedRGBA colors = sensor.getNormalizedColors();
+        float[] hsv = new float[3];
+        android.graphics.Color.RGBToHSV(
+                (int) (colors.red * 255),
+                (int) (colors.green * 255),
+                (int) (colors.blue * 255),
+                hsv
+        );
+        float hue = hsv[0];
+        float sat = hsv[1];
+        float val = hsv[2];
+
+        boolean isGreen = (hue >= HSV_GREEN_MIN_H && hue <= HSV_GREEN_MAX_H);
+        boolean isPurple = (hue >= HSV_PURPLE_MIN_H && hue <= HSV_PURPLE_MAX_H);
+        boolean strongColor = sat >= HSV_MIN_SAT && val >= HSV_MIN_VAL;
+
+        if (strongColor && isGreen) {
+            return MatchSettings.ArtifactColor.GREEN;
+        } else if (strongColor && isPurple) {
+            return MatchSettings.ArtifactColor.PURPLE;
+        } else {
+            return MatchSettings.ArtifactColor.UNKNOWN;
+        }
+
 //        if (isGreen) {
 //            return MatchSettings.ArtifactColor.GREEN;
 //        } else if (isPurple) {
@@ -135,40 +146,40 @@ public class IntakeSubsystem extends SubsystemBase {
 //        } else {
 //            return MatchSettings.ArtifactColor.UNKNOWN;
 //        }
+    }
+
+//    private MatchSettings.ArtifactColor colorDetected(RevColorSensorV3 sensor) { // Returns color detected if there is one
+//
+//        rgbValues[0] = sensor.red();
+//        rgbValues[1] = sensor.green();
+//        rgbValues[2] = sensor.blue();
+//
+//        double greenConfidence = computeDistance(rgbValues, GREEN_TARGET);
+//        double purpleConfidence = computeDistance(rgbValues, PURPLE_TARGET);
+//
+//        if (greenConfidence < purpleConfidence && greenConfidence < CONFIDENCE_THRESHOLD) {
+//            return MatchSettings.ArtifactColor.GREEN;
+//        } else if (purpleConfidence < greenConfidence && purpleConfidence < CONFIDENCE_THRESHOLD) {
+//            return MatchSettings.ArtifactColor.PURPLE;
+//        } else {
+//            return MatchSettings.ArtifactColor.UNKNOWN;
+//        }
 //    }
-
-    private MatchSettings.ArtifactColor colorDetected(RevColorSensorV3 sensor) { // Returns color detected if there is one
-
-        rgbValues[0] = sensor.red();
-        rgbValues[1] = sensor.green();
-        rgbValues[2] = sensor.blue();
-
-        double greenConfidence = computeDistance(rgbValues, GREEN_TARGET);
-        double purpleConfidence = computeDistance(rgbValues, PURPLE_TARGET);
-
-        if (greenConfidence < purpleConfidence && greenConfidence < CONFIDENCE_THRESHOLD) {
-            return MatchSettings.ArtifactColor.GREEN;
-        } else if (purpleConfidence < greenConfidence && purpleConfidence < CONFIDENCE_THRESHOLD) {
-            return MatchSettings.ArtifactColor.PURPLE;
-        } else {
-            return MatchSettings.ArtifactColor.UNKNOWN;
-        }
-    }
-
-    /**
-     * Calculates the Euclidean distance between measured RGB values and target RGB values.
-     * Lower distances indicate better color matches.
-     *
-     * @param measured The measured RGB values from the sensor
-     * @param target   The target RGB values to compare against
-     * @return The Euclidean distance between the two color points
-     */
-    public double computeDistance(double[] measured, double[] target) {
-        double dr = measured[0] - target[0];
-        double dg = measured[1] - target[1];
-        double db = measured[2] - target[2];
-        return Math.sqrt(dr * dr + dg * dg + db * db);
-    }
+//
+//    /**
+//     * Calculates the Euclidean distance between measured RGB values and target RGB values.
+//     * Lower distances indicate better color matches.
+//     *
+//     * @param measured The measured RGB values from the sensor
+//     * @param target   The target RGB values to compare against
+//     * @return The Euclidean distance between the two color points
+//     */
+//    public double computeDistance(double[] measured, double[] target) {
+//        double dr = measured[0] - target[0];
+//        double dg = measured[1] - target[1];
+//        double db = measured[2] - target[2];
+//        return Math.sqrt(dr * dr + dg * dg + db * db);
+//    }
 
 
     public void readIntakeLoadColors() { // bulk read all sensors and set initial color variables prior to launching
