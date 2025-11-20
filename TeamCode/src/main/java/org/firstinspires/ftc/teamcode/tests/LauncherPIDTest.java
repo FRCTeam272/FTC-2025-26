@@ -30,6 +30,7 @@ public class LauncherPIDTest extends CommandOpMode {
     // --- PIDF ---
     /**
      * Sets shooter PIDF coefficients manually in LauncherSubsystem Configs
+     * Dashboard address - 192.168.43.1:8080/dash
      * kf - Set to a low value, just enough that the shooter wheel
      *           begins to rotate
      * kp - Increase kP after kF until the shooter wheel reaches the target speed
