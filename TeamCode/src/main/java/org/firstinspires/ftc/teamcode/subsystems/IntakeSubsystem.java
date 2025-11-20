@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
-import org.opencv.core.Mat;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -32,7 +31,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private final RevColorSensorV3 midColorSens;
     private final RevColorSensorV3 rearColorSens;
 
-    double possessionDistance = Constants.intakeConstants.DISTANCE_FOR_POSSESSION;
+    double possessionDistanceOuter = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_OUTER;
+    double possessionDistanceMid =  Constants.intakeConstants.DISTANCE_FOR_POSSESSION_MID;
     double intaking = Constants.intakeConstants.INTAKE_POWER;
     double outtaking = Constants.intakeConstants.REVERSE_INTAKE_POWER;
 
@@ -136,15 +136,21 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // DISTANCE SENSOR METHODS ==========================\\
 
-    private boolean possessionDetected(RevColorSensorV3 sensor) { //for bulk read before launching
-        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistance;
+    private boolean possessionDetectedOuter(RevColorSensorV3 sensor) { //for bulk read before launching
+        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceOuter;
         return possession;
     }
 
+    private boolean possessionDetectedMid(RevColorSensorV3 sensor) { //for bulk read before launching
+        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceMid;
+        return possession;
+    }
+
+
     public void readIntakePossessions() { // bulk read all sensors for initial possession values prior to launching
-        possessionFront = possessionDetected(frontColorSens);
-        possessionMid = possessionDetected(midColorSens);
-        possessionRear = possessionDetected(rearColorSens);
+        possessionFront = possessionDetectedOuter(frontColorSens);
+        possessionMid = possessionDetectedMid(midColorSens);
+        possessionRear = possessionDetectedOuter(rearColorSens);
     }
 
     public void clearIntakePossessions() { // clear Intake load possession values
@@ -154,33 +160,18 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean frontPossession() { // returns true if there is an artifact in distance
-        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
+        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistanceOuter;
         return possession;
     }
 
     public boolean midPossession() { // returns true if there is an artifact in distance
-        possession = midColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
+        possession = midColorSens.getDistance(DistanceUnit.CM) < possessionDistanceMid;
         return possession;
     }
 
     public boolean rearPossession() { // returns true if there is an artifact in distance
-        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
+        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceOuter;
         return possession;
-    }
-
-    public boolean notFrontPossession() { // returns true if there is not an artifact in distance
-        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
-        return !possession;
-    }
-
-    public boolean notMidPossession() { // returns true if there is not an artifact in distance
-        possession = midColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
-        return !possession;
-    }
-
-    public boolean notRearPossession() { // returns true if there is not an artifact in distance
-        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistance;
-        return !possession;
     }
 
     // IN-BOUND METHODS ==========================\\
@@ -266,11 +257,14 @@ public class IntakeSubsystem extends SubsystemBase {
     // TRANSFER TO LAUNCHER METHODS ==========================\\
 
 
-    public void printTelemetry(Telemetry telemetry) {
+    public void printTelemetry(Telemetry telemetry) { // Only for Testing. DO NOT constantly read sensors during teleop
         telemetry.addLine("INTAKE SUBSYSTEM");
         telemetry.addData("Front Sensor Distance", frontColorSens.getDistance(DistanceUnit.CM));
         telemetry.addData("Mid Sensor Distance", midColorSens.getDistance(DistanceUnit.CM));
         telemetry.addData("Rear Sensor Distance", rearColorSens.getDistance(DistanceUnit.CM));
+        telemetry.addData("Front Color Detected", colorDetected(frontColorSens));
+        telemetry.addData("Mid Color Detected", colorDetected(midColorSens));
+        telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
         telemetry.update();
     }
 

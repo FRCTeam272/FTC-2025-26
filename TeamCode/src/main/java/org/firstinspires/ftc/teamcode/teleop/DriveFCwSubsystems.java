@@ -61,7 +61,7 @@ public class DriveFCwSubsystems extends SampleCommandTeleop {
     public void onLoop() {
         drive.FieldCentricAllianceBased(gamepad1, telemetry);
 
-        intake.printTelemetry(telemetry);
+        //intake.printTelemetry(telemetry); // Only enable for testing. Constantly reads sensors, adds cycle time!
 
         // Print Instructions every loop
         telemetry.addLine("INTAKE CONTROLS");
