@@ -41,5 +41,12 @@ public final class Constants {
         }
     }
 
+    public static class ColorSensor {
+
+        public static double[] GREEN_TARGET = {70, 200, 150};
+        public static double[] PURPLE_TARGET = {120, 150, 220};
+        public static double CONFIDENCE_THRESHOLD = 60.0; // Acceptable distance threshold
+    }
+
 
 }

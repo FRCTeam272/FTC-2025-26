@@ -29,7 +29,7 @@ public class MotifAutoV2 extends LinearOpMode {
         // Initializing Robot
         Pose2d StartPose = new Pose2d(0,0,0);
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
-        //VisionSubsystem vision = new VisionSubsystem(hardwareMap, matchSettings);
+
         MotifVisionSubsystem vision = new MotifVisionSubsystem(hardwareMap, telemetry,matchSettings);
 
         while (!isStopRequested() && !opModeIsActive()) {
