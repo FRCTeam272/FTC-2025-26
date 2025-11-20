@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-@Autonomous
+@Autonomous (name="Motif Test Auto", group = "Tests")
 public class MotifAuto extends LinearOpMode {
 
     private MatchSettings matchSettings;

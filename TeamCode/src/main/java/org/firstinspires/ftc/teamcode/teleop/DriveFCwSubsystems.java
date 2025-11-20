@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
 
-@TeleOp
+@TeleOp (name="DriveFCwSubsystems", group = "Competition")
 public class DriveFCwSubsystems extends SampleCommandTeleop {
     public MatchSettings matchSettings;
 

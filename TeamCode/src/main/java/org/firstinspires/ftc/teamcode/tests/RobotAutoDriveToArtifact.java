@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,6 +26,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
  * It uses a ColorBlobLocatorProcessor to find the artifact and a simple
  * proportional control loop to steer the robot.
  */
+@Disabled
 @Autonomous(name = "Auto Drive to Artifact", group = "Concept")
 public class RobotAutoDriveToArtifact extends LinearOpMode {
 

@@ -52,7 +52,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "PitMode", group = "Robot")
+@TeleOp(name = "PitMode", group = "Tests")
 @Disabled
 public class PitMode extends OpMode {
     // This declares the four motors needed

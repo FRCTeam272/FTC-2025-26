@@ -77,8 +77,6 @@ public class DriveSubsystem {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        double fastpower = 2;
-
         if (alliance == MatchSettings.AllianceColor.BLUE) {
             allianceSteering = -1;
         } else {
@@ -90,8 +88,6 @@ public class DriveSubsystem {
         } else {
             correctedYaw = 90;
         }
-
-
 
     }
 
@@ -109,7 +105,6 @@ public class DriveSubsystem {
 
         // Apply speed control to gamepad stick input as a denominator, remember y stick is inverted
         // Change depending on where driver stands for Alliance
-
 
         double forward = (-gamepad1.left_stick_y * allianceSteering) / fastpower;
         double strafe = (gamepad1.left_stick_x * allianceSteering) / fastpower;

@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
 @Config
-@Autonomous (name="BlueFarTestClean", group="Auto")
+@Autonomous (name="BlueFarTestClean", group="Tests")
 public class BlueFarTestClean extends LinearOpMode {
 
     private MatchSettings matchSettings;
@@ -135,9 +135,11 @@ public class BlueFarTestClean extends LinearOpMode {
                         intake.autoIntake3Front()
                 ),
 
-                new SleepAction(1)
+                new SleepAction(1),
 
+                // more stuff here!
 
+                launcher.autoStop() //don't forget to stop launcher at the end!!!!
 
         ));
 
