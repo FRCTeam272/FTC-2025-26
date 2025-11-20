@@ -26,6 +26,11 @@ public class VisionSubsystem extends SubsystemBase {
             .setDrawTagOutline(true)
             .build();
 
+
+
+
+
+
     public VisionSubsystem(HardwareMap hwMap, MatchSettings matchSettings) {
         this.matchSettings = matchSettings;
         webCam = hwMap.get(WebcamName.class, "Webcam 1");
@@ -35,6 +40,8 @@ public class VisionSubsystem extends SubsystemBase {
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .build();
+
+
     }
 
     public boolean isDetectingAGoalTag() {
