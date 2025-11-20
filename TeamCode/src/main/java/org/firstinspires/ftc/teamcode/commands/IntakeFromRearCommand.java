@@ -13,6 +13,7 @@ public class IntakeFromRearCommand extends SequentialCommandGroup {
 
         addCommands(
                 new ParallelCommandGroup( //turn on all intake servos to intake from rear
+                        new InstantCommand(intake::stopFront),
                         new InstantCommand(intake::outboundMidFront),
                         new InstantCommand(intake::inboundMidRear),
                         new InstantCommand(intake::inboundRear)

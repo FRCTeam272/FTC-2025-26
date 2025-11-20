@@ -113,9 +113,17 @@ public class IntakeSubsystem extends SubsystemBase {
         boolean isPurple = (hue >= HSV_PURPLE_MIN_H && hue <= HSV_PURPLE_MAX_H);
         boolean strongColor = sat >= HSV_MIN_SAT && val >= HSV_MIN_VAL;
 
-        if (strongColor && isGreen) {
+//        if (strongColor && isGreen) {
+//            return MatchSettings.ArtifactColor.GREEN;
+//        } else if (strongColor && isPurple) {
+//            return MatchSettings.ArtifactColor.PURPLE;
+//        } else {
+//            return MatchSettings.ArtifactColor.UNKNOWN;
+//        }
+
+        if (isGreen) {
             return MatchSettings.ArtifactColor.GREEN;
-        } else if (strongColor && isPurple) {
+        } else if (isPurple) {
             return MatchSettings.ArtifactColor.PURPLE;
         } else {
             return MatchSettings.ArtifactColor.UNKNOWN;
