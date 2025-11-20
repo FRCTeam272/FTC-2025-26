@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystemOld;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 // Thanks to https://github.com/14468-undefined/14468-DECODE-V2/blob/master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/ColorfulTelemetry.java
 

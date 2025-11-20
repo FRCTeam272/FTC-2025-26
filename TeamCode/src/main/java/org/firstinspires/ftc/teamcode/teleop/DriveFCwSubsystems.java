@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.IntakeFromFrontCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeFromRearCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
@@ -17,6 +17,7 @@ public class DriveFCwSubsystems extends SampleCommandTeleop {
     public MatchSettings matchSettings;
 
     private DriveSubsystem drive;
+    private LauncherSubsystem launcher;
     private IntakeSubsystem intake;
 
     private IntakeFromFrontCommand intakeFromFrontCommand;
@@ -28,6 +29,7 @@ public class DriveFCwSubsystems extends SampleCommandTeleop {
         matchSettings = new MatchSettings(blackboard);
 
         drive = new DriveSubsystem(hardwareMap, telemetry, matchSettings);
+        launcher = new LauncherSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap, telemetry, matchSettings);
 
         intakeFromFrontCommand = new IntakeFromFrontCommand(intake);
@@ -46,11 +48,11 @@ public class DriveFCwSubsystems extends SampleCommandTeleop {
                 .whenPressed(intakeFromRearCommand);
 
         g2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> {
-            intake.stop();
+            intake.stopAll();
         });
 
         g2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> {
-            intake.thruAll();
+            intake.thruFrontAll();
         });
 
     }

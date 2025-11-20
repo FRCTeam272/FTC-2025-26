@@ -21,10 +21,10 @@ public final class Constants {
     }
 
     @Config
-    public static final class shooterConstants{
-        public static int FAR_ZONE_SHOT_RPM = 2500;
-        public static int MID_SHOT_RPM = 2300;
-        public static int CLOSE_SHOT_RPM= 2200;
+    public static final class launcherConstants{
+        public static double FAR_ZONE_LAUNCH_RPM = 2500;
+        public static double MID_ZONE_LAUNCH_RPM = 2300;
+        public static double CLOSE_ZONE_LAUNCH_RPM = 2200;
     }
 
     @Config
@@ -32,5 +32,13 @@ public final class Constants {
         public static double round(double in, int places) {
             return ((int) (in * Math.pow(10, places))) / (double) Math.pow(10, places);
         }
+
+        public static double angleToBlueGoal(double x, double y) { //in Radians
+            double dx = -72 - x;
+            double dy = -72 - y;
+            return Math.atan2(dy, dx);
+        }
     }
+
+
 }

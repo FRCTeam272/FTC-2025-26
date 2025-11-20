@@ -57,6 +57,33 @@ public class MatchSettings {
         return colors;
     }
 
+    public ArtifactColor firstArtifactNeeded() {
+        Motif motif = getMotif();
+        if (motif == null || motif == Motif.UNKNOWN)
+            return ArtifactColor.UNKNOWN;
+
+        ArtifactColor[] motifColors = motifToArtifactColors(motif);
+        return motifColors[0];
+    }
+
+    public ArtifactColor secondArtifactNeeded() {
+        Motif motif = getMotif();
+        if (motif == null || motif == Motif.UNKNOWN)
+            return ArtifactColor.UNKNOWN;
+
+        ArtifactColor[] motifColors = motifToArtifactColors(motif);
+        return motifColors[1];
+    }
+
+    public ArtifactColor thirdArtifactNeeded() {
+        Motif motif = getMotif();
+        if (motif == null || motif == Motif.UNKNOWN)
+            return ArtifactColor.UNKNOWN;
+
+        ArtifactColor[] motifColors = motifToArtifactColors(motif);
+        return motifColors[2];
+    }
+
     public AllianceColor getAllianceColor() {
         String color = (String) blackboard.get(ALLIANCE_COLOR_KEY);
         return Objects.equals(color, "red") ? AllianceColor.RED : AllianceColor.BLUE;

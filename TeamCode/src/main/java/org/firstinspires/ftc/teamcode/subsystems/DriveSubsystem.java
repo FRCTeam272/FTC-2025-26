@@ -42,7 +42,7 @@ public class DriveSubsystem {
 
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
 
-        // All the configuration for the OTOS is done in this helper method, check it out!
+        // All the configuration for the OTOS is done in this helper method, check it out at the bottom!
         configureOtos();
 
         // After configuring and resetting the tracking, the OTOS will report that the robot is at
@@ -51,7 +51,8 @@ public class DriveSubsystem {
         // the OTOS location to match and it will continue to track from there.
         // SET THIS TO ALLIANCE DEPENDENT HEADING or GET FROM AUTON
 
-        SparkFunOTOS.Pose2D storedPose = matchSettings.getStoredPose(); //get from Auton
+        SparkFunOTOS.Pose2D storedPose = matchSettings.getStoredPose(); //get from Auton if one ran
+        matchSettings.clearStoredPose(); //and then clear it so that if you are running practice it won't get a stale position
 
         SparkFunOTOS.Pose2D bluePosition = new SparkFunOTOS.Pose2D(0, -24, 270); // default blue for practice
         SparkFunOTOS.Pose2D redPosition = new SparkFunOTOS.Pose2D(0, 24, 90); // default red for practice
@@ -77,8 +78,20 @@ public class DriveSubsystem {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 //        double fastpower = 2;
-//        double allianceSteering = 1;
-//        double correctedYaw = 0;
+
+        if (alliance == MatchSettings.AllianceColor.BLUE) {
+            allianceSteering = -1;
+        } else {
+            allianceSteering = 1;
+        }
+
+        if (alliance == MatchSettings.AllianceColor.BLUE) {
+            correctedYaw = 270;
+        } else {
+            correctedYaw = 90;
+        }
+
+
 
     }
 
@@ -97,11 +110,7 @@ public class DriveSubsystem {
         // Apply speed control to gamepad stick input as a denominator, remember y stick is inverted
         // Change depending on where driver stands for Alliance
 
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            allianceSteering = -1;
-        } else {
-            allianceSteering = 1;
-        }
+
         double forward = (-gamepad1.left_stick_y * allianceSteering) / fastpower;
         double strafe = (gamepad1.left_stick_x * allianceSteering) / fastpower;
 
@@ -109,16 +118,23 @@ public class DriveSubsystem {
 
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
 
+        if (gamepad1.right_trigger > 0.2) {
+            //Compute angle to goal
+            double targetHeading = headingToGoal(pos, alliance);
+            double currentHeading = Math.toRadians(pos.h);
+
+            // Replace robot heading command directly with the needed rotation
+            // Determine shortest rotation direction
+            double headingError = angleWrap(targetHeading - currentHeading);
+
+            // Turn in that direction at a fixed rate (scaled by error)
+            rotate = Math.toDegrees( Math.copySign(Math.min(Math.abs(headingError) / Math.PI, 1.0), headingError));
+        }
+
         //Corrected Alliance Dependent Yaw Position if needed, retains field position, but resets Angle if
         //it drifts from where it should be. Can also be reset correctly from vision, hopefully implement next!
 
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            correctedYaw = 270;
-        } else {
-            correctedYaw = 90;
-        }
-
-        SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, correctedYaw); // Baseline 0 degree
+       SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, correctedYaw); // Baseline 0 degree
 
         // Reset the yaw if the user requests it
         if (gamepad1.y) {
@@ -154,8 +170,33 @@ public class DriveSubsystem {
         telemetry.addLine("Press Y to reset tracking");
         telemetry.addLine("Hold LeftBumper for TURBO speed");
         telemetry.addLine("Hold RightBumper for TURTLE speed");
+        telemetry.addLine("Hold RightTrigger to Aim towards Goal");
         telemetry.update();
 
+    }
+
+    /** Helper to wrap angles to [-PI, PI] */
+    private static double angleWrap(double angle) {
+        while (angle > Math.PI) angle -= 2 * Math.PI;
+        while (angle < -Math.PI) angle += 2 * Math.PI;
+        return angle; }
+
+    /** Returns the absolute heading (radians) to the goal corner */
+    public static double headingToGoal(SparkFunOTOS.Pose2D pose, MatchSettings.AllianceColor alliance) {
+        double allianceSteering;
+
+        if (alliance == MatchSettings.AllianceColor.BLUE) {
+            allianceSteering = -1;
+        } else {
+            allianceSteering = 1;
+        }
+
+        double GOAL_X = -72;
+        double GOAL_Y = 72 * allianceSteering; // negative if Blue Alliance
+
+        double dx = GOAL_X - pose.x;
+        double dy = GOAL_Y - pose.y;
+        return Math.atan2(dy, dx); //in Radians
     }
 
     /**

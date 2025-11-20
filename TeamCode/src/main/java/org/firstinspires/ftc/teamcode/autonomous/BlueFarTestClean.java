@@ -7,15 +7,16 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.commands.IntakeFromFrontCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeFromRearCommand;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
@@ -26,9 +27,8 @@ public class BlueFarTestClean extends LinearOpMode {
     private MatchSettings matchSettings;
 
     private MecanumDrive drive;
+    private LauncherSubsystem launcher;
     private IntakeSubsystem intake;
-
-    private IntakeFromFrontCommand intakeFromFrontCommand;
 
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
@@ -40,7 +40,7 @@ public class BlueFarTestClean extends LinearOpMode {
     // Shoot Preload
     double preloadX = 58;
     double preloadY = -15;
-    double preloadH = Math.toRadians(210);
+    double preloadH = Constants.Util.angleToBlueGoal(preloadX,preloadY); //calculates angle to goal, no guessing!
 
     // Pickup Load1
     double load1X = 35;
@@ -67,9 +67,8 @@ public class BlueFarTestClean extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
         drive.localizer.setPose(StartPose);
 
+        LauncherSubsystem launcher = new LauncherSubsystem(hardwareMap, telemetry);
         IntakeSubsystem intake = new IntakeSubsystem(hardwareMap, telemetry, matchSettings);
-
-        intakeFromFrontCommand = new IntakeFromFrontCommand(intake);
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
@@ -88,7 +87,7 @@ public class BlueFarTestClean extends LinearOpMode {
 
         //get load one
         TrajectoryActionBuilder  intakeload1= goToIntakeLoad1.endTrajectory().fresh() // instead of StartPose, it works from where the last trajectory ended
-                .strafeToLinearHeading(new Vector2d(getload1X,getload1Y),getload1H) //drive to position to loading 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(getload1X,getload1Y),getload1H, new TranslationalVelConstraint(20.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action Intakeload1 = intakeload1.build();
 
@@ -112,28 +111,33 @@ public class BlueFarTestClean extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
 
+                launcher.autoSetRPMFar(),
                 // drive to shoot preload while spinning up motor wheel at the same time
                 new ParallelAction(
-                        new SleepAction(1), // placeholder for spinning up shooter flywheel Action
+                        launcher.autoSpinUp(),
                         GoToShootPreload
                 ),
 
-                // shoot 3 Artifacts from far position
-                new SleepAction(1), //placeholder for ShootArtifactFar
+                // shoot 3 Artifacts from far position, checking launcher wheel speed between each launch
+                launcher.autoCheckAtSpeed(),
+                intake.autoLaunch1st(),
+                launcher.autoCheckAtSpeed(),
+                intake.autoLaunch2nd(),
+                launcher.autoCheckAtSpeed(),
+                intake.autoLaunch3rd(),
 
                 // drive to intake Load 1
                 GoToIntakeLoad1,
 
-
+                // Drive forward SLOWLY intaking Artifacts - See trajectory build action for how this is achieved
                 new ParallelAction(
                         Intakeload1,
-                        new SleepAction(2)
+                        intake.autoIntake3Front()
                 ),
 
-                // spin up Intake
-                new SleepAction(1) //spin up Intake Placeholder
+                new SleepAction(1)
 
-                // Drive forward intaking Artifacts
+
 
         ));
 
