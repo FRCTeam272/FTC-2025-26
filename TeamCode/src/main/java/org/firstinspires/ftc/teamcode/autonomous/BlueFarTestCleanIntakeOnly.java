@@ -43,13 +43,13 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
     double preloadH = Constants.Util.angleToBlueGoal(preloadX,preloadY); //calculates angle to goal, no guessing!
 
     // Pickup Load1
-    double load1X = 35;
+    double load1X = 37;
     double load1Y = -30;
     double load1H = Math.toRadians(270);
 
     // Drive to Pickup Load1
-    double getload1X = 35;
-    double getload1Y = -45;
+    double getload1X = 37;
+    double getload1Y = -52;
     double getload1H = Math.toRadians(270);
 
     @Override
