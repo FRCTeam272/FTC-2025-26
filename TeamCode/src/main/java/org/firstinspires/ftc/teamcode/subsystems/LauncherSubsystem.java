@@ -234,6 +234,10 @@ public class LauncherSubsystem extends SubsystemBase {
         return ((getLauncherRPM() > (getTargetRPM() - 200)) && (getLauncherRPM() < (getTargetRPM() + 100)) && getLauncherRPM() != 0);
     }
 
+    public boolean isNotAtTargetSpeed() {
+        return !isAtTargetSpeed();
+    }
+
     public void printTelemetry(Telemetry telemetry) {
         telemetry.addLine("LAUNCHER SUBSYSTEM");
         telemetry.addData("Target RPM", TARGET_RPM);

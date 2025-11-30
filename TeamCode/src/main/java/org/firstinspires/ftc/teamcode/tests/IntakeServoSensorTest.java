@@ -76,8 +76,8 @@ public class IntakeServoSensorTest extends SampleCommandTeleop {
         telemetry.addLine("Press DpadLEFT to PASS THRU from Front");
         telemetry.addLine("Press DpadRIGHT to stop Intake");
         telemetry.addLine();
-        telemetry.addLine("Press X to Outbound Transfer");
-        telemetry.addLine("Press Y to Stop Transfer");
+        telemetry.addLine("Press Y to Outbound Transfer");
+        telemetry.addLine("Press X to Stop Transfer");
         telemetry.addLine("Intake will run until stopped by Button");
 
     }

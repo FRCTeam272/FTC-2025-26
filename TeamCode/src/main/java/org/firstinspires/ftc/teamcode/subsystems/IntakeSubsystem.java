@@ -184,6 +184,18 @@ public class IntakeSubsystem extends SubsystemBase {
         colorInSlotRear = MatchSettings.ArtifactColor.UNKNOWN;
     }
 
+    public void setRearColor() {
+        colorInSlotRear = colorDetected(midColorSens);
+    }
+
+    public void setMidColor() {
+        colorInSlotMid = colorDetected(midColorSens);
+    }
+
+    public void setFrontColor() {
+        colorInSlotFront = colorDetected(midColorSens);
+    }
+
     // DISTANCE SENSOR METHODS ==========================\\
 
     private boolean possessionDetectedFront(RevColorSensorV3 sensor) { //for bulk read before launching
@@ -479,27 +491,24 @@ public class IntakeSubsystem extends SubsystemBase {
                 }
                 secondArtifactLaunched = launchSlot;
                 timer.reset();
-                // turn on front or rear servos depending on which artifact to be launched and where the fro
+                // turn on front or rear servos depending on which artifact to be launched and where the front Artifact is
                 if (launchSlot == "Front" && midPossession()) { //the front ball already there from checking color
-                    inboundMidFront();
+                    inboundMidFront(); //send Front into launcher
                     inboundMidRear();
                 } else if (launchSlot == "Front") { // it didn't get to the sensor? Push it along a little
-                    inboundMidFront();
+                    inboundMidFront(); // send the Front Artifact toward middle without also pushing rear Artifact
                 } else if (launchSlot == "Rear" && midPossession()) { // send the front ball backwards
                     outboundMidFront();
+                } else if (launchSlot == "Rear" && !midPossession()) { //send Rear into launcher
+                    inboundMidRear();
                 }
                 initialized = true; //so that it skips this part next rerun
             }
             if(timer.time() < 0.5) {
                 return true;
             }
-            if (launchSlot == "Rear"){
-                stopRear();
-                inboundMidFront();
-            } else {
-                stopFront();
-                inboundMidRear();
-            }
+            inboundMidFront();
+            inboundMidRear();
             outboundTransfer();
             if(timer.time() < 1) {
                 return true;
@@ -540,9 +549,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 // turn on front or rear servos depending on which artifact to be launched
                 if (launchSlot == "Rear") {
                     inboundMidRear();
-                    inboundRear();
                 } else {
-                    inboundFront();
                     inboundMidFront();
                 }
                 initialized = true; //so that it skips this part next rerun
@@ -550,13 +557,8 @@ public class IntakeSubsystem extends SubsystemBase {
             if(timer.time() < 0.5) {
                 return true;
             }
-            if (launchSlot == "Rear"){
-                stopRear();
-                inboundMidFront();
-            } else {
-                stopFront();
-                inboundMidRear();
-            }
+            inboundMidFront();
+            inboundMidRear();
             outboundTransfer();
             if(timer.time() < 1) {
                 return true;
