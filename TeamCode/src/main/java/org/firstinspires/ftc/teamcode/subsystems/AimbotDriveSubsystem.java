@@ -1,19 +1,22 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-public class DriveSubsystem {
+//look at https://github.com/FTC-9073-Knightrix/2025-2026-DECODE/blob/master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/teleop/mechanisms/TeleOpMecanumDrive.java
+//and https://github.com/FTC-9073-Knightrix/2025-2026-DECODE/blob/master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/teleop/main/TeleOpMethods.java
+
+public class AimbotDriveSubsystem {
 
     public enum DriveMode {
         MANUAL,
@@ -25,35 +28,44 @@ public class DriveSubsystem {
     // CREATE DEVICES ==========================\\
 
     SparkFunOTOS myOtos; //Declare Odometry Computer
+    public IMU rev_imu;
+    public YawPitchRollAngles orientation;
+    boolean imuYawFromAuton;
+    private double angleOffset;
+    double startAngle;
 
     private DcMotorEx leftFront;
     private DcMotorEx leftBack;
     private DcMotorEx rightBack;
     private DcMotorEx rightFront;
 
-    private MotifVisionSubsystem webcam;
-
-    // CREATE VARIABLES ==========================\\
-
-    double fastpower;
-    double allianceSteering;
-    double correctedYaw;
-
-    boolean webcamStreaming;
-    ElapsedTime localizationTimer;
-    ElapsedTime streamingTimer;
-
+    public double finalSpeedMode = 0.0;
+    public final double driveSpeed = 0.66;
+    public final double fastSpeed = 1.0;
+    public final double slowSpeed = 0.16;
+    private boolean rightStickPrevPressed = false;
 
     // CREATE MATCH SETTINGS / ALLIANCE ==============\\
     MatchSettings.AllianceColor alliance;
 
     public final MatchSettings matchSettings;
 
+    public AimbotDriveSubsystem(HardwareMap hardwareMap, MatchSettings matchSettings) {
 
-    public DriveSubsystem(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
         this.matchSettings = matchSettings;
 
         alliance = matchSettings.getAllianceColor();
+
+        rev_imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot RevOrientation = new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP
+        );
+        rev_imu.initialize(new IMU.Parameters(RevOrientation));
+        imuYawFromAuton = false;
+
+
 
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
 
@@ -71,6 +83,7 @@ public class DriveSubsystem {
 
         SparkFunOTOS.Pose2D bluePosition = new SparkFunOTOS.Pose2D(0, -24, 270); // default blue for practice
         SparkFunOTOS.Pose2D redPosition = new SparkFunOTOS.Pose2D(0, 24, 90); // default red for practice
+
 
         if (storedPose != null) {
             myOtos.setPosition(storedPose);
@@ -92,125 +105,59 @@ public class DriveSubsystem {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        webcam = new MotifVisionSubsystem(hardwareMap,telemetry,matchSettings);
-
-        webcamStreaming = false;
-        localizationTimer = new ElapsedTime();
-        streamingTimer = new ElapsedTime();
-
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            allianceSteering = -1;
-        } else {
-            allianceSteering = 1;
-        }
-
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            correctedYaw = 270;
-        } else {
-            correctedYaw = 90;
-        }
-
     }
 
     public DriveMode getDriveMode() {
         return driveMode;
     }
 
-    public void DriveMode(DriveMode driveMode) {
+    public void setDriveMode(DriveMode driveMode) {
         this.driveMode = driveMode;
     }
 
-    public void FieldCentricAllianceBased(Gamepad gamepad1, Telemetry telemetry) {
+    public void runManualMecanumDrive(boolean rightBumper, boolean leftBumper, double leftStickY, double leftStickX, double rightStickX, boolean yButton) {
 
-        // Speed Controls
-
-        if (gamepad1.left_bumper) { //Turbo/Max speed!
-            fastpower = 1;
-        } else if (gamepad1.right_bumper) { // Turtle speed - to nudge into position for endgame
-            fastpower = 6;
+        //Setting boolean hold
+        if(rightBumper) {
+            //Slow mode
+            finalSpeedMode = slowSpeed;
+        } else if (leftBumper) {
+            //Fast mode
+            finalSpeedMode = fastSpeed;
         } else {
-            fastpower = 2; //Regular speed, initially 50%, but can bump up as needed
+            //Regular
+            finalSpeedMode = driveSpeed;
         }
-
-        // Apply speed control to gamepad stick input as a denominator, remember y stick is inverted
-        // Change depending on where driver stands for Alliance
-
-        double forward = (-gamepad1.left_stick_y * allianceSteering) / fastpower;
-        double strafe = (gamepad1.left_stick_x * allianceSteering) / fastpower;
-
-        double rotate = gamepad1.right_stick_x / fastpower;
-
-        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
-        SparkFunOTOS.Pose2D webcamPos;
-
-        // Webcam Localization Controls
-        //----------------------------------------------------------
-        // Save CPU resources; can resume streaming when needed.
-        // End streaming if we get a good localization or if we've been streaming for more than 5 seconds
-        if (gamepad1.dpad_down || localizationTimer.time() < 1 || streamingTimer.time() > 5) {
-            webcam.visionPortal.stopStreaming();
-            webcamStreaming = false;
-        }
-        if(gamepad1.dpad_up) { //start streaming - tell driver to do this when launching (or maybe automate it into launch code?)
-            webcam.visionPortal.resumeStreaming();
-            webcamStreaming = true;
-            streamingTimer.reset();
-        }
-
-        // if streaming and it's been a while since the last good localization, save a new pose to Otos
-        if (webcamStreaming && localizationTimer.time() > 6) {
-            webcamPos = webcam.scanGoalTagLocalization();
-            if (webcamPos.x != 100) {
-                myOtos.setPosition(webcamPos);
-                localizationTimer.reset();
-            }
-        }
-
-        //Corrected Alliance Dependent Yaw Position if needed, retains field position, but resets Angle if
-        //it drifts from where it should be. Can also be reset correctly from vision, hopefully implement next!
-
-       SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, correctedYaw); // Baseline 0 degree
 
         // Reset the yaw if the user requests it
-        if (gamepad1.y) {
-            myOtos.setPosition(resetYawPos);
+        if (yButton) {
+            rev_imu.resetYaw();
         }
 
-        double heading = Math.toRadians(pos.h);
-        double headingDegrees = pos.h; // for telemetry
+        orientation = rev_imu.getRobotYawPitchRollAngles();
 
-        double cosAngle = Math.cos((Math.PI / 2)-heading);
-        double sinAngle = Math.sin((Math.PI / 2)-heading);
+        double botHeading = rev_imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-        double globalStrafe = -forward * sinAngle + strafe * cosAngle;
-        double globalForward = forward * cosAngle + strafe * sinAngle;
+        double rotX = leftStickX * Math.cos(-botHeading) - leftStickY * Math.sin(-botHeading);
+        double rotY = leftStickX * Math.sin(-botHeading) + leftStickY * Math.cos(-botHeading);
 
-        double[] newWheelSpeeds = new double[4];
+        rotX = rotX * 1.1;
 
-        newWheelSpeeds[0] = globalForward + globalStrafe + rotate;
-        newWheelSpeeds[1] = globalForward - globalStrafe - rotate;
-        newWheelSpeeds[2] = globalForward - globalStrafe + rotate;
-        newWheelSpeeds[3] = globalForward + globalStrafe - rotate;
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rightStickX), 1);
+        double frontLeftPower = (rotY + rotX + rightStickX) / denominator;
+        double backLeftPower = (rotY - rotX + rightStickX) / denominator;
+        double frontRightPower = (rotY - rotX - rightStickX) / denominator;
+        double backRightPower = (rotY + rotX - rightStickX) / denominator;
 
-        leftFront.setPower(newWheelSpeeds[0]);
-        rightFront.setPower(newWheelSpeeds[1]);
-        leftBack.setPower(newWheelSpeeds[2]);
-        rightBack.setPower(newWheelSpeeds[3]);
-
-        telemetry.addLine("Odometry Data");
-        telemetry.addData("Robot Xpos: ", pos.x);
-        telemetry.addData("Robot Ypos: ", pos.y);
-        telemetry.addData("Robot Heading: ", headingDegrees);
-        telemetry.addData("Alliance: ", alliance);
-        telemetry.addLine("Press Y to reset tracking");
-        telemetry.addLine("Hold LeftBumper for TURBO speed");
-        telemetry.addLine("Hold RightBumper for TURTLE speed");
-        telemetry.addLine("Hold RightTrigger to Aim towards Goal");
-        telemetry.update();
+        this.leftFront.setPower(frontLeftPower * finalSpeedMode);
+        this.leftBack.setPower(backLeftPower * finalSpeedMode);
+        this.rightFront.setPower(frontRightPower * finalSpeedMode);
+        this.rightBack.setPower(backRightPower * finalSpeedMode);
 
     }
 
-    public void runAutoAlignToTag(Gamepad gamepad1, double bearingRadians, Telemetry telemetry) {
+    public void runAutoAlignToTag(double bearingRadians, boolean rightBumper, boolean leftBumper, double leftStickY, double leftStickX) {
+
         // Proportional control constant (tune as needed)
         double kP = 0.805;
         double kI;
@@ -224,37 +171,37 @@ public class DriveSubsystem {
             turnPower = -kP * bearingRadians;
             turnPower = Math.max(-maxPower, Math.min(maxPower, turnPower));
         }
+        // No translation, only rotation
+        runManualMecanumDrive(rightBumper, leftBumper, leftStickY, leftStickX, turnPower, false);
     }
 
-    /** Helper to wrap angles to [-PI, PI] */
-    private static double angleWrap(double angle) {
-        while (angle > Math.PI) angle -= 2 * Math.PI;
-        while (angle < -Math.PI) angle += 2 * Math.PI;
-        return angle; }
+    public double getOtosBearingToGoal() {
 
-    /** Returns the absolute heading (radians) to the goal corner */
-    public static double headingToGoal(SparkFunOTOS.Pose2D pose, MatchSettings.AllianceColor alliance) {
-        double allianceSteering;
+        double goalX;
+        double goalY = 72;
+        SparkFunOTOS.Pose2D pose = myOtos.getPosition();
 
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            allianceSteering = -1;
-        } else {
-            allianceSteering = 1;
-        }
+        if(alliance == MatchSettings.AllianceColor.BLUE) {
+            goalX = -72;
+        } else { goalX = 72; }
 
-        double GOAL_X = -72;
-        double GOAL_Y = 72 * allianceSteering; // negative if Blue Alliance
+        double dx = goalX - pose.x;
+        double dy = goalY - pose.y;
 
-        double dx = GOAL_X - pose.x;
-        double dy = GOAL_Y - pose.y;
         return Math.atan2(dy, dx); //in Radians
     }
 
-    public boolean isRobotMoving() {
-        if( )
+    public void setCurrentPose(SparkFunOTOS.Pose2D currentPose) {
+        myOtos.setPosition(currentPose);
     }
 
-
+    public boolean isRobotMoving() {
+        if (myOtos.getAcceleration().x < 1 && myOtos.getAcceleration().y < 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     /**
      * Otos Configuration Code
@@ -320,8 +267,6 @@ public class DriveSubsystem {
         // but can also be used to recover from some rare tracking errors
         myOtos.resetTracking();
 
-
-
-
     }
 }
+

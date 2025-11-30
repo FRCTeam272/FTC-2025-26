@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.util.Constants.ColorSensor.CONFIDENCE_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.util.Constants.ColorSensor.GREEN_TARGET;
-import static org.firstinspires.ftc.teamcode.util.Constants.ColorSensor.PURPLE_TARGET;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -35,8 +31,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private final RevColorSensorV3 midColorSens;
     private final RevColorSensorV3 rearColorSens;
 
-    double possessionDistanceOuter = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_OUTER;
+    double possessionDistanceFront = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_FRONT;
     double possessionDistanceMid =  Constants.intakeConstants.DISTANCE_FOR_POSSESSION_MID;
+    double possessionDistanceRear =  Constants.intakeConstants.DISTANCE_FOR_POSSESSION_REAR;
     double intaking = Constants.intakeConstants.INTAKE_POWER;
     double outtaking = Constants.intakeConstants.REVERSE_INTAKE_POWER;
 
@@ -181,13 +178,6 @@ public class IntakeSubsystem extends SubsystemBase {
 //        return Math.sqrt(dr * dr + dg * dg + db * db);
 //    }
 
-
-    public void readIntakeLoadColors() { // bulk read all sensors and set initial color variables prior to launching
-        colorInSlotFront = colorDetected(frontColorSens);
-        colorInSlotMid = colorDetected(midColorSens);
-        colorInSlotRear = colorDetected(rearColorSens);
-    }
-
     public void clearIntakeLoadColors() {
         colorInSlotFront = MatchSettings.ArtifactColor.UNKNOWN;
         colorInSlotMid = MatchSettings.ArtifactColor.UNKNOWN;
@@ -196,8 +186,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // DISTANCE SENSOR METHODS ==========================\\
 
-    private boolean possessionDetectedOuter(RevColorSensorV3 sensor) { //for bulk read before launching
-        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceOuter;
+    private boolean possessionDetectedFront(RevColorSensorV3 sensor) { //for bulk read before launching
+        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceFront;
         return possession;
     }
 
@@ -206,11 +196,16 @@ public class IntakeSubsystem extends SubsystemBase {
         return possession;
     }
 
+    private boolean possessionDetectedRear(RevColorSensorV3 sensor) { //for bulk read before launching
+        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceRear;
+        return possession;
+    }
+
 
     public void readIntakePossessions() { // bulk read all sensors for initial possession values prior to launching
-        possessionFront = possessionDetectedOuter(frontColorSens);
+        possessionFront = possessionDetectedFront(frontColorSens);
         possessionMid = possessionDetectedMid(midColorSens);
-        possessionRear = possessionDetectedOuter(rearColorSens);
+        possessionRear = possessionDetectedRear(rearColorSens);
     }
 
     public void clearIntakePossessions() { // clear Intake load possession values
@@ -220,7 +215,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean frontPossession() { // returns true if there is an artifact in distance
-        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistanceOuter;
+        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
         return possession;
     }
 
@@ -230,7 +225,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean rearPossession() { // returns true if there is an artifact in distance
-        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceOuter;
+        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
         return possession;
     }
 
@@ -340,6 +335,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             // powers on intake, if it is not on
             if (!initialized) { // turn on all front intaking servos
+                clearIntakeLoadColors();
                 inboundFront();
                 inboundMidFront();
                 outboundMidRear();
@@ -353,7 +349,11 @@ public class IntakeSubsystem extends SubsystemBase {
             }
 
             if (!rearPossession()) { //check for rear possession
-                return true;  // rerun if sensor doesn't read anything
+                // Check for color passing through Mid while waiting
+                if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
+                    colorInSlotRear = colorDetected(midColorSens);
+                }
+                return true;  // rerun if sensor doesn't read possession
             } else {
                 stopMidRear(); //otherwise stop checking, stop servo, and move on
             }
@@ -361,11 +361,12 @@ public class IntakeSubsystem extends SubsystemBase {
             if (!midPossession()) { //check for mid possession
                 return true; //rerun if sensor doesn't read anything
             } else {
+                colorInSlotMid = colorDetected(midColorSens);
                 stopMidFront(); //otherwise stop checking, stop servo, and move on
             }
 
             if (!frontPossession()) { // check for front possession
-                return true; // rerun in sensor doesn't read anything
+                return true; // rerun if sensor doesn't read anything
             } else {
                 stopFront(); //otherwise, turn off servo
                 return false; //and return since action is complete
@@ -379,40 +380,63 @@ public class IntakeSubsystem extends SubsystemBase {
     // Bulk reads for initial possession and colors. Launches Mid Artifact if there is one.
     public class AutoLaunch1st implements Action {
         // checks if the action has been initialized
+
         private boolean initialized = false;
-        private ElapsedTime timer = new ElapsedTime();
+        private boolean midIsLaunched = false;
+        private ElapsedTime timerAction = new ElapsedTime();
+        private ElapsedTime timerTransfer = new ElapsedTime();
 
         // actions are formatted via telemetry packets as below
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
             if(!initialized) {
-                // start by clearing possession/color values and then bulk read
+                // start by clearing possession values and then bulk read
                 // for initial values for this intake load
                 clearIntakePossessions();
-                clearIntakeLoadColors();
-                readIntakePossessions();
-                readIntakeLoadColors();
+                readIntakePossessions(); //saves initial possession values (lets us know how many Artifacts were loaded
                 secondArtifactLaunched = "TBD";
 
-                // check for possession in midSlot and skip the rest of the action if nothing there
+                // check for possession in midSlot and frontSlot and skip the rest of the action if nothing there
+                // we need to know about the Front so that we can read the color there before moving on
                 if (!possessionMid) {
+                    if (!possessionFront) {
                     return false;
                 }
-                timer.reset();
+                timerAction.reset();
                 inboundMidFront();
                 inboundMidRear();
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
             }
-            if(timer.time() < 0.5) {
-                return true;
-            } else {
-                stopAll();
+            if(timerAction.time() > 2) {
+                return false; //if the whole thing is taking too long
             }
-            if(timer.time() < 1) {
+
+            if(midPossession() && !midIsLaunched) {
+                return true; //if the mid ball hasn't moved up yet - RERUN
+                }
+            } else if (!midIsLaunched) { //mid has moved up, nothing in front of sensor, skip next time
+                midIsLaunched = true;
+                timerTransfer.reset();
+                // once the mid no longer detects an artifact OR its been long enough
+                // stop intake servos, leave the transfer servos running to feed into launcher
+                if (possessionFront) {
+                    stopMidRear();
+                } else { stopAll(); }
+            }
+
+            if (midPossession() && midIsLaunched) { //check to see if the front artifact has moved in front of the sensor, stop servo, store color
+                stopMidFront();
+                colorInSlotFront = colorDetected(midColorSens);
+            }
+
+            if(timerTransfer.time() < 0.5) {
+                //tune - how long does it take to transfer once artifact is in transfer??
+                //consider adding a beam break to determine if artifact has launched so it's not time based
                 return true;
             } else {
+                stopMidFront(); //just in case it's still running
                 stopTransfer();
                 return false;
             }
@@ -444,24 +468,25 @@ public class IntakeSubsystem extends SubsystemBase {
                 } else {
                     desiredColor = matchSettings.secondArtifactNeeded();
                 }
-                if (possessionRear && colorInSlotRear == desiredColor) { // choose a launch slot
-                    launchSlot = "Rear";
-                } else if (possessionFront && colorInSlotFront == desiredColor) {
+                if (possessionFront && colorInSlotFront == desiredColor) { // choose a launch slot
                     launchSlot = "Front";
-                } else if (possessionRear) {
+                } else if (possessionRear && colorInSlotRear == desiredColor) {
                     launchSlot = "Rear";
+                } else if (possessionFront) {
+                    launchSlot = "Front";
                 } else {
-                    launchSlot = "Front";
+                    launchSlot = "Rear";
                 }
                 secondArtifactLaunched = launchSlot;
                 timer.reset();
-                // turn on front or rear servos depending on which artifact to be launched
-                if (launchSlot == "Rear") {
-                    inboundMidRear();
-                    inboundRear();
-                } else {
-                    inboundFront();
+                // turn on front or rear servos depending on which artifact to be launched and where the fro
+                if (launchSlot == "Front" && midPossession()) { //the front ball already there from checking color
                     inboundMidFront();
+                    inboundMidRear();
+                } else if (launchSlot == "Front") { // it didn't get to the sensor? Push it along a little
+                    inboundMidFront();
+                } else if (launchSlot == "Rear" && midPossession()) { // send the front ball backwards
+                    outboundMidFront();
                 }
                 initialized = true; //so that it skips this part next rerun
             }

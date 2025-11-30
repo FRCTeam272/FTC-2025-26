@@ -29,13 +29,19 @@
 
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.util.Size;
+
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.util.AprilTagEnums;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -49,34 +55,56 @@ public class MotifVisionSubsystem {
     public final MatchSettings matchSettings;
     public WebcamName webCam;
     public static String motifTagSequence = "NONE";
-    boolean targetFound;
 
-    private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
-    private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
-    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
+    /**
+     * Variables to store the position and orientation of the camera on the robot. Setting these
+     * values requires a definition of the axes of the camera and robot:
+     *
+     * Camera axes:
+     * Origin location: Center of the lens
+     * Axes orientation: +x right, +y down, +z forward (from camera's perspective)
+     *
+     * Robot axes (this is typical, but you can define this however you want):
+     * Origin location: Center of the robot at field height
+     * Axes orientation: +x right, +y forward, +z upward
+     *
+     * Position:
+     * If all values are zero (no translation), that implies the camera is at the center of the
+     * robot. Suppose your camera is positioned 5 inches to the left, 7 inches forward, and 12
+     * inches above the ground - you would need to set the position to (-5, 7, 12).
+     *
+     * Orientation:
+     * If all values are zero (no rotation), that implies the camera is pointing straight up. In
+     * most cases, you'll need to set the pitch to -90 degrees (rotation about the x-axis), meaning
+     * the camera is horizontal. Use a yaw of 0 if the camera is pointing forwards, +90 degrees if
+     * it's pointing straight left, -90 degrees for straight right, etc. You can also set the roll
+     * to +/-90 degrees if it's vertical, or 180 degrees if it's upside-down.
+     */
+    Position cameraPosition = new Position(DistanceUnit.INCH,
+            0, 8.5, 10.5, 0);
+    YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
+            0, -90, 0, 0);
+
+    AprilTagProcessor aprilTag;
+    VisionPortal visionPortal;                         // Used to manage the video source.
 
     public MotifVisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
         this.matchSettings = matchSettings;
         webCam = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-
-        // Initialize the Apriltag Detection process
+        // Initialize the Apriltag Detection process (vision portal)
         initAprilTag();
-
 
         // Wait for driver to press start
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();
     }
 
     public void scanObeliskTagSequence() {
 
-        desiredTag = null;
+        AprilTagDetection desiredTag;
 
-        MatchSettings.Motif detectedMotif = MatchSettings.Motif.UNKNOWN;
+        MatchSettings.Motif detectedMotif;
 
         // Step through the list of detected tags and look for a matching tag
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -85,9 +113,7 @@ public class MotifVisionSubsystem {
                     || detectedTag.id == AprilTagEnums.OBELISK_TAG_22.getId()
                     || detectedTag.id == AprilTagEnums.OBELISK_TAG_23.getId()) {
                 // Yes, we want to use this tag.
-                targetFound = true;
                 desiredTag = detectedTag;
-                // don't look any further.
 
                 if (desiredTag.id == AprilTagEnums.OBELISK_TAG_21.getId()) {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_21.getDescription();
@@ -95,26 +121,67 @@ public class MotifVisionSubsystem {
                 } else if (desiredTag.id == AprilTagEnums.OBELISK_TAG_22.getId()) {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_22.getDescription();
                     detectedMotif = MatchSettings.Motif.PGP;
-                } else if (desiredTag.id == AprilTagEnums.OBELISK_TAG_23.getId()) {
+                } else {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_23.getDescription();
                     detectedMotif = MatchSettings.Motif.PPG;
                 }
-                break;
+                matchSettings.setMotif(detectedMotif);
             }
         }
-        matchSettings.setMotif(detectedMotif);
     }
 
+    public SparkFunOTOS.Pose2D scanGoalTagLocalization() { //call by drivesubsystem, not in the main teleop
+        double Xpos;
+        double Ypos;
+        double Heading;
+        SparkFunOTOS.Pose2D pose = new SparkFunOTOS.Pose2D(100,0,0);
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        //telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                // Only use tags that don't have Obelisk in them
+                if (!detection.metadata.name.contains("Obelisk")) {
+                    // If not an Obelisk Tag, get field location and send to
+                    Xpos = detection.robotPose.getPosition().x;
+                    Ypos = detection.robotPose.getPosition().y;
+                    Heading = detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
+
+                    pose.x = Xpos;
+                    pose.y = Ypos;
+                    pose.h = Heading;
+
+//                    //telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
+//                            detection.robotPose.getPosition().x,
+//                            detection.robotPose.getPosition().y,
+//                            detection.robotPose.getPosition().z));
+//                    //telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
+//                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
+//                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
+//                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+                }
+            }
+        }
+        // end for() loop
+        return pose;
+    }
 
     /**
      * Initialize the AprilTag processor.
      */
     private void initAprilTag() {
+
         // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
+        AprilTagProcessor aprilTag = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .setCameraPose(cameraPosition, cameraOrientation)
 
-        //webCam = hardwaremap.get(WebcamName.class, "Webcam 1");
-
+                .build();
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // e.g. Some typical detection data using a Logitech C920 WebCam
         // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
@@ -125,16 +192,14 @@ public class MotifVisionSubsystem {
         aprilTag.setDecimation(1);
 
         // Create the vision portal by using a builder.
-        if (USE_WEBCAM) {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(webCam)
-                    .addProcessor(aprilTag)
-                    .build();
-        } else {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessor(aprilTag)
-                    .build();
-        }
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(webCam)
+                .addProcessor(aprilTag)
+                .setCameraResolution(new Size(640, 480))
+                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                .enableLiveView(true)
+                .setAutoStopLiveView(true)
+                .build();
+
     }
 }

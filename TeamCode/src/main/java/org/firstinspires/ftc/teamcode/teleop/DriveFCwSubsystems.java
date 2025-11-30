@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.IntakeFromFrontCommand;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
-
+@Disabled
 @TeleOp (name="DriveFCwSubsystems", group = "Competition")
 public class DriveFCwSubsystems extends SampleCommandTeleop {
     public MatchSettings matchSettings;

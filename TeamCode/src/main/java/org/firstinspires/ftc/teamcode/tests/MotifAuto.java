@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystemOld;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 @Autonomous (name="Motif Test Auto", group = "Tests")
@@ -29,7 +29,7 @@ public class MotifAuto extends LinearOpMode {
         // Initializing Robot
         Pose2d StartPose = new Pose2d(0,0,0);
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
-        VisionSubsystem vision = new VisionSubsystem(hardwareMap, matchSettings);
+        VisionSubsystemOld vision = new VisionSubsystemOld(hardwareMap, matchSettings);
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
