@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -55,9 +56,9 @@ public class LauncherSubsystem extends SubsystemBase {
 
         launcherRight = hardwareMap.get(DcMotorEx.class, "launcherRight");
         launcherLeft = hardwareMap.get(DcMotorEx.class, "launcherLeft");
-        launcherRight.setDirection(DcMotorEx.Direction.REVERSE);
 
-
+        launcherRight.setDirection(DcMotorEx.Direction.FORWARD);
+        launcherLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
         launcherLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

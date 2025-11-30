@@ -250,9 +250,7 @@ public class DriveSubsystem {
         return Math.atan2(dy, dx); //in Radians
     }
 
-    public boolean isRobotMoving() {
-        if( )
-    }
+
 
 
 
