@@ -58,8 +58,10 @@ public class LEDSubsystem implements LEDInterface{
 
         if (alliance == MatchSettings.AllianceColor.BLUE) {
             setMode(LedMode.ALLIANCE_BLUE);
-        } else {
+        } else if (alliance == MatchSettings.AllianceColor.RED){
             setMode(LedMode.ALLIANCE_RED);
+        } else {
+            setMode(LedMode.TEAM_COLORS);
         }
     }
 
@@ -70,7 +72,7 @@ public class LEDSubsystem implements LEDInterface{
             intakingThru = false;
         }
 
-        if (endGameTimer.seconds() > 140 && !endGameSignaled) {
+        if (endGameTimer.seconds() > 140 && endGameTimer.seconds() < 145 && !endGameSignaled) {
             setMode(LedMode.ELEVATING);
         } else if (endGameTimer.seconds() > 145 && !endGameSignaled) {
             setMode(LedMode.BLACK);
@@ -84,6 +86,14 @@ public class LEDSubsystem implements LEDInterface{
             setMode(LedMode.INTAKING_THRU);
         } else if (intakeStopped && launcherAtSpeed) {
             setMode(LedMode.LAUNCHER_ATSPEED);
+        } else if (endGameTimer.seconds() < 10) {
+            if (alliance == MatchSettings.AllianceColor.BLUE) {
+                setMode(LedMode.ALLIANCE_BLUE);
+            } else if (alliance == MatchSettings.AllianceColor.RED){
+                setMode(LedMode.ALLIANCE_RED);
+            } else {
+                setMode(LedMode.TEAM_COLORS);
+            }
         } else {
             setMode(LedMode.BLACK);
         }

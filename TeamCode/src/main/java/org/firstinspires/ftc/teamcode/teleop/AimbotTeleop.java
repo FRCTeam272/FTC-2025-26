@@ -46,9 +46,9 @@ public class AimbotTeleop extends SampleCommandTeleop {
         vision = new VisionSubsystem(hardwareMap);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
 
-        intakeFromFrontCommandV2 = new IntakeFromFrontCommandV2(intake, leds);
-        intakeFromRearCommandV2 = new IntakeFromRearCommandV2(intake, leds);
-        launch3QuickCommand = new Launch3QuickCommand(intake,launcher, leds);
+        intakeFromFrontCommandV2 = new IntakeFromFrontCommandV2(intake);
+        intakeFromRearCommandV2 = new IntakeFromRearCommandV2(intake);
+        launch3QuickCommand = new Launch3QuickCommand(intake,launcher);
 
         localizationTimer = new ElapsedTime();
     }
@@ -113,10 +113,16 @@ public class AimbotTeleop extends SampleCommandTeleop {
         runVision();
 
 
-        if(launcher.isAtTargetSpeed()) {
-            leds.setLauncherAtSpeed();
-        } else {
-            leds.setLauncherNotAtSpeed();
+//        if(launcher.isAtTargetSpeed()) {
+//            leds.setLauncherAtSpeed();
+//        } else {
+//            leds.setLauncherNotAtSpeed();
+//        }
+        if(gamepad2.dpad_up){
+            leds.setIntakingFront();
+        }
+        if(gamepad2.dpad_down) {
+            leds.setIntakingRear();
         }
 
         leds.update();

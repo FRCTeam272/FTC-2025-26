@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 // Launch Command that doesn't worry about color, only possession
 public class Launch3QuickCommand extends SequentialCommandGroup {
 
-    public Launch3QuickCommand(IntakeSubsystem intake, LauncherSubsystem launcher, LEDSubsystem leds) {
+    public Launch3QuickCommand(IntakeSubsystem intake, LauncherSubsystem launcher) {
         addCommands(
                 new InstantCommand(intake::clearIntakePossessions),
                 new InstantCommand(intake::readIntakePossessions),

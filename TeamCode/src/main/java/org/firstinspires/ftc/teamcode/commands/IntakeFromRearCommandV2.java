@@ -11,15 +11,14 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 
 // Intake Command that saves colors on the Front and Mid slots during intake
 public class IntakeFromRearCommandV2 extends SequentialCommandGroup {
-    public IntakeFromRearCommandV2(IntakeSubsystem intake, LEDSubsystem leds) {
+    public IntakeFromRearCommandV2(IntakeSubsystem intake) {
         addCommands(
                 new ParallelCommandGroup( //turn on all intake servos to intake from front
                         new InstantCommand(intake::clearIntakeLoadColors),
                         new InstantCommand(intake::stopFront),
                         new InstantCommand(intake::outboundMidFront),
                         new InstantCommand(intake::inboundMidRear),
-                        new InstantCommand(intake::inboundRear),
-                        new InstantCommand(leds::setIntakingRear)
+                        new InstantCommand(intake::inboundRear)
                 ),
                 new ParallelRaceGroup( //watch for artifact to go past mid (or continue if it's missed
                         new WaitUntilCommand(intake::frontPossession),
@@ -37,8 +36,7 @@ public class IntakeFromRearCommandV2 extends SequentialCommandGroup {
                 ),
                 new WaitUntilCommand(intake::rearPossession),
                 new ParallelCommandGroup(
-                        new InstantCommand(intake::stopAll),
-                        new InstantCommand(leds::setIntakingStopped)
+                        new InstantCommand(intake::stopAll)
                 )
         );
     }

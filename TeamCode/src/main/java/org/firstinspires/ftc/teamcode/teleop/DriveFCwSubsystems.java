@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
-@Disabled
+
 @TeleOp (name="DriveFCwSubsystems", group = "Competition")
 public class DriveFCwSubsystems extends SampleCommandTeleop {
     public MatchSettings matchSettings;
@@ -40,7 +40,7 @@ public class DriveFCwSubsystems extends SampleCommandTeleop {
 
         intakeFromFrontCommand = new IntakeFromFrontCommand(intake);
         intakeFromRearCommand = new IntakeFromRearCommand(intake);
-        launch3QuickCommand = new Launch3QuickCommand(intake,launcher,leds);
+        launch3QuickCommand = new Launch3QuickCommand(intake,launcher);
 
 
     }
@@ -70,6 +70,8 @@ public class DriveFCwSubsystems extends SampleCommandTeleop {
     @Override
     public void onLoop() {
         drive.FieldCentricAllianceBased(gamepad1, telemetry);
+
+        leds.update();
 
         //intake.printTelemetry(telemetry); // Only enable for testing. Constantly reads sensors, adds cycle time!
 

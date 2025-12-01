@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -94,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
         rearMidIntake.setDirection(CRServo.Direction.FORWARD);
         rearIntake.setDirection(CRServo.Direction.FORWARD);
         leftTransfer.setDirection(CRServo.Direction.FORWARD);
-        rightTransfer.setDirection(CRServo.Direction.FORWARD);
+        rightTransfer.setDirection(CRServo.Direction.REVERSE);
 
         // ================== SENSORS ================== \\
         frontColorSens = hardwareMap.get(RevColorSensorV3.class, "frontColor");
