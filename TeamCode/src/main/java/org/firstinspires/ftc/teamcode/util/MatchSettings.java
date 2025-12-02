@@ -24,8 +24,8 @@ public class MatchSettings {
     }
 
     public static IntakeState intakeState = IntakeState.STOPPED;
-    public static TransferState transferState;
-    public static LauncherState launcherState;
+    public static TransferState transferState = TransferState.STOPPED;
+    public static LauncherState launcherState = LauncherState.STOPPED;
 
     /**
      * Returns an array of ArtifactColor representing the sequence for the given
@@ -173,13 +173,12 @@ public class MatchSettings {
     }
 
     public enum TransferState {
-        TRANSFERRING,
+        LAUNCHING_SIMPLE,
         STOPPED
     }
 
     public enum LauncherState {
-        SPINNING_FAR,
-        SPINNING_MID,
+        SPINNING,
         STOPPED
     }
 

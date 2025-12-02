@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -47,6 +46,8 @@ public class IntakeSubsystemV2 {
     boolean possessionRear = false;
 
     String secondArtifactLaunched = "TBD";
+    String intakeLoadDirection = "TBD";
+    int launchCounter = 0;
 
     private static final int RGB_COMPONENTS = 3;
     private final double[] rgbValues = new double[RGB_COMPONENTS];
@@ -72,6 +73,7 @@ public class IntakeSubsystemV2 {
 
     //FSM tracker variables
     private boolean initialized = false;
+    private ElapsedTime launchTimer = new ElapsedTime();
 
     public IntakeSubsystemV2(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
 
@@ -124,6 +126,7 @@ public class IntakeSubsystemV2 {
                     inboundFront(); // turn on all front intaking servos
                     inboundMidFront();
                     outboundMidRear();
+                    intakeLoadDirection = "FRONT";
                     initialized = true;
                 }
                 if(!rearPossession()) { //check for rear possession
@@ -151,6 +154,7 @@ public class IntakeSubsystemV2 {
                     inboundRear(); // turn on all rear intaking servos
                     inboundMidRear();
                     outboundMidFront();
+                    intakeLoadDirection = "REAR";
                     initialized = true;
                 }
                 if(!frontPossession()) { //check for front possession
@@ -184,6 +188,57 @@ public class IntakeSubsystemV2 {
             initialized = false;
             MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
+
+        switch(MatchSettings.transferState) {
+            case STOPPED:
+                if(gamepad2.right_bumper && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED && MatchSettings.launcherState == MatchSettings.LauncherState.SPINNING) {
+                    MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_SIMPLE;
+                }
+                break;
+            case LAUNCHING_SIMPLE:
+                if(!initialized) {
+                    launchTimer.reset();
+                    launchCounter = 0;
+                    initialized = true;
+                }
+                if (intakeLoadDirection == "FRONT"){
+                    inboundMidRear();
+                } else {
+                    inboundMidFront();
+                }
+                outboundTransfer();
+                if(launchCounter == 0 && launchTimer.seconds() > 1){
+                    stopTransfer(); //pause after 1st Artifact launched
+                    launchCounter++;
+                }
+                if(launchCounter == 1 && launchTimer.seconds() >1.5){
+                    outboundTransfer();
+                    launchTimer.reset();
+                }
+                if(launchCounter == 1 && launchTimer.seconds() > 1){
+                    stopTransfer(); // pause after 2nd artifact launched
+                    launchCounter++;
+                    inboundMidFront();
+                    inboundMidRear();
+                }
+                if(launchCounter == 2 && launchTimer.seconds() >1.5){
+                    outboundTransfer();
+                    launchTimer.reset();
+                }
+                if(launchCounter == 2 && launchTimer.seconds() > 1){
+                    stopTransfer(); //stop after 3rd Artifact launched
+                    stopMidRear();
+                    stopMidFront();
+                    launchCounter++;
+                }
+                if(launchCounter == 3 ){
+                    MatchSettings.transferState= MatchSettings.TransferState.STOPPED;
+                }
+                break;
+            default: //should never be reached
+                MatchSettings.transferState= MatchSettings.TransferState.STOPPED;
+
+        }
     }
 
     //============== CONTROL METHODS ==============\\
@@ -214,48 +269,7 @@ public class IntakeSubsystemV2 {
         } else {
             return MatchSettings.ArtifactColor.UNKNOWN;
         }
-
-//        if (isGreen) {
-//            return MatchSettings.ArtifactColor.GREEN;
-//        } else if (isPurple) {
-//            return MatchSettings.ArtifactColor.PURPLE;
-//        } else {
-//            return MatchSettings.ArtifactColor.UNKNOWN;
-//        }
     }
-
-//    private MatchSettings.ArtifactColor colorDetected(RevColorSensorV3 sensor) { // Returns color detected if there is one
-//
-//        rgbValues[0] = sensor.red();
-//        rgbValues[1] = sensor.green();
-//        rgbValues[2] = sensor.blue();
-//
-//        double greenConfidence = computeDistance(rgbValues, GREEN_TARGET);
-//        double purpleConfidence = computeDistance(rgbValues, PURPLE_TARGET);
-//
-//        if (greenConfidence < purpleConfidence && greenConfidence < CONFIDENCE_THRESHOLD) {
-//            return MatchSettings.ArtifactColor.GREEN;
-//        } else if (purpleConfidence < greenConfidence && purpleConfidence < CONFIDENCE_THRESHOLD) {
-//            return MatchSettings.ArtifactColor.PURPLE;
-//        } else {
-//            return MatchSettings.ArtifactColor.UNKNOWN;
-//        }
-//    }
-//
-//    /**
-//     * Calculates the Euclidean distance between measured RGB values and target RGB values.
-//     * Lower distances indicate better color matches.
-//     *
-//     * @param measured The measured RGB values from the sensor
-//     * @param target   The target RGB values to compare against
-//     * @return The Euclidean distance between the two color points
-//     */
-//    public double computeDistance(double[] measured, double[] target) {
-//        double dr = measured[0] - target[0];
-//        double dg = measured[1] - target[1];
-//        double db = measured[2] - target[2];
-//        return Math.sqrt(dr * dr + dg * dg + db * db);
-//    }
 
     public void clearIntakeLoadColors() {
         colorInSlotFront = MatchSettings.ArtifactColor.UNKNOWN;

@@ -7,15 +7,15 @@ import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-public class LauncherSubsystem extends SubsystemBase {
+public class LauncherSubsystemV2 {
     //===========MOTORS==========\\
     private DcMotorEx launcherRight;
     private DcMotorEx launcherLeft;
@@ -49,10 +49,11 @@ public class LauncherSubsystem extends SubsystemBase {
      * @param defaultTicks Sets the default ticks of the motor
      *                    Set to the encoder ticks of your motor
      */
-    public LauncherSubsystem(HardwareMap hardwareMap, double defaultTargetRPM,
-                    double defaultMotorRPM, double defaultGearRatio, double defaultTicks) {
+    public LauncherSubsystemV2(HardwareMap hardwareMap, double defaultTargetRPM,
+                               double defaultMotorRPM, double defaultGearRatio, double defaultTicks, MatchSettings matchSettings) {
 
         //telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
+
 
 
         launcherRight = hardwareMap.get(DcMotorEx.class, "launcherRight");
@@ -85,12 +86,49 @@ public class LauncherSubsystem extends SubsystemBase {
     }
 
     /// Only use if the constants in this file are correct
-    public LauncherSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
-        this(hardwareMap, TARGET_RPM, MOTOR_RPM, GEAR_RATIO, TICKS_PER_REV);
+    public LauncherSubsystemV2(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
+        this(hardwareMap, TARGET_RPM, MOTOR_RPM, GEAR_RATIO, TICKS_PER_REV, matchSettings);
     }
 
     public void teleopFSM(Gamepad gamepad2){
+        switch (MatchSettings.launcherState) {
+            case STOPPED:
+                if(gamepad2.x) {
+                    spinUp();
+                    setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
+                    MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
+                }
+                else if(gamepad2.a) {
+                    spinUp();
+                    setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
+                    MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
+                }
+                break;
 
+            case SPINNING:
+                if(gamepad2.b){
+                    eStop();
+                    MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
+                }
+                else if(gamepad2.x){
+                    setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
+                    spinUp();
+                }
+                else if(gamepad2.a){
+                    setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
+                    spinUp();
+                }
+                break;
+            default:
+                MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
+        }
+
+        if(gamepad2.a){
+            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
+        }
+        if(gamepad2.x){
+            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
+        }
     }
 
     // --- PIDF ---

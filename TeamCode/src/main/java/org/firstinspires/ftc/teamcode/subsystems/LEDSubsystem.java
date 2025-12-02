@@ -66,25 +66,19 @@ public class LEDSubsystem implements LEDInterface{
     }
 
     public void update() {
-        if (intakeStopped) {
-            intakingFront = false;
-            intakingRear = false;
-            intakingThru = false;
-        }
-
-        if (endGameTimer.seconds() > 140 && endGameTimer.seconds() < 145 && !endGameSignaled) {
+        if (endGameTimer.seconds() > 140 && endGameTimer.seconds() < 143 && !endGameSignaled) {
             setMode(LedMode.ELEVATING);
-        } else if (endGameTimer.seconds() > 145 && !endGameSignaled) {
+        } else if (endGameTimer.seconds() > 143 && !endGameSignaled) {
             setMode(LedMode.BLACK);
             endGameSignaled = true;
         }
-        else if (intakingFront) {
+        else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_FRONT) {
             setMode(LedMode.INTAKING_FRONT);
-        } else if (intakingRear) {
+        } else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_REAR) {
             setMode(LedMode.INTAKING_REAR);
-        } else if (intakingThru) {
+        } else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_THRU) {
             setMode(LedMode.INTAKING_THRU);
-        } else if (intakeStopped && launcherAtSpeed) {
+        } else if (MatchSettings.transferState == MatchSettings.TransferState.LAUNCHING_SIMPLE) {
             setMode(LedMode.LAUNCHER_ATSPEED);
         } else if (endGameTimer.seconds() < 10) {
             if (alliance == MatchSettings.AllianceColor.BLUE) {
