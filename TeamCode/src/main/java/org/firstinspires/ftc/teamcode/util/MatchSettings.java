@@ -23,6 +23,10 @@ public class MatchSettings {
         this.blackboard = blackboard;
     }
 
+    public static IntakeState intakeState;
+    public static TransferState transferState;
+    public static LauncherState launcherState;
+
     /**
      * Returns an array of ArtifactColor representing the sequence for the given
      * Motif.
@@ -158,6 +162,25 @@ public class MatchSettings {
         PGP,
         GPP,
         UNKNOWN
+    }
+
+    public enum IntakeState {
+        STOPPED,
+        INTAKING_FRONT,
+        INTAKING_REAR,
+        INTAKING_THRU,
+        TRANSFERRING
+    }
+
+    public enum TransferState {
+        TRANSFERRING,
+        STOPPED
+    }
+
+    public enum LauncherState {
+        SPINNING_FAR,
+        SPINNING_MID,
+        STOPPED
     }
 
 }
