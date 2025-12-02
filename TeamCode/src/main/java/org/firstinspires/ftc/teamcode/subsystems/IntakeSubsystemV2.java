@@ -432,7 +432,7 @@ public class IntakeSubsystemV2 {
 
     /**============== AUTONOMOUS ACTIONS ==============**/
 
-    // Automatically intakes 3 artifacts. Times out after 5 seconds
+    // Automatically intakes 3 artifacts from front. Times out after 5 seconds
     public class AutoIntake3Front implements Action {
         //check if initialized
         private boolean initialized = false;
@@ -442,6 +442,7 @@ public class IntakeSubsystemV2 {
         public boolean run(@NonNull TelemetryPacket packet) {
             // powers on intake, if it is not on
             if (!initialized) { // turn on all front intaking servos
+                MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_FRONT;
                 clearIntakeLoadColors();
                 inboundFront();
                 inboundMidFront();
@@ -452,6 +453,7 @@ public class IntakeSubsystemV2 {
 
             if (timer.time() > 5) { //stop intakes if it's been intaking longer than 5 seconds
                 stopAll();
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
             }
 
@@ -476,6 +478,7 @@ public class IntakeSubsystemV2 {
                 return true; // rerun if sensor doesn't read anything
             } else {
                 stopFront(); //otherwise, turn off servo
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //and return since action is complete
             }
         }
@@ -503,13 +506,15 @@ public class IntakeSubsystemV2 {
                 clearIntakePossessions();
                 readIntakePossessions(); //saves initial possession values (lets us know how many Artifacts were loaded
                 secondArtifactLaunched = "TBD";
+                MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_SIMPLE;
 
                 // check for possession in midSlot and frontSlot and skip the rest of the action if nothing there
                 // we need to know about the Front so that we can read the color there before moving on
                 if (!possessionMid) {
                     if (!possessionFront) {
-                    return false;
-                }
+                        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                        return false;
+                    }
                 timerAction.reset();
                 inboundMidFront();
                 inboundMidRear();
@@ -517,6 +522,7 @@ public class IntakeSubsystemV2 {
                 initialized = true; //so that it skips this part next rerun
             }
             if(timerAction.time() > 2) {
+                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false; //if the whole thing is taking too long
             }
 
@@ -545,6 +551,7 @@ public class IntakeSubsystemV2 {
             } else {
                 stopMidFront(); //just in case it's still running
                 stopTransfer();
+                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;
             }
         }
@@ -567,7 +574,9 @@ public class IntakeSubsystemV2 {
         public boolean run(@NonNull TelemetryPacket packet) {
 
             if(!initialized) {
+                MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_SIMPLE;
                 if(!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
+                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                     return false;
                 }
                 if (!possessionMid) { // set desired color, 2nd motif slot unless there was no mid artifact
@@ -610,6 +619,7 @@ public class IntakeSubsystemV2 {
             } else {
                 stopTransfer();
                 stopAll();
+                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;
             }
         }
@@ -630,7 +640,9 @@ public class IntakeSubsystemV2 {
         public boolean run(@NonNull TelemetryPacket packet) {
 
             if(!initialized) {
+                MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_SIMPLE;
                 if(!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
+                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                     return false;
                 }
                 if (possessionRear && secondArtifactLaunched == "Front") {
@@ -638,6 +650,7 @@ public class IntakeSubsystemV2 {
                 } else if (possessionFront && secondArtifactLaunched == "Rear"){
                     launchSlot = "Front";
                 } else {
+                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                     return false;
                 }
                 timer.reset();
@@ -660,6 +673,7 @@ public class IntakeSubsystemV2 {
             } else {
                 stopTransfer();
                 stopAll();
+                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;
             }
         }

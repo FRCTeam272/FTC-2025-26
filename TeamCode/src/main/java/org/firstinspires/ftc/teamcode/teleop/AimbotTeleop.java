@@ -5,13 +5,10 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.commands.IntakeFromFrontCommandV2;
-import org.firstinspires.ftc.teamcode.commands.IntakeFromRearCommandV2;
-import org.firstinspires.ftc.teamcode.commands.Launch3QuickCommand;
 import org.firstinspires.ftc.teamcode.subsystems.AimbotDriveSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
@@ -22,14 +19,10 @@ public class AimbotTeleop extends SampleCommandTeleop {
     public MatchSettings matchSettings;
 
     private AimbotDriveSubsystem drive;
-    private LauncherSubsystem launcher;
-    private IntakeSubsystem intake;
+    private LauncherSubsystemV2 launcher;
+    private IntakeSubsystemV2 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
-
-    private IntakeFromFrontCommandV2 intakeFromFrontCommandV2;
-    private IntakeFromRearCommandV2 intakeFromRearCommandV2;
-    private Launch3QuickCommand launch3QuickCommand;
 
     boolean libCode = false;
     boolean lockPrevPressed = false;
@@ -41,14 +34,10 @@ public class AimbotTeleop extends SampleCommandTeleop {
         matchSettings = new MatchSettings(blackboard);
 
         drive = new AimbotDriveSubsystem(hardwareMap, matchSettings);
-        launcher = new LauncherSubsystem(hardwareMap, telemetry);
-        intake = new IntakeSubsystem(hardwareMap, telemetry, matchSettings);
+        launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);
+        intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
         vision = new VisionSubsystem(hardwareMap);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
-
-        intakeFromFrontCommandV2 = new IntakeFromFrontCommandV2(intake);
-        intakeFromRearCommandV2 = new IntakeFromRearCommandV2(intake);
-        launch3QuickCommand = new Launch3QuickCommand(intake,launcher);
 
         localizationTimer = new ElapsedTime();
     }
@@ -58,53 +47,6 @@ public class AimbotTeleop extends SampleCommandTeleop {
 
         leds.startEndGameTimer();
 
-        //Intake Controls
-
-        //Dpad Up - Intake From Front
-        g2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(intakeFromFrontCommandV2);
-
-        // Dpad Down - Intake From Rear
-        g2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(intakeFromRearCommandV2);
-
-        // Dpad Right - Stop Intake
-        g2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> {
-            intake.stopAll();
-            leds.setIntakingStopped();
-        });
-
-        // Dpad Left - Pass Thru From Front
-        g2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> {
-            intake.thruFrontAll();
-            leds.setIntakingThru();
-        });
-
-        // Launch Controls
-
-        // B - Quick and Simple Launch 3
-        g2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(launch3QuickCommand);
-
-        // A - Launcher Far Zone
-        g2.getGamepadButton(GamepadKeys.Button.A).whenPressed(() -> {
-            launcher.setTargetRPM(2500);
-            launcher.spinUp();
-        });
-
-        // X - Launcher Mid Zone
-        g2.getGamepadButton(GamepadKeys.Button.X).whenPressed(() -> {
-            launcher.setTargetRPM(2100);
-            launcher.spinUp();
-        });
-
-        // Y - Launcher Near Zone
-
-        // B - Launcher Stop
-        g2.getGamepadButton(GamepadKeys.Button.B).whenPressed(() -> {
-            launcher.eStop();
-        });
-
     }
 
     @Override
@@ -112,19 +54,8 @@ public class AimbotTeleop extends SampleCommandTeleop {
         runToggledDrive();
         runVision();
 
-
-//        if(launcher.isAtTargetSpeed()) {
-//            leds.setLauncherAtSpeed();
-//        } else {
-//            leds.setLauncherNotAtSpeed();
-//        }
-        if(gamepad2.dpad_up){
-            leds.setIntakingFront();
-        }
-        if(gamepad2.dpad_down) {
-            leds.setIntakingRear();
-        }
-
+        intake.teleopFSM(gamepad2);
+        launcher.teleopFSM(gamepad2);
         leds.update();
     }
 

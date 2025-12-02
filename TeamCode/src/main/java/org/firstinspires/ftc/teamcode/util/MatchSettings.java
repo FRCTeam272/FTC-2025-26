@@ -26,6 +26,7 @@ public class MatchSettings {
     public static IntakeState intakeState = IntakeState.STOPPED;
     public static TransferState transferState = TransferState.STOPPED;
     public static LauncherState launcherState = LauncherState.STOPPED;
+    public static VisionState visionState = VisionState.NONE;
 
     /**
      * Returns an array of ArtifactColor representing the sequence for the given
@@ -180,6 +181,12 @@ public class MatchSettings {
     public enum LauncherState {
         SPINNING,
         STOPPED
+    }
+
+    public enum VisionState {
+        MOTIF_ACQUIRED,
+        GOAL_ACQUIRED,
+        NONE
     }
 
 }

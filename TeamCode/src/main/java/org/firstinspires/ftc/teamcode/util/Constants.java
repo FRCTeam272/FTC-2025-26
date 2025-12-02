@@ -26,7 +26,7 @@ public final class Constants {
     public static final class launcherConstants{
         public static double FAR_ZONE_LAUNCH_RPM = 2500;
         public static double MID_ZONE_LAUNCH_RPM = 2200;
-        public static double CLOSE_ZONE_LAUNCH_RPM = 2200;
+        public static double CLOSE_ZONE_LAUNCH_RPM = 1200;
     }
 
     @Config
@@ -38,6 +38,12 @@ public final class Constants {
         public static double angleToBlueGoal(double x, double y) { //in Radians
             double dx = -72 - x;
             double dy = -72 - y;
+            return Math.atan2(dy, dx);
+        }
+
+        public static double angleToRedGoal(double x, double y) { //in Radians
+            double dx = -72 - x;
+            double dy = 72 - y;
             return Math.atan2(dy, dx);
         }
     }

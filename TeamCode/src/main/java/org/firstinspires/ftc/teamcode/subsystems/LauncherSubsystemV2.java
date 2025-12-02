@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -93,7 +92,12 @@ public class LauncherSubsystemV2 {
     public void teleopFSM(Gamepad gamepad2){
         switch (MatchSettings.launcherState) {
             case STOPPED:
-                if(gamepad2.x) {
+                if(gamepad2.y) {
+                    spinUp();
+                    setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
+                    MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
+                }
+                else if(gamepad2.x) {
                     spinUp();
                     setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
                     MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
@@ -109,6 +113,10 @@ public class LauncherSubsystemV2 {
                 if(gamepad2.b){
                     eStop();
                     MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
+                }
+                else if(gamepad2.y){
+                    setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
+                    spinUp();
                 }
                 else if(gamepad2.x){
                     setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);

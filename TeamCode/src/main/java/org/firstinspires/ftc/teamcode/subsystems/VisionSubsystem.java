@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.util.AprilTagEnums;
+import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -100,6 +101,7 @@ public class VisionSubsystem {
                     || detectedTag.id == AprilTagEnums.OBELISK_TAG_22.getId()
                     || detectedTag.id == AprilTagEnums.OBELISK_TAG_23.getId()) {
                 tag = detectedTag;
+                MatchSettings.visionState = MatchSettings.VisionState.MOTIF_ACQUIRED;
                 if (tag.id == AprilTagEnums.OBELISK_TAG_21.getId()) {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_21.getDescription();
                 } else if (tag.id == AprilTagEnums.OBELISK_TAG_22.getId()) {

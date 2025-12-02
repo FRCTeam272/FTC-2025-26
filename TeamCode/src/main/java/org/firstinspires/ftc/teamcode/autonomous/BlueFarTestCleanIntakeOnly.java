@@ -14,8 +14,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
@@ -27,33 +28,34 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
     private MatchSettings matchSettings;
 
     private MecanumDrive drive;
-    private LauncherSubsystem launcher;
-    private IntakeSubsystem intake;
-
-    //TODO - Coordinate List (Pasted from MeepMeep!)
-
-    // Starting Coordinates
-    double startX = 62;
-    double startY = -15;
-    double startH = Math.toRadians(180);
-
-    // Shoot Preload
-    double preloadX = 58;
-    double preloadY = -15;
-    double preloadH = Constants.Util.angleToBlueGoal(preloadX,preloadY); //calculates angle to goal, no guessing!
-
-    // Pickup Load1
-    double load1X = 37;
-    double load1Y = -30;
-    double load1H = Math.toRadians(270);
-
-    // Drive to Pickup Load1
-    double getload1X = 37;
-    double getload1Y = -52;
-    double getload1H = Math.toRadians(270);
+    private LauncherSubsystemV2 launcher;
+    private IntakeSubsystemV2 intake;
+    private LEDSubsystem leds;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        //TODO - Coordinate List (Pasted from MeepMeep!)
+
+        // Starting Coordinates
+        double startX = 62;
+        double startY = -15;
+        double startH = Math.toRadians(180);
+
+        // Shoot Preload
+        double preloadX = 58;
+        double preloadY = -15;
+        double preloadH = Constants.Util.angleToBlueGoal(preloadX,preloadY); //calculates angle to goal, no guessing!
+
+        // Pickup Load1
+        double load1X = 37;
+        double load1Y = -30;
+        double load1H = Math.toRadians(270);
+
+        // Drive to Pickup Load1
+        double getload1X = 37;
+        double getload1Y = -52;
+        double getload1H = Math.toRadians(270);
 
         matchSettings = new MatchSettings(blackboard);
         blackboard.clear(); //do not save match settings between matches
@@ -67,8 +69,9 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
         drive.localizer.setPose(StartPose);
 
-        LauncherSubsystem launcher = new LauncherSubsystem(hardwareMap, telemetry);
-        IntakeSubsystem intake = new IntakeSubsystem(hardwareMap, telemetry, matchSettings);
+        LauncherSubsystemV2 launcher = new LauncherSubsystemV2(hardwareMap, telemetry, matchSettings);
+        IntakeSubsystemV2 intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
+        LEDSubsystem leds = new LEDSubsystem(hardwareMap,matchSettings);
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
@@ -110,39 +113,41 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
 
 
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
+                new ParallelAction( //leds update during entire auto - run in parallel to everything else
+                        leds.updateAuto(),
+                        new SequentialAction(
+                                launcher.autoSetRPMFar(),
+                                // drive to shoot preload while spinning up motor wheel at the same time
+                                new ParallelAction(
+//                                        launcher.autoSpinUp(),
+                                        GoToShootPreload
+                                ),
 
-                launcher.autoSetRPMFar(),
-                // drive to shoot preload while spinning up motor wheel at the same time
-                new ParallelAction(
-//                        launcher.autoSpinUp(),
-                        GoToShootPreload
-                ),
+                                // shoot 3 Artifacts from far position, checking launcher wheel speed between each launch
+//                                launcher.autoCheckAtSpeed(),
+//                                intake.autoLaunch1st(),
+//                                launcher.autoCheckAtSpeed(),
+//                                intake.autoLaunch2nd(),
+//                                launcher.autoCheckAtSpeed(),
+//                                intake.autoLaunch3rd(),
 
-                // shoot 3 Artifacts from far position, checking launcher wheel speed between each launch
-//                launcher.autoCheckAtSpeed(),
-//                intake.autoLaunch1st(),
-//                launcher.autoCheckAtSpeed(),
-//                intake.autoLaunch2nd(),
-//                launcher.autoCheckAtSpeed(),
-//                intake.autoLaunch3rd(),
+                                // drive to intake Load 1
+                                GoToIntakeLoad1,
 
-                // drive to intake Load 1
-                GoToIntakeLoad1,
+                                // Drive forward SLOWLY intaking Artifacts - See trajectory build action for how this is achieved
+                                new ParallelAction(
+                                        Intakeload1,
+                                        intake.autoIntake3Front()
+                                ),
 
-                // Drive forward SLOWLY intaking Artifacts - See trajectory build action for how this is achieved
-                new ParallelAction(
-                        Intakeload1,
-                        intake.autoIntake3Front()
-                ),
+                                new SleepAction(1)
+                                //,
 
-                new SleepAction(1)
-                //,
+                                // more stuff here!
 
-                // more stuff here!
-
-                //launcher.autoStop() //don't forget to stop launcher at the end!!!!
-
-        ));
+                                //launcher.autoStop() //don't forget to stop launcher at the end!!!!
+                        )
+                )));
 
         // Stores ending pose for use by Teleop
         matchSettings.setStoredPose(drive.localizer.getPose());

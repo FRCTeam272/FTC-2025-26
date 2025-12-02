@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,15 +23,11 @@ public class LEDSubsystem implements LEDInterface{
     public final MatchSettings matchSettings;
     MatchSettings.AllianceColor alliance;
 
+    ElapsedTime signalTimer = new ElapsedTime();
     ElapsedTime endGameTimer = new ElapsedTime();
-
-    //Robot State Tracking
-    private boolean intakingFront = false;
-    private boolean intakingRear = false;
-    private boolean intakingThru = false;
-    private boolean intakeStopped = true;
-    private boolean launcherAtSpeed = false;
     private boolean endGameSignaled = false;
+    private boolean signaled = false;
+    private boolean isAuto = false;
 
 
     private static final Map<LedMode, RevBlinkinLedDriver.BlinkinPattern> modeLookup = new HashMap<>();
@@ -56,21 +56,27 @@ public class LEDSubsystem implements LEDInterface{
         this.matchSettings = matchSettings;
         alliance = matchSettings.getAllianceColor();
 
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            setMode(LedMode.ALLIANCE_BLUE);
-        } else if (alliance == MatchSettings.AllianceColor.RED){
-            setMode(LedMode.ALLIANCE_RED);
-        } else {
-            setMode(LedMode.TEAM_COLORS);
-        }
+        setAllianceColors();
     }
 
     public void update() {
-        if (endGameTimer.seconds() > 140 && endGameTimer.seconds() < 143 && !endGameSignaled) {
-            setMode(LedMode.ELEVATING);
-        } else if (endGameTimer.seconds() > 143 && !endGameSignaled) {
-            setMode(LedMode.BLACK);
-            endGameSignaled = true;
+        if (!isAuto) { //only runs during teleop
+            if (endGameTimer.seconds() > 140 && endGameTimer.seconds() < 143 && !endGameSignaled) {
+                setMode(LedMode.ELEVATING);
+            } else if (endGameTimer.seconds() > 143 && !endGameSignaled) {
+                setMode(LedMode.BLACK);
+                endGameSignaled = true;
+            }
+        }
+        else if (MatchSettings.visionState == MatchSettings.VisionState.MOTIF_ACQUIRED){
+            if(!signaled) {
+                signalTimer.reset();
+                signaled = true;
+            }
+            else if (signalTimer.seconds() > 2) {
+                MatchSettings.visionState = MatchSettings.VisionState.NONE;
+                signaled = false;
+            }
         }
         else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_FRONT) {
             setMode(LedMode.INTAKING_FRONT);
@@ -80,16 +86,10 @@ public class LEDSubsystem implements LEDInterface{
             setMode(LedMode.INTAKING_THRU);
         } else if (MatchSettings.transferState == MatchSettings.TransferState.LAUNCHING_SIMPLE) {
             setMode(LedMode.LAUNCHER_ATSPEED);
-        } else if (endGameTimer.seconds() < 10) {
-            if (alliance == MatchSettings.AllianceColor.BLUE) {
-                setMode(LedMode.ALLIANCE_BLUE);
-            } else if (alliance == MatchSettings.AllianceColor.RED){
-                setMode(LedMode.ALLIANCE_RED);
-            } else {
-                setMode(LedMode.TEAM_COLORS);
-            }
         } else {
-            setMode(LedMode.BLACK);
+            setAllianceColors();
+//        } else {
+//            setMode(LedMode.BLACK);
         }
 
     }
@@ -115,6 +115,16 @@ public class LEDSubsystem implements LEDInterface{
         return currentPattern;
     }
 
+    public void setAllianceColors() {
+        if (alliance == MatchSettings.AllianceColor.BLUE) {
+            setMode(LedMode.ALLIANCE_BLUE);
+        } else if (alliance == MatchSettings.AllianceColor.RED){
+            setMode(LedMode.ALLIANCE_RED);
+        } else {
+            setMode(LedMode.TEAM_COLORS);
+        }
+    }
+
     public void startEndGameTimer() {
         endGameTimer.reset();
     }
@@ -131,27 +141,16 @@ public class LEDSubsystem implements LEDInterface{
         setMode(LedMode.ALLIANCE_BLUE);
     }
 
-    public void setIntakingFront() {
-        intakingFront = true;
-    }
+    //============== AUTONOMOUS ACTIONS ==============\\
 
-    public void setIntakingRear() {
-        intakingRear = true;
+    //follower for LEDs
+    public class UpdateAuto implements Action {
+        @Override
+        public boolean run (@NonNull TelemetryPacket packet) {
+            isAuto = true; //so that the endgame timer doesn't trigger
+            update();
+            return true;
+        }
     }
-
-    public void setIntakingThru() {
-        intakingThru = true;
-    }
-
-    public void setLauncherAtSpeed() {
-        launcherAtSpeed = true;
-    }
-
-    public void setLauncherNotAtSpeed() {
-        launcherAtSpeed = false;
-    }
-
-    public void setIntakingStopped() {
-        intakeStopped = true;
-    }
+    public Action updateAuto() { return new UpdateAuto(); }
 }
