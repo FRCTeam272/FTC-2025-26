@@ -148,7 +148,7 @@ public class VisionSubsystem {
     public double getTagHorizontalDistance() {
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
-            return tag.ftcPose.y;
+            return tag.ftcPose.range;
         }
         return -1;
     }
