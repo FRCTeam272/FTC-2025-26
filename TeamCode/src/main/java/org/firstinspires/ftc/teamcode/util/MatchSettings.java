@@ -23,7 +23,7 @@ public class MatchSettings {
         this.blackboard = blackboard;
     }
 
-    public static IntakeState intakeState;
+    public static IntakeState intakeState = IntakeState.STOPPED;
     public static TransferState transferState;
     public static LauncherState launcherState;
 

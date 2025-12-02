@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
-@TeleOp (name = "IntakeServoSensorTest", group = "Tests")
+@TeleOp (name = "IntakeFSMTest", group = "Tests")
 public class IntakeFSMTest extends SampleCommandTeleop {
 
     public MatchSettings matchSettings;
