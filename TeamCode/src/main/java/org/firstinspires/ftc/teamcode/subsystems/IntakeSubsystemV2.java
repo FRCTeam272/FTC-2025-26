@@ -451,7 +451,7 @@ public class IntakeSubsystemV2 {
                 initialized = true; //so that it skips this part next rerun
             }
 
-            if (timer.time() > 3.5) { //stop intakes if it's been intaking longer than 5 seconds
+            if (timer.time() > 3) { //stop intakes if it's been intaking longer than ## seconds
                 stopAll();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
@@ -484,6 +484,28 @@ public class IntakeSubsystemV2 {
         }
     }
     public Action autoIntake3Front() { return new AutoIntake3Front(); }
+
+    //---------------------------------------------------------------
+
+    //temp for auto before the launcher is final - spits out balls from the intake for 3 seconds
+    public class AutoSpitOut implements Action {
+        private boolean initialized = false;
+        private ElapsedTime timer = new ElapsedTime();
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if(!initialized) {
+                thruFrontAll();
+                timer.reset();
+            }
+            if(timer.seconds() < 2){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    public Action autoSpitOut() { return new AutoSpitOut(); }
 
     //---------------------------------------------------------------
 

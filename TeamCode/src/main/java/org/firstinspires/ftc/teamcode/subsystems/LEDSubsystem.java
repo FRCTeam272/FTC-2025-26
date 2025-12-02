@@ -48,6 +48,7 @@ public class LEDSubsystem implements LEDInterface{
         modeLookup.put(LedMode.ELEVATING, RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD);
         modeLookup.put(LedMode.LAUNCHER_ATSPEED, RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
         modeLookup.put(LedMode.MOTIF_DETECTED, RevBlinkinLedDriver.BlinkinPattern.CP1_2_TWINKLES);
+        modeLookup.put(LedMode.GOAL_DETECTED, RevBlinkinLedDriver.BlinkinPattern.CP1_2_BEATS_PER_MINUTE);
     }
 
     public LEDSubsystem(HardwareMap hardwareMap, MatchSettings matchSettings) {
@@ -68,15 +69,19 @@ public class LEDSubsystem implements LEDInterface{
                 endGameSignaled = true;
             }
         }
-        else if (MatchSettings.visionState == MatchSettings.VisionState.MOTIF_ACQUIRED){
+        else if (MatchSettings.visionState == MatchSettings.VisionState.MOTIF_DETECTED){
+            setMode(LedMode.MOTIF_DETECTED);
             if(!signaled) {
                 signalTimer.reset();
                 signaled = true;
             }
-            else if (signalTimer.seconds() > 2) {
+            else if (signalTimer.seconds() > 1) {
                 MatchSettings.visionState = MatchSettings.VisionState.NONE;
                 signaled = false;
             }
+        }
+        else if (MatchSettings.visionState == MatchSettings.VisionState.GOAL_DETECTED && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED) {
+            setMode(LedMode.GOAL_DETECTED);
         }
         else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_FRONT) {
             setMode(LedMode.INTAKING_FRONT);
@@ -84,9 +89,11 @@ public class LEDSubsystem implements LEDInterface{
             setMode(LedMode.INTAKING_REAR);
         } else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_THRU) {
             setMode(LedMode.INTAKING_THRU);
-        } else if (MatchSettings.transferState == MatchSettings.TransferState.LAUNCHING_SIMPLE) {
-            setMode(LedMode.LAUNCHER_ATSPEED);
-        } else {
+        }
+        //else if (MatchSettings.transferState == MatchSettings.TransferState.LAUNCHING_SIMPLE) {
+//            setMode(LedMode.LAUNCHER_ATSPEED);
+//        }
+        else {
             setAllianceColors();
 //        } else {
 //            setMode(LedMode.BLACK);

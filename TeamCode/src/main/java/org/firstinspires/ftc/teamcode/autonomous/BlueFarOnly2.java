@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
 @Config
-@Autonomous (name="BlueNearOnly2", group="Auto")
-public class BlueNearOnly2 extends LinearOpMode {
+@Autonomous (name="BlueFarOnly2", group="Auto")
+public class BlueFarOnly2 extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,37 +36,37 @@ public class BlueNearOnly2 extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = -61;
-    double startY = -36;
+    double startX = 61;
+    double startY = -15;
     double startH = Math.toRadians(180);
 
-    // Launch Position
-    double launchX = -12;
-    double launchY = -12;
-    double launchH = Constants.Util.angleToBlueGoal(launchX, launchY);
+    // Launch Preload
+    double launchX = 58;
+    double launchY = -15;
+    double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
-    double load1X = -12;
+    double load1X = 37;
     double load1Y = -30;
     double load1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -12;
+    double getload1X = 37;
     double getload1Y = -52;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
-    // Go to Pickup Load 2 Start
-    double load2X = 12;
-    double load2Y = -30;
-    double load2H = Math.toRadians(270); //Red=90, Blue=270
+    // Go to Pickup Wall Load Start
+    double load2wallX = 40;
+    double load2wallY = -60;
+    double load2wallH = Math.toRadians(340); //Red=20, Blue=340
 
-    // Go to Pickup Load 2 End while Intaking
-    double getload2X = 12;
-    double getload2Y = -52;
-    double getload2H = Math.toRadians(270); //Red=90, Blue=270
+    // Go to Pickup Wall Load End while Intaking
+    double getload2wallX = 60;
+    double getload2wallY = -60;
+    double getload2wallH = Math.toRadians(340); //Red=20, Blue=340
 
     // End auto off a launch line, facing away from Driver
-    double endX = 12;
+    double endX = 36;
     double endY = -36;
     double endH = Math.toRadians(90); //Red=270, Blue = 90
 
@@ -119,13 +119,13 @@ public class BlueNearOnly2 extends LinearOpMode {
 
         //drive to position to load 2nd set of artifacts on Wall
         TrajectoryActionBuilder goToIntakeLoad2 = goToLaunchLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(load2X, load2Y), load2H)
+                .strafeToLinearHeading(new Vector2d(load2wallX,load2wallY),load2wallH)
                 ;
         Action GoToIntakeLoad2 = goToIntakeLoad2.build();
 
         //get wall load, slowly
         TrajectoryActionBuilder  intakeLoad2 = goToIntakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload2X, getload2Y), getload2H, new TranslationalVelConstraint(20.0)) //drive SLOWLY to position to loading 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(getload2wallX,getload2wallY),getload2wallH, new TranslationalVelConstraint(20.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action IntakeLoad2 = intakeLoad2.build();
 
@@ -164,7 +164,7 @@ public class BlueNearOnly2 extends LinearOpMode {
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         new SequentialAction(
-                                launcher.autoSetRPMMid(),
+                                launcher.autoSetRPMFar(),
 
                                 // drive to launch position while spinning up launcher wheel
                                 launcher.autoSpinUp(),

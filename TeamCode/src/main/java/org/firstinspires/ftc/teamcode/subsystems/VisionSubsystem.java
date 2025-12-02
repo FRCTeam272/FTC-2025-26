@@ -2,13 +2,16 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.util.AprilTagEnums;
@@ -19,7 +22,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 public class VisionSubsystem {
     public WebcamName webCam;
+    public final MatchSettings matchSettings;
     public static String motifTagSequence = "NONE";
+    public static MatchSettings.Motif motif = MatchSettings.Motif.UNKNOWN;
     VisionPortal visionPortal;
 
     /**
@@ -59,7 +64,8 @@ public class VisionSubsystem {
             .setCameraPose(cameraPosition, cameraOrientation)
             .build();
 
-    public VisionSubsystem(HardwareMap hwMap) {
+    public VisionSubsystem(HardwareMap hwMap, MatchSettings matchSettings) {
+        this.matchSettings = matchSettings;
         webCam = hwMap.get(WebcamName.class, "Webcam 1");
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
@@ -112,13 +118,16 @@ public class VisionSubsystem {
                     || detectedTag.id == AprilTagEnums.OBELISK_TAG_22.getId()
                     || detectedTag.id == AprilTagEnums.OBELISK_TAG_23.getId()) {
                 tag = detectedTag;
-                MatchSettings.visionState = MatchSettings.VisionState.MOTIF_ACQUIRED;
+                MatchSettings.visionState = MatchSettings.VisionState.MOTIF_DETECTED;
                 if (tag.id == AprilTagEnums.OBELISK_TAG_21.getId()) {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_21.getDescription();
+                    motif = MatchSettings.Motif.PPG;
                 } else if (tag.id == AprilTagEnums.OBELISK_TAG_22.getId()) {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_22.getDescription();
+                    motif = MatchSettings.Motif.PGP;
                 } else if (tag.id == AprilTagEnums.OBELISK_TAG_23.getId()) {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_23.getDescription();
+                    motif = MatchSettings.Motif.PPG;
                 }
                 break;
             }
@@ -157,4 +166,20 @@ public class VisionSubsystem {
     public String getSequence() {
         return motifTagSequence;
     }
+
+    /**============== AUTONOMOUS ACTIONS ==============**/
+
+    public class AutoScanMotif implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (motif == MatchSettings.Motif.UNKNOWN) {
+                scanMotifTagSequence();
+                return true;
+            } else {
+                matchSettings.setMotif(motif);
+                return false;
+            }
+        }
+    }
+    public Action autoScanMotif() { return new AutoScanMotif(); }
 }

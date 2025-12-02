@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.archive;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
 @Config
-@Autonomous (name="BlueFarTestCleanIntakeOnly", group="Tests")
-public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
+@Autonomous (name="RedFarTestCleanIntakeOnly", group="Tests")
+public class RedFarTestCleanIntakeOnly extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,23 +36,23 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
 
     // Starting Coordinates
     double startX = 61;
-    double startY = -15;
+    double startY = 15;
     double startH = Math.toRadians(180);
 
     // Shoot Preload
     double preloadX = 58;
-    double preloadY = -15;
-    double preloadH = Constants.Util.angleToBlueGoal(preloadX,preloadY); //calculates angle to goal, no guessing!
+    double preloadY = 15;
+    double preloadH = Constants.Util.angleToRedGoal(preloadX,preloadY);
 
     // Go to Pickup Load1 Start
     double load1X = 37;
-    double load1Y = -30;
-    double load1H = Math.toRadians(270);
+    double load1Y = 30;
+    double load1H = Math.toRadians(90);
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = -52;
-    double getload1H = Math.toRadians(270);
+    double getload1Y = 52;
+    double getload1H = Math.toRadians(90);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -62,7 +62,7 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -151,6 +151,14 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
 
         // Stores ending pose for use by Teleop
         matchSettings.setStoredPose(drive.localizer.getPose());
+
+        while (!isStopRequested() && !opModeIsActive()) {
+
+        }
+
+        waitForStart();
+
+        if (isStopRequested()) return;
 
     }
 }

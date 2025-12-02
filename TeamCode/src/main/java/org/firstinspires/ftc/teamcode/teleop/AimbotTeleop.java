@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -36,12 +35,12 @@ public class AimbotTeleop extends SampleCommandTeleop {
         drive = new AimbotDriveSubsystem(hardwareMap, matchSettings);
         launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);
         intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
-        vision = new VisionSubsystem(hardwareMap);
+        vision = new VisionSubsystem(hardwareMap, matchSettings);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
 
         localizationTimer = new ElapsedTime();
 
-        boolean startVision = vision.isDetectingAGoalTag();  //Dummy to make the camera stream work in init
+        boolean startVision = vision.isDetectingAGoalTag();  //Dummy to make the camera stream work in init??
     }
 
     @Override
@@ -89,15 +88,16 @@ public class AimbotTeleop extends SampleCommandTeleop {
             lockPrevPressed = false;
         }
 
-        if (drive.getDriveMode() == AimbotDriveSubsystem.DriveMode.LOCKED_ON && vision.isDetectingAGoalTag())
-        {
+        if (drive.getDriveMode() == AimbotDriveSubsystem.DriveMode.LOCKED_ON && vision.isDetectingAGoalTag()) {
             drive.runAutoAlignToTag(Math.toRadians(vision.getTagBearing()), rb, lb, leftY, leftX);
+            MatchSettings.visionState = MatchSettings.VisionState.GOAL_DETECTED;
         }
 //        else if (drive.getDriveMode() == AimbotDriveSubsystem.DriveMode.LOCKED_ON && !vision.isDetectingAGoalTag()) {
 //            drive.runAutoAlignToTag(drive.getOtosBearingToGoal(), rb, lb, leftY, leftX);
 //        }
         else {
-            drive.runManualMecanumDrive(rb,lb,leftY,leftX,rightX,yButton);
+            drive.runManualMecanumDrive(rb, lb, leftY, leftX, rightX, yButton);
+            MatchSettings.visionState = MatchSettings.VisionState.NONE;
         }
     }
 

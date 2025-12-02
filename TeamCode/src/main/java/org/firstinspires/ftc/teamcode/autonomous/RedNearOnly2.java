@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
 @Config
-@Autonomous (name="BlueNearOnly2", group="Auto")
-public class BlueNearOnly2 extends LinearOpMode {
+@Autonomous (name="RedNearOnly2", group="Auto")
+public class RedNearOnly2 extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -37,38 +37,38 @@ public class BlueNearOnly2 extends LinearOpMode {
 
     // Starting Coordinates
     double startX = -61;
-    double startY = -36;
+    double startY = 36;
     double startH = Math.toRadians(180);
 
     // Launch Position
     double launchX = -12;
-    double launchY = -12;
-    double launchH = Constants.Util.angleToBlueGoal(launchX, launchY);
+    double launchY = 12;
+    double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
     double load1X = -12;
-    double load1Y = -30;
-    double load1H = Math.toRadians(270); //Red=90, Blue=270
+    double load1Y = 30;
+    double load1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = -12;
-    double getload1Y = -52;
-    double getload1H = Math.toRadians(270); //Red=90, Blue=270
+    double getload1Y = 52;
+    double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
     double load2X = 12;
-    double load2Y = -30;
-    double load2H = Math.toRadians(270); //Red=90, Blue=270
+    double load2Y = 30;
+    double load2H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
     double getload2X = 12;
-    double getload2Y = -52;
-    double getload2H = Math.toRadians(270); //Red=90, Blue=270
+    double getload2Y = 52;
+    double getload2H = Math.toRadians(90); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = 12;
-    double endY = -36;
-    double endH = Math.toRadians(90); //Red=270, Blue = 90
+    double endY = 36;
+    double endH = Math.toRadians(270); //Red=270, Blue = 90
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,7 +78,7 @@ public class BlueNearOnly2 extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
