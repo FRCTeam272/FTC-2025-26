@@ -32,30 +32,30 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
     private IntakeSubsystemV2 intake;
     private LEDSubsystem leds;
 
+    //TODO - Coordinate List (Pasted from MeepMeep!)
+
+    // Starting Coordinates
+    double startX = 62;
+    double startY = -15;
+    double startH = Math.toRadians(180);
+
+    // Shoot Preload
+    double preloadX = 58;
+    double preloadY = -15;
+    double preloadH = Constants.Util.angleToBlueGoal(preloadX,preloadY); //calculates angle to goal, no guessing!
+
+    // Go to Pickup Load1 Start
+    double load1X = 37;
+    double load1Y = -30;
+    double load1H = Math.toRadians(270);
+
+    // Go to Pickup Load1 End while Intaking
+    double getload1X = 37;
+    double getload1Y = -52;
+    double getload1H = Math.toRadians(270);
+
     @Override
     public void runOpMode() throws InterruptedException {
-
-        //TODO - Coordinate List (Pasted from MeepMeep!)
-
-        // Starting Coordinates
-        double startX = 62;
-        double startY = -15;
-        double startH = Math.toRadians(180);
-
-        // Shoot Preload
-        double preloadX = 58;
-        double preloadY = -15;
-        double preloadH = Constants.Util.angleToBlueGoal(preloadX,preloadY); //calculates angle to goal, no guessing!
-
-        // Pickup Load1
-        double load1X = 37;
-        double load1Y = -30;
-        double load1H = Math.toRadians(270);
-
-        // Drive to Pickup Load1
-        double getload1X = 37;
-        double getload1Y = -52;
-        double getload1H = Math.toRadians(270);
 
         matchSettings = new MatchSettings(blackboard);
         blackboard.clear(); //do not save match settings between matches

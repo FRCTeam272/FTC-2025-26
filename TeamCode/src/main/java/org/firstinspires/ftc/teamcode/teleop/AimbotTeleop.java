@@ -91,9 +91,10 @@ public class AimbotTeleop extends SampleCommandTeleop {
         {
             drive.runAutoAlignToTag(Math.toRadians(vision.getTagBearing()), rb, lb, leftY, leftX);
         }
-        else if (drive.getDriveMode() == AimbotDriveSubsystem.DriveMode.LOCKED_ON && !vision.isDetectingAGoalTag()) {
-            drive.runAutoAlignToTag(drive.getOtosBearingToGoal(), rb, lb, leftY, leftX);
-        } else {
+//        else if (drive.getDriveMode() == AimbotDriveSubsystem.DriveMode.LOCKED_ON && !vision.isDetectingAGoalTag()) {
+//            drive.runAutoAlignToTag(drive.getOtosBearingToGoal(), rb, lb, leftY, leftX);
+//        }
+        else {
             drive.runManualMecanumDrive(rb,lb,leftY,leftX,rightX,yButton);
         }
     }

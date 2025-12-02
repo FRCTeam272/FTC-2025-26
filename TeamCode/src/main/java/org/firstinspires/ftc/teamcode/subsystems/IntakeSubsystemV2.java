@@ -451,7 +451,7 @@ public class IntakeSubsystemV2 {
                 initialized = true; //so that it skips this part next rerun
             }
 
-            if (timer.time() > 5) { //stop intakes if it's been intaking longer than 5 seconds
+            if (timer.time() > 3.5) { //stop intakes if it's been intaking longer than 5 seconds
                 stopAll();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
