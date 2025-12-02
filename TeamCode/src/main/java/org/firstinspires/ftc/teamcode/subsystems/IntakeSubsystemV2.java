@@ -200,29 +200,30 @@ public class IntakeSubsystemV2 {
                     launchTimer.reset();
                     launchCounter = 0;
                     initialized = true;
+                    if (intakeLoadDirection == "FRONT"){
+                        inboundMidRear();
+                    } else {
+                        inboundMidFront();
+                    }
+                    outboundTransfer();
                 }
-                if (intakeLoadDirection == "FRONT"){
-                    inboundMidRear();
-                } else {
-                    inboundMidFront();
-                }
-                outboundTransfer();
+
                 if(launchCounter == 0 && launchTimer.seconds() > 1){
                     stopTransfer(); //pause after 1st Artifact launched
-                    launchCounter++;
                 }
-                if(launchCounter == 1 && launchTimer.seconds() >1.5){
+                if(launchCounter == 0 && launchTimer.seconds() >1.5){
                     outboundTransfer();
                     launchTimer.reset();
+                    launchCounter++;
                 }
                 if(launchCounter == 1 && launchTimer.seconds() > 1){
                     stopTransfer(); // pause after 2nd artifact launched
-                    launchCounter++;
                     inboundMidFront();
                     inboundMidRear();
                 }
-                if(launchCounter == 2 && launchTimer.seconds() >1.5){
+                if(launchCounter == 1 && launchTimer.seconds() >1.5){
                     outboundTransfer();
+                    launchCounter++;
                     launchTimer.reset();
                 }
                 if(launchCounter == 2 && launchTimer.seconds() > 1){
@@ -232,6 +233,7 @@ public class IntakeSubsystemV2 {
                     launchCounter++;
                 }
                 if(launchCounter == 3 ){
+                    initialized = false;
                     MatchSettings.transferState= MatchSettings.TransferState.STOPPED;
                 }
                 break;
