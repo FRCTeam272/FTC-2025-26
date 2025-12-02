@@ -35,7 +35,7 @@ public class BlueFarTestCleanIntakeOnly extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = 62;
+    double startX = 61;
     double startY = -15;
     double startH = Math.toRadians(180);
 

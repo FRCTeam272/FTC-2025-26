@@ -40,6 +40,8 @@ public class AimbotTeleop extends SampleCommandTeleop {
         leds = new LEDSubsystem(hardwareMap,matchSettings);
 
         localizationTimer = new ElapsedTime();
+
+        boolean startVision = vision.isDetectingAGoalTag();  //Dummy to make the camera stream work in init
     }
 
     @Override
@@ -52,7 +54,7 @@ public class AimbotTeleop extends SampleCommandTeleop {
     @Override
     public void onLoop() {
         runToggledDrive();
-        runVision();
+        //runVision();
 
         intake.teleopFSM(gamepad2);
         launcher.teleopFSM(gamepad2);

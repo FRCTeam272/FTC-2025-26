@@ -35,7 +35,7 @@ public class RedFarTestCleanIntakeOnly extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = 62;
+    double startX = 61;
     double startY = 15;
     double startH = Math.toRadians(180);
 
@@ -151,6 +151,14 @@ public class RedFarTestCleanIntakeOnly extends LinearOpMode {
 
         // Stores ending pose for use by Teleop
         matchSettings.setStoredPose(drive.localizer.getPose());
+
+        while (!isStopRequested() && !opModeIsActive()) {
+
+        }
+
+        waitForStart();
+
+        if (isStopRequested()) return;
 
     }
 }
