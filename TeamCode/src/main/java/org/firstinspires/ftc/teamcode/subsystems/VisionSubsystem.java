@@ -155,7 +155,7 @@ public class VisionSubsystem {
         return currentPose;
     }
 
-    public double getTagHorizontalDistance() {
+    public double getTagRange() {
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
             return tag.ftcPose.range;

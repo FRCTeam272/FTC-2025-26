@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
@@ -15,6 +16,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
     private IntakeSubsystemV2 intake;
     private LauncherSubsystemV2 launcher;
     private LEDSubsystem leds;
+    private VisionSubsystem vision;
 
     @Override
     public void onInit() {
@@ -67,6 +69,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
             intake.stopTransfer();
             MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
+        telemetry.addData("Range to AprilTag", vision.getTagRange());
 
         intake.printTelemetry(telemetry);
         launcher.printTelemetry(telemetry);
