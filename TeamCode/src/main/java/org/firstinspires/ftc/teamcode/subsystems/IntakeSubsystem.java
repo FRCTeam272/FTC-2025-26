@@ -94,8 +94,8 @@ public class IntakeSubsystem extends SubsystemBase {
         frontMidIntake.setDirection(CRServo.Direction.REVERSE);
         rearMidIntake.setDirection(CRServo.Direction.FORWARD);
         rearIntake.setDirection(CRServo.Direction.FORWARD);
-        leftTransfer.setDirection(CRServo.Direction.FORWARD);
-        rightTransfer.setDirection(CRServo.Direction.REVERSE);
+        leftTransfer.setDirection(CRServo.Direction.REVERSE);
+        rightTransfer.setDirection(CRServo.Direction.FORWARD);
 
         // ================== SENSORS ================== \\
         frontColorSens = hardwareMap.get(RevColorSensorV3.class, "frontColor");

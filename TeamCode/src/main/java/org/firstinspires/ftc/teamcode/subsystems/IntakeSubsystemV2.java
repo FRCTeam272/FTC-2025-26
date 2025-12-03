@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -94,8 +95,8 @@ public class IntakeSubsystemV2 {
         frontMidIntake.setDirection(CRServo.Direction.REVERSE);
         rearMidIntake.setDirection(CRServo.Direction.FORWARD);
         rearIntake.setDirection(CRServo.Direction.FORWARD);
-        leftTransfer.setDirection(CRServo.Direction.FORWARD);
-        rightTransfer.setDirection(CRServo.Direction.REVERSE);
+        leftTransfer.setDirection(CRServo.Direction.REVERSE);
+        rightTransfer.setDirection(CRServo.Direction.FORWARD);
 
         // ================== SENSORS ================== \\
         frontColorSens = hardwareMap.get(RevColorSensorV3.class, "frontColor");
