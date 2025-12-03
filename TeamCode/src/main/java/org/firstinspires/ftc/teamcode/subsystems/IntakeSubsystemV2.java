@@ -523,8 +523,10 @@ public class IntakeSubsystemV2 {
             if(!initialized) {
                 thruFrontAll();
                 timer.reset();
+                initialized = true;
+                return true;
             }
-            if(timer.seconds() < 2){
+            else if(timer.seconds() < 2){
                 return true;
             } else {
                 return false;
