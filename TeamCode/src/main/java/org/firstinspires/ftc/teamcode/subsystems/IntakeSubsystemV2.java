@@ -256,7 +256,7 @@ public class IntakeSubsystemV2 {
     // COLOR SENSOR METHODS ==========================\\
 
     // Checks the launcher beam break to see if an artifact has passed through
-    private boolean artifactLaunched() {
+    public boolean artifactLaunched() {
         return !launcherBeamBreak.getState();
     }
 
@@ -440,6 +440,7 @@ public class IntakeSubsystemV2 {
         telemetry.addData("Front Color Detected", colorDetected(frontColorSens));
         telemetry.addData("Mid Color Detected", colorDetected(midColorSens));
         telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
+        telemetry.addData("Launcher Beam Break", artifactLaunched());
         telemetry.update();
     }
 

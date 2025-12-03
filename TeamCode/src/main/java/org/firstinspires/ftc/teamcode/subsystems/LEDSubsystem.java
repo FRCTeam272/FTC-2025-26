@@ -65,7 +65,6 @@ public class LEDSubsystem implements LEDInterface{
             if (endGameTimer.seconds() > 140 && endGameTimer.seconds() < 143 && !endGameSignaled) {
                 setMode(LedMode.ELEVATING);
             } else if (endGameTimer.seconds() > 143 && !endGameSignaled) {
-                setMode(LedMode.BLACK);
                 endGameSignaled = true;
             }
         }
