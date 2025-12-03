@@ -61,11 +61,12 @@ public class LEDSubsystem implements LEDInterface{
     }
 
     public void update() {
-        if (!isAuto) { //only runs during teleop
-            if (endGameTimer.seconds() > 140 && endGameTimer.seconds() < 143 && !endGameSignaled) {
+        if (!isAuto && !endGameSignaled && endGameTimer.seconds() > 140) { //only runs during teleop
+            if (endGameTimer.seconds() < 143) {
                 setMode(LedMode.ELEVATING);
-            } else if (endGameTimer.seconds() > 143 && !endGameSignaled) {
+            } else if (endGameTimer.seconds() > 143) {
                 endGameSignaled = true;
+                setMode(LedMode.BLACK);
             }
         }
         else if (MatchSettings.visionState == MatchSettings.VisionState.MOTIF_DETECTED){

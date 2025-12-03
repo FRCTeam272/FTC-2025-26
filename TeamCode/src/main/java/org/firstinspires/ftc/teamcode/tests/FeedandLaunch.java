@@ -29,22 +29,18 @@ public class FeedandLaunch extends SampleCommandTeleop {
 
     @Override
     public void onStart() {
-
+        launcher.setTargetRPM(1000);
     }
 
     @Override
     public void onLoop() {
 
         if(gamepad1.dpad_up){
-            launcher.setTargetRPM(launcher.getLauncherRPM() + 100);
-            launcher.spinUp();
-            MatchSettings.launcherState = MatchSettings.LauncherState.SPINNING;
+            launcher.setTargetRPM(launcher.getTargetRPM() + 50);
         }
 
         if(gamepad1.dpad_down) {
-            launcher.setTargetRPM(launcher.getLauncherRPM() - 100);
-            launcher.spinUp();
-            MatchSettings.launcherState = MatchSettings.LauncherState.SPINNING;
+            launcher.setTargetRPM(launcher.getTargetRPM() - 50);
         }
 
         if(gamepad1.dpad_left) {
@@ -70,9 +66,9 @@ public class FeedandLaunch extends SampleCommandTeleop {
             intake.stopTransfer();
             MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
-        telemetry.addData("Range to AprilTag", vision.getTagRange());
+        //telemetry.addData("Range to AprilTag", vision.getTagRange());
 
-        intake.printTelemetry(telemetry);
+        //intake.printTelemetry(telemetry);
         launcher.printTelemetry(telemetry);
 
         leds.update();
