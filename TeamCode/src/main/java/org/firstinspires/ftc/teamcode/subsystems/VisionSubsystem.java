@@ -129,6 +129,7 @@ public class VisionSubsystem {
                     motifTagSequence = AprilTagEnums.OBELISK_TAG_23.getDescription();
                     motif = MatchSettings.Motif.PPG;
                 }
+                matchSettings.setMotif(motif);
                 break;
             }
         }
@@ -176,7 +177,6 @@ public class VisionSubsystem {
                 scanMotifTagSequence();
                 return true;
             } else {
-                matchSettings.setMotif(motif);
                 return false;
             }
         }

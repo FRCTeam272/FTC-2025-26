@@ -52,7 +52,7 @@ public class BlueNearOnly2 extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = -12;
-    double getload1Y = -52;
+    double getload1Y = -60;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
@@ -62,7 +62,7 @@ public class BlueNearOnly2 extends LinearOpMode {
 
     // Go to Pickup Load 2 End while Intaking
     double getload2X = 12;
-    double getload2Y = -52;
+    double getload2Y = -60;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
@@ -145,6 +145,7 @@ public class BlueNearOnly2 extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
+
         }
 
         telemetry.addData("Starting Position", StartPose);

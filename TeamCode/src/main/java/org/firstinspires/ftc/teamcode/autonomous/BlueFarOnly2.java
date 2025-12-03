@@ -41,8 +41,8 @@ public class BlueFarOnly2 extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // Launch Preload
-    double launchX = 58;
-    double launchY = -15;
+    double launchX = 50;
+    double launchY = -12;
     double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
@@ -52,17 +52,17 @@ public class BlueFarOnly2 extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = -52;
+    double getload1Y = -60;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start
     double load2wallX = 40;
-    double load2wallY = -60;
+    double load2wallY = -65;
     double load2wallH = Math.toRadians(340); //Red=20, Blue=340
 
     // Go to Pickup Wall Load End while Intaking
     double getload2wallX = 60;
-    double getload2wallY = -60;
+    double getload2wallY = -65;
     double getload2wallH = Math.toRadians(340); //Red=20, Blue=340
 
     // End auto off a launch line, facing away from Driver
@@ -145,6 +145,8 @@ public class BlueFarOnly2 extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
+
+            vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
