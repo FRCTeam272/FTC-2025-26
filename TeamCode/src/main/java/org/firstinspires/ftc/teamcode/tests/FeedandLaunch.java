@@ -36,11 +36,11 @@ public class FeedandLaunch extends SampleCommandTeleop {
     public void onLoop() {
 
         if(gamepad1.dpad_up){
-            launcher.setTargetRPM(launcher.getTargetRPM() + 50);
+            launcher.setTargetRPM(launcher.getTargetRPM() + 25);
         }
 
         if(gamepad1.dpad_down) {
-            launcher.setTargetRPM(launcher.getTargetRPM() - 50);
+            launcher.setTargetRPM(launcher.getTargetRPM() - 25);
         }
 
         if(gamepad1.dpad_left) {
@@ -70,6 +70,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
 
         //intake.printTelemetry(telemetry);
         launcher.printTelemetry(telemetry);
+        telemetry.addLine("Beambreak",intake.artifactLaunched());
 
         leds.update();
 
