@@ -24,6 +24,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
         intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
         launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
+        vision = new VisionSubsystem(hardwareMap, matchSettings);
     }
 
     @Override
