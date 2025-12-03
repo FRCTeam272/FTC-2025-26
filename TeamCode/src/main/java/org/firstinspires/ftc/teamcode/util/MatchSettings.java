@@ -27,6 +27,7 @@ public class MatchSettings {
     public static TransferState transferState = TransferState.STOPPED;
     public static LauncherState launcherState = LauncherState.STOPPED;
     public static VisionState visionState = VisionState.NONE;
+    public static boolean isAuto = true;
 
     /**
      * Returns an array of ArtifactColor representing the sequence for the given

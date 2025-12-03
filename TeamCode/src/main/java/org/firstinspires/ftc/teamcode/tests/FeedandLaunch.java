@@ -62,7 +62,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
         }
 
         if (intake.artifactLaunched() || gamepad1.x) {
-            intake.stopAll();
+            intake.stopIntake();
             intake.stopTransfer();
             MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }

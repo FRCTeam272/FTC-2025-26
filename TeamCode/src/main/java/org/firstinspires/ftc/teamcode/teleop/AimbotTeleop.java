@@ -31,6 +31,7 @@ public class AimbotTeleop extends SampleCommandTeleop {
     @Override
     public void onInit() {
         matchSettings = new MatchSettings(blackboard);
+        MatchSettings.isAuto = false;
 
         drive = new AimbotDriveSubsystem(hardwareMap, matchSettings);
         launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);

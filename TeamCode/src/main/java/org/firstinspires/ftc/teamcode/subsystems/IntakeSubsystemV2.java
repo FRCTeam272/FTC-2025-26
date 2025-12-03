@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -82,6 +81,12 @@ public class IntakeSubsystemV2 {
 
         this.telemetry = telemetry;
         this.matchSettings = matchSettings;
+
+        if(MatchSettings.isAuto) {
+            colorInSlotFront = MatchSettings.ArtifactColor.PURPLE;
+            colorInSlotMid = MatchSettings.ArtifactColor.PURPLE;
+            colorInSlotRear = MatchSettings.ArtifactColor.GREEN;
+        }
 
         // ================== SERVOS ================== \\
         frontIntake = hardwareMap.get(CRServo.class, "frontIntake");
@@ -189,7 +194,8 @@ public class IntakeSubsystemV2 {
         }
         //cancel intaking & STOP button
         if(gamepad2.dpad_right && MatchSettings.intakeState != MatchSettings.IntakeState.STOPPED) {
-            stopAll();
+            stopIntake();
+            stopTransfer();
             initialized = false;
             MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
@@ -201,7 +207,9 @@ public class IntakeSubsystemV2 {
                 }
                 break;
             case LAUNCHING_SIMPLE:
-                if(gamepad2.b) {
+                if(gamepad2.dpad_right) {
+                    stopIntake();
+                    stopTransfer();
                     MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 } else {
                     if (!initialized) {
@@ -422,7 +430,7 @@ public class IntakeSubsystemV2 {
         rightTransfer.setPower(0);
     }
 
-    public void stopAll() {
+    public void stopIntake() {
         frontIntake.setPower(0);
         frontMidIntake.setPower(0);
         rearMidIntake.setPower(0);
@@ -442,6 +450,10 @@ public class IntakeSubsystemV2 {
         telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
         telemetry.addData("Launcher Beam Break", artifactLaunched());
         telemetry.update();
+    }
+
+    public MatchSettings getMatchSettings() {
+        return matchSettings;
     }
 
     /**============== AUTONOMOUS ACTIONS ==============**/
@@ -466,7 +478,7 @@ public class IntakeSubsystemV2 {
             }
 
             if (timer.time() > 3) { //stop intakes if it's been intaking longer than ## seconds
-                stopAll();
+                stopIntake();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
             }
@@ -530,13 +542,13 @@ public class IntakeSubsystemV2 {
         private boolean initialized = false;
         private boolean midIsLaunched = false;
         private ElapsedTime timerAction = new ElapsedTime();
-        private ElapsedTime timerTransfer = new ElapsedTime();
+        private ElapsedTime timerLaunch = new ElapsedTime();
 
         // actions are formatted via telemetry packets as below
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            if(!initialized) {
+            if (!initialized) {
                 // start by clearing possession values and then bulk read
                 // for initial values for this intake load
                 clearIntakePossessions();
@@ -547,46 +559,41 @@ public class IntakeSubsystemV2 {
                 // check for possession in midSlot and frontSlot and skip the rest of the action if nothing there
                 // we need to know about the Front so that we can read the color there before moving on
                 if (!possessionMid) {
-                    if (!possessionFront) {
-                        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                        return false;
-                    }
-                timerAction.reset();
-                inboundMidFront();
-                inboundMidRear();
-                outboundTransfer();
-                initialized = true; //so that it skips this part next rerun
-            }
-            if(timerAction.time() > 2) {
+                    return false;
+                } else { timerAction.reset();
+                    inboundMidFront();
+                    //inboundMidRear();
+                    outboundTransfer();
+                    initialized = true; //so that it skips this part next rerun
+                    return true;
+                }
+            } else if (timerAction.seconds() > 3) {
+                stopIntake();
+                stopTransfer();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false; //if the whole thing is taking too long
-            }
-
-            if(midPossession() && !midIsLaunched) {
-                return true; //if the mid ball hasn't moved up yet - RERUN
-                }
-            } else if (!midIsLaunched) { //mid has moved up, nothing in front of sensor, skip next time
+            } else if (!artifactLaunched() && !midIsLaunched) {
+                return true; //if the mid ball hasn't launched yet - RERUN
+            } else if (artifactLaunched() && !midIsLaunched) { //skip next time
                 midIsLaunched = true;
-                timerTransfer.reset();
-                // once the mid no longer detects an artifact OR its been long enough
-                // stop intake servos, leave the transfer servos running to feed into launcher
-                if (possessionFront) {
-                    stopMidRear();
-                } else { stopAll(); }
-            }
-
-            if (midPossession() && midIsLaunched) { //check to see if the front artifact has moved in front of the sensor, stop servo, store color
-                stopMidFront();
-                colorInSlotFront = colorDetected(midColorSens);
-            }
-
-            if(timerTransfer.time() < 0.5) {
-                //tune - how long does it take to transfer once artifact is in transfer??
-                //consider adding a beam break to determine if artifact has launched so it's not time based
-                return true;
-            } else {
-                stopMidFront(); //just in case it's still running
                 stopTransfer();
+                timerLaunch.reset();
+                // once the artifact has gone through the launcher
+                // stop transfer servos, leave the frontmid servo running to feed front into the middle, rerun to position the front ball
+                return true;
+            } else if (midIsLaunched && timerLaunch.seconds() < 0.5) {
+                //tune timer- how long does it take to spin back up once artifact launched?
+                if (!midPossession() && possessionFront) {
+                    return true;
+                } else {
+                    stopMidFront();
+                    if (colorInSlotFront == MatchSettings.ArtifactColor.UNKNOWN) {
+                        colorInSlotFront = colorDetected(midColorSens);
+                    }
+                    return true;
+                }
+            } else {
+                stopMidFront();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;
             }
@@ -600,18 +607,19 @@ public class IntakeSubsystemV2 {
     public class AutoLaunch2nd implements Action {
         // checks if the action has been initialized
         private boolean initialized = false;
-        private ElapsedTime timer = new ElapsedTime();
+        private boolean transferOn = false;
+        private boolean launched = false;
+        private ElapsedTime timerAction = new ElapsedTime();
         private String launchSlot = "TBD";
-        private MatchSettings.Motif motif = null;
         private MatchSettings.ArtifactColor desiredColor = MatchSettings.ArtifactColor.UNKNOWN;
 
         // actions are formatted via telemetry packets as below
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            if(!initialized) {
+            if (!initialized) {
                 MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_SIMPLE;
-                if(!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
+                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
                     MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                     return false;
                 }
@@ -630,7 +638,7 @@ public class IntakeSubsystemV2 {
                     launchSlot = "Rear";
                 }
                 secondArtifactLaunched = launchSlot;
-                timer.reset();
+                timerAction.reset();
                 // turn on front or rear servos depending on which artifact to be launched and where the front Artifact is
                 if (launchSlot == "Front" && midPossession()) { //the front ball already there from checking color
                     inboundMidFront(); //send Front into launcher
@@ -643,18 +651,34 @@ public class IntakeSubsystemV2 {
                     inboundMidRear();
                 }
                 initialized = true; //so that it skips this part next rerun
-            }
-            if(timer.time() < 0.5) {
                 return true;
-            }
-            inboundMidFront();
-            inboundMidRear();
-            outboundTransfer();
-            if(timer.time() < 1) {
+            } else if (timerAction.seconds() > 3) {
+                stopIntake();
+                stopTransfer();
+                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                return false; //if the whole thing is taking too long
+            } else if (timerAction.seconds() < 0.25) {
+                return true;
+            } else if (!transferOn) {
+                if (launchSlot == "Front") {
+                    inboundMidFront();
+                } else {
+                    inboundMidRear();
+                }
+                outboundTransfer();
+                transferOn = true;
+                return true;
+            } else if (!launched) {
+                if (artifactLaunched()) {
+                    launched = true;
+                    stopIntake();
+                    stopTransfer();
+                    launchTimer.reset();
+                }
+                return true;
+            } else if (launched && launchTimer.seconds() < 0.5) {
                 return true;
             } else {
-                stopTransfer();
-                stopAll();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;
             }
@@ -668,7 +692,7 @@ public class IntakeSubsystemV2 {
     public class AutoLaunch3rd implements Action {
         // checks if the action has been initialized
         private boolean initialized = false;
-        private ElapsedTime timer = new ElapsedTime();
+        private ElapsedTime timerAction = new ElapsedTime();
         private String launchSlot = "TBD";
 
         // actions are formatted via telemetry packets as below
@@ -681,39 +705,27 @@ public class IntakeSubsystemV2 {
                     MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                     return false;
                 }
-                if (possessionRear && secondArtifactLaunched == "Front") {
-                    launchSlot = "Rear";
-                } else if (possessionFront && secondArtifactLaunched == "Rear"){
-                    launchSlot = "Front";
-                } else {
-                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                    return false;
-                }
-                timer.reset();
-                // turn on front or rear servos depending on which artifact to be launched
-                if (launchSlot == "Rear") {
-                    inboundMidRear();
-                } else {
-                    inboundMidFront();
-                }
+                timerAction.reset();
+                // turn on front and rear servos to feed whatever up
+                inboundMidRear();
+                inboundMidFront();
+                outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
-            }
-            if(timer.time() < 0.5) {
                 return true;
-            }
-            inboundMidFront();
-            inboundMidRear();
-            outboundTransfer();
-            if(timer.time() < 1) {
+            } else if (timerAction.seconds() > 3) {
+                stopIntake();
+                stopTransfer();
+                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                return false; //if the whole thing is taking too long
+            } else if (!artifactLaunched()) {
                 return true;
             } else {
                 stopTransfer();
-                stopAll();
+                stopIntake();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;
             }
         }
     }
     public Action autoLaunch3rd() { return new AutoLaunch3rd(); }
-
 }

@@ -61,7 +61,7 @@ public class LEDSubsystem implements LEDInterface{
     }
 
     public void update() {
-        if (!isAuto && !endGameSignaled && endGameTimer.seconds() > 140) { //only runs during teleop
+        if (!MatchSettings.isAuto && !endGameSignaled && endGameTimer.seconds() > 140) { //only runs during teleop
             if (endGameTimer.seconds() < 143) {
                 setMode(LedMode.ELEVATING);
             } else if (endGameTimer.seconds() > 143) {
@@ -136,25 +136,12 @@ public class LEDSubsystem implements LEDInterface{
         endGameTimer.reset();
     }
 
-    public void setTeamColors() {
-        setMode(LedMode.TEAM_COLORS);
-    }
-
-    public void setAllianceRed () {
-        setMode(LedMode.ALLIANCE_RED);
-    }
-
-    public void setAllianceBlue() {
-        setMode(LedMode.ALLIANCE_BLUE);
-    }
-
     //============== AUTONOMOUS ACTIONS ==============\\
 
     //follower for LEDs
     public class UpdateAuto implements Action {
         @Override
         public boolean run (@NonNull TelemetryPacket packet) {
-            isAuto = true; //so that the endgame timer doesn't trigger
             update();
             return true;
         }
