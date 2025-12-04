@@ -39,7 +39,7 @@ public class RedFarDoNothing extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // End auto off a launch line, facing away from Driver
-    double endX = 12;
+    double endX = 55;
     double endY = 36;
     double endH = Math.toRadians(270); //Red=270, Blue = 90
 

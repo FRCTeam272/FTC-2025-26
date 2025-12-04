@@ -175,11 +175,13 @@ public class MatchSettings {
     }
 
     public enum TransferState {
-        LAUNCHING_SIMPLE,
+        LAUNCHING_3_SIMPLE,
+        LAUNCHING_1_SIMPLE,
         STOPPED
     }
 
     public enum LauncherState {
+
         SPINNING,
         STOPPED
     }

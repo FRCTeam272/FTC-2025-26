@@ -53,18 +53,18 @@ public class RedFarOnly2 extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = 52;
+    double getload1Y = 60;
     double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start
     double load2wallX = 40;
-    double load2wallY = 60;
-    double load2wallH = Math.toRadians(20); //Red=20, Blue=340
+    double load2wallY = 65;
+    double load2wallH = Math.toRadians(70); //Red=70, Blue=290
 
     // Go to Pickup Wall Load End while Intaking
     double getload2wallX = 60;
-    double getload2wallY = 60;
-    double getload2wallH = Math.toRadians(20); //Red=20, Blue=340
+    double getload2wallY = 65;
+    double getload2wallH = Math.toRadians(70); //Red=70, Blue=290
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
@@ -146,6 +146,7 @@ public class RedFarOnly2 extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
+            vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
@@ -172,25 +173,24 @@ public class RedFarOnly2 extends LinearOpMode {
                                 GoToLaunchPreload,
 
 
-                                // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
+                                // launch Preload - 3 Artifacts from far position
 //                                intake.autoLaunch1st(),
 //                                intake.autoLaunch2nd(),
 //                                intake.autoLaunch3rd(),
                                 intake.autoSpitOut(),
 
                                 // stop launcher and drive to Load 1
-                                launcher.autoStop(),
                                 GoToIntakeLoad1,
 
                                 // Drive forward SLOWLY intaking Artifacts
                                 new ParallelAction(
                                         IntakeLoad1,
-                                        intake.autoIntake3Front()
+                                        intake.autoIntake3Front(),
+                                        intake.autoFarColors()
                                 ),
 
                                 // spin up launcher and drive to launch position for Load 1
-                                launcher.autoSpinUp(),
-                                GoToLaunchLoad1,
+                               GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
 //                                intake.autoLaunch1st(),
@@ -199,15 +199,14 @@ public class RedFarOnly2 extends LinearOpMode {
                                 intake.autoSpitOut(),
 
                                 //stop Launcher and drive to Load 2 at the wall
-                                launcher.autoStop(),
                                 GoToIntakeLoad2,
 
                                 // Drive forward SLOWLY intaking Artifacts from the wall.
                                 new ParallelAction(
                                         IntakeLoad2,
-                                        intake.autoIntake3Front()
+                                        intake.autoIntake3Front(),
+                                        intake.autoWallColors()
                                 ),
-                                launcher.autoSpinUp(),
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch

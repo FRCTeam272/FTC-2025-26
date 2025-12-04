@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -39,6 +40,11 @@ public class RedNearOnly2 extends LinearOpMode {
     double startX = -61;
     double startY = 36;
     double startH = Math.toRadians(180);
+
+    // Motif Scan Position
+    double motifX = -12;
+    double motifY = 12;
+    double motifH = Math.toRadians(170);
 
     // Launch Position
     double launchX = -12;
@@ -94,7 +100,12 @@ public class RedNearOnly2 extends LinearOpMode {
         // because robot will do other actions timed by where in the trajectory it is
 
         //drive to preload launch position
-        TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
+        TrajectoryActionBuilder goToMotifScan = drive.actionBuilder(StartPose)
+                .strafeToLinearHeading(new Vector2d(motifX, motifY), motifH)
+                ;
+        Action GoToMotifScan = goToMotifScan.build();
+
+        TrajectoryActionBuilder goToLaunchPreload = goToMotifScan.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
                 ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
@@ -160,16 +171,17 @@ public class RedNearOnly2 extends LinearOpMode {
 
 
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
-                new ParallelAction( //leds update during entire auto - run in parallel to everything else
+                new ParallelAction( //leds update during entire auto & vision scans until it saves the motif - run in parallel to everything else
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         new SequentialAction(
                                 launcher.autoSetRPMMid(),
-
-                                // drive to launch position while spinning up launcher wheel
                                 launcher.autoSpinUp(),
+                                //go to motif scan position and be still for 1 second
+                                GoToMotifScan,
+                                new SleepAction(1),
+                                // spin to launch position
                                 GoToLaunchPreload,
-
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
 //                                intake.autoLaunch1st(),
@@ -178,17 +190,16 @@ public class RedNearOnly2 extends LinearOpMode {
                                 intake.autoSpitOut(),
 
                                 // stop launcher and drive to Load 1
-                                launcher.autoStop(),
                                 GoToIntakeLoad1,
 
                                 // Drive forward SLOWLY intaking Artifacts
                                 new ParallelAction(
                                         IntakeLoad1,
-                                        intake.autoIntake3Front()
+                                        intake.autoIntake3Front(),
+                                        intake.autoCloseColors()
                                 ),
 
                                 // spin up launcher and drive to launch position for Load 1
-                                launcher.autoSpinUp(),
                                 GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
@@ -204,9 +215,9 @@ public class RedNearOnly2 extends LinearOpMode {
                                 // Drive forward SLOWLY intaking Artifacts from the wall.
                                 new ParallelAction(
                                         IntakeLoad2,
-                                        intake.autoIntake3Front()
+                                        intake.autoIntake3Front(),
+                                        intake.autoMidColors()
                                 ),
-                                launcher.autoSpinUp(),
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
