@@ -188,6 +188,7 @@ public class IntakeSubsystemV2 {
                 break;
             case INTAKING_THRU:
                 thruFrontAll();
+                inboundTransfer();
                 break;
             default: // should never be reached
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
@@ -565,6 +566,7 @@ public class IntakeSubsystemV2 {
             } else if (timer.seconds() < 2) {
                 return true;
             } else {
+                stopIntake();
                 return false;
             }
         }

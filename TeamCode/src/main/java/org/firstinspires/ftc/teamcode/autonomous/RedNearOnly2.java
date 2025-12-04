@@ -37,8 +37,8 @@ public class RedNearOnly2 extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = -61;
-    double startY = 36;
+    double startX = -62;
+    double startY = 39.5;
     double startH = Math.toRadians(180);
 
     // Motif Scan Position
@@ -48,17 +48,17 @@ public class RedNearOnly2 extends LinearOpMode {
 
     // Launch Position
     double launchX = -12;
-    double launchY = 12;
+    double launchY = 20;
     double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
-    double load1X = -12;
+    double load1X = -18;
     double load1Y = 30;
     double load1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -12;
-    double getload1Y = 52;
+    double getload1X = -18;
+    double getload1Y = 60;
     double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
@@ -68,11 +68,11 @@ public class RedNearOnly2 extends LinearOpMode {
 
     // Go to Pickup Load 2 End while Intaking
     double getload2X = 12;
-    double getload2Y = 52;
+    double getload2Y = 60;
     double getload2H = Math.toRadians(90); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
-    double endX = 12;
+    double endX = 15;
     double endY = 36;
     double endH = Math.toRadians(270); //Red=270, Blue = 90
 

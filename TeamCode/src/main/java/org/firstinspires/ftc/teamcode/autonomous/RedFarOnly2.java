@@ -37,7 +37,7 @@ public class RedFarOnly2 extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = 61;
+    double startX = 62;
     double startY = 15;
     double startH = Math.toRadians(180);
 
@@ -57,13 +57,13 @@ public class RedFarOnly2 extends LinearOpMode {
     double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start
-    double load2wallX = 40;
-    double load2wallY = 65;
+    double load2wallX = 48;
+    double load2wallY = 62;
     double load2wallH = Math.toRadians(70); //Red=70, Blue=290
 
     // Go to Pickup Wall Load End while Intaking
-    double getload2wallX = 60;
-    double getload2wallY = 65;
+    double getload2wallX = 68;
+    double getload2wallY = 62;
     double getload2wallH = Math.toRadians(70); //Red=70, Blue=290
 
     // End auto off a launch line, facing away from Driver

@@ -36,14 +36,14 @@ public class RedNearDoNothing extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = -61;
-    double startY = 36;
+    double startX = -62;
+    double startY = 39.5;
     double startH = Math.toRadians(180);
 
     // End auto off a launch line, facing away from Driver
-    double endX = -48;
-    double endY = 12;
-    double endH = Math.toRadians(270); //Red=270, Blue = 90
+    double endX = -55;
+    double endY = 15;
+    double endH = Math.toRadians(180); //Red=270, Blue = 90
 
     @Override
     public void runOpMode() throws InterruptedException {
