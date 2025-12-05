@@ -174,10 +174,10 @@ public class RedFarOnly2 extends LinearOpMode {
 
 
                                 // launch Preload - 3 Artifacts from far position
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+                                //intake.autoSpitOut(),
 
                                 // stop launcher and drive to Load 1
                                 GoToIntakeLoad1,
@@ -193,10 +193,10 @@ public class RedFarOnly2 extends LinearOpMode {
                                GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+                                //intake.autoSpitOut(),
 
                                 //stop Launcher and drive to Load 2 at the wall
                                 GoToIntakeLoad2,
@@ -210,10 +210,10 @@ public class RedFarOnly2 extends LinearOpMode {
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+                                //intake.autoSpitOut(),
 
                                 //stop launcher and drive to end position off launch lines
                                 launcher.autoStop(),

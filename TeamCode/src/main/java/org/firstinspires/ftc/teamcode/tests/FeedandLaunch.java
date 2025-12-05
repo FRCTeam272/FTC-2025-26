@@ -29,18 +29,18 @@ public class FeedandLaunch extends SampleCommandTeleop {
 
     @Override
     public void onStart() {
-        launcher.setTargetRPM(1000);
+        launcher.setTargetRPM(1750);
     }
 
     @Override
     public void onLoop() {
 
         if(gamepad1.dpad_up){
-            launcher.setTargetRPM(launcher.getTargetRPM() + 25);
+            launcher.setTargetRPM(launcher.getTargetRPM() + 10);
         }
 
         if(gamepad1.dpad_down) {
-            launcher.setTargetRPM(launcher.getTargetRPM() - 25);
+            launcher.setTargetRPM(launcher.getTargetRPM() - 10);
         }
 
         if(gamepad1.dpad_left) {

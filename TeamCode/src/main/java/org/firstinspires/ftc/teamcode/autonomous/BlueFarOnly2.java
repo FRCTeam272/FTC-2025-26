@@ -174,13 +174,13 @@ public class BlueFarOnly2 extends LinearOpMode {
 
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+                                //intake.autoSpitOut(),
 
                                 // stop launcher and drive to Load 1
-                                launcher.autoStop(),
+
                                 GoToIntakeLoad1,
 
                                 // Drive forward SLOWLY intaking Artifacts

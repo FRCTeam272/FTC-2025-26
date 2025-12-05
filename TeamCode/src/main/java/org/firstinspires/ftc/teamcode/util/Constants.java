@@ -17,16 +17,16 @@ public final class Constants {
     public static final class intakeConstants{
         public static double INTAKE_POWER = 1;
         public static double REVERSE_INTAKE_POWER = -1;
-        public static double DISTANCE_FOR_POSSESSION_FRONT = 4.75; //TUNE!!!!! max range is 10
+        public static double DISTANCE_FOR_POSSESSION_FRONT = 4.5; //TUNE!!!!! max range is 10
         public static double DISTANCE_FOR_POSSESSION_MID = 2.5;
-        public static double DISTANCE_FOR_POSSESSION_REAR = 5.75; //TUNE!!!!! max range is 10
+        public static double DISTANCE_FOR_POSSESSION_REAR = 5.5; //TUNE!!!!! max range is 10
     }
 
     @Config
     public static final class launcherConstants{
-        public static double FAR_ZONE_LAUNCH_RPM = 1950;
-        public static double MID_ZONE_LAUNCH_RPM = 1900;
-        public static double CLOSE_ZONE_LAUNCH_RPM = 1950;
+        public static double FAR_ZONE_LAUNCH_RPM = 1750;
+        public static double MID_ZONE_LAUNCH_RPM = 1750;
+        public static double CLOSE_ZONE_LAUNCH_RPM = 1850;
     }
 
     @Config

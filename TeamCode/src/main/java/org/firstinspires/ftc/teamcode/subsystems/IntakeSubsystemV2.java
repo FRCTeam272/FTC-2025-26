@@ -602,9 +602,10 @@ public class IntakeSubsystemV2 {
 
                 // check for possession in midSlot and frontSlot and skip the rest of the action if nothing there
                 // we need to know about the Front so that we can read the color there before moving on
-                if (!possessionMid) {
-                    return false;
-                } else {
+//                if (!possessionMid) {
+//                    return false;
+//                }
+//                else {
                     timerAction.reset();
                     inboundMidFront();
                     inboundMidRear();
@@ -615,7 +616,7 @@ public class IntakeSubsystemV2 {
                     } else { inboundRear(); secondArtifactToLaunch = "Rear"; }
                     initialized = true; //so that it skips this part next rerun
                     return true;
-                }
+//                }
             } else if (timerAction.seconds() > 3) {
                 stopIntake();
                 stopTransfer();
@@ -658,10 +659,10 @@ public class IntakeSubsystemV2 {
 
             if (!initialized) {
                 MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
-                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
-                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                    return false;
-                }
+//                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
+//                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+//                    return false;
+//                }
                 if (secondArtifactToLaunch == "Front") { // choose a launch slot
                     launchSlot = "Front";
                 } else {
@@ -678,6 +679,7 @@ public class IntakeSubsystemV2 {
                     inboundMidFront();
                     inboundRear();
                 }
+                outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
             } else if (timerAction.seconds() > 3) {
@@ -720,10 +722,10 @@ public class IntakeSubsystemV2 {
 
             if (!initialized) {
                 MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
-                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
-                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                    return false;
-                }
+//                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
+//                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+//                    return false;
+//                }
                 timerAction.reset();
                 // turn on front and rear servos to feed whatever up
                 inboundMidRear();
@@ -733,7 +735,7 @@ public class IntakeSubsystemV2 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 3) {
+            } else if (timerAction.seconds() > 5) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;

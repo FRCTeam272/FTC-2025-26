@@ -83,7 +83,7 @@ public class AutoLaunchTest extends LinearOpMode {
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         new SequentialAction(
-                                launcher.autoSetRPMFar(),
+                                launcher.autoSetRPMMid(),
                                 launcher.autoSpinUp(),
                                 new SleepAction(2),
                                 intake.autoLaunch1st(),
