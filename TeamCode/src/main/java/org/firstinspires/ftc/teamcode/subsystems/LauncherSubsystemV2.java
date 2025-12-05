@@ -97,7 +97,7 @@ public class LauncherSubsystemV2 {
                     setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
                     MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
                 }
-                else if(gamepad2.x) {
+                else if(gamepad2.b) {
                     spinUp();
                     setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
                     MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
@@ -110,7 +110,7 @@ public class LauncherSubsystemV2 {
                 break;
 
             case SPINNING:
-                if(gamepad2.b){
+                if(gamepad2.x){
                     eStop();
                     MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
                 }
@@ -118,7 +118,7 @@ public class LauncherSubsystemV2 {
                     setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
                     spinUp();
                 }
-                else if(gamepad2.x){
+                else if(gamepad2.b){
                     setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
                     spinUp();
                 }
@@ -129,13 +129,6 @@ public class LauncherSubsystemV2 {
                 break;
             default:
                 MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
-        }
-
-        if(gamepad2.a){
-            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
-        }
-        if(gamepad2.x){
-            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
         }
     }
 

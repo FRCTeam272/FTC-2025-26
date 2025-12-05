@@ -193,13 +193,6 @@ public class IntakeSubsystemV2 {
             default: // should never be reached
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
-        //cancel intaking & STOP button
-        if (gamepad2.dpad_right && MatchSettings.intakeState != MatchSettings.IntakeState.STOPPED) {
-            stopIntake();
-            stopTransfer();
-            initialized = false;
-            MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
-        }
 
         switch (MatchSettings.transferState) {
             case STOPPED:
@@ -215,6 +208,7 @@ public class IntakeSubsystemV2 {
                     stopTransfer();
                     initialized = false;
                     MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 } else {
                     if (!initialized) {
                         launchCounter = 0;
@@ -264,31 +258,33 @@ public class IntakeSubsystemV2 {
                 }
                 break;
             case LAUNCHING_1_SIMPLE:
-                if (gamepad2.dpad_right) {
+                if (!initialized) {
+                    initialized = true;
+                    inboundFront();
+                    inboundMidFront();
+                    inboundMidRear();
+                    inboundRear();
+                    outboundTransfer();
+                }
+                if (artifactLaunched()) {
                     stopIntake();
                     stopTransfer();
                     initialized = false;
                     MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                } else {
-                    if (!initialized) {
-                        initialized = true;
-                        inboundFront();
-                        inboundMidFront();
-                        inboundMidRear();
-                        inboundRear();
-                        outboundTransfer();
-                    }
-                    if (artifactLaunched()) {
-                        stopIntake();
-                        stopTransfer();
-                        initialized = false;
-                        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                    }
                 }
                 break;
             default: //should never be reached
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
 
+        }
+
+        //cancel intaking/transfer & STOP button
+        if (gamepad2.dpad_right && (MatchSettings.intakeState != MatchSettings.IntakeState.STOPPED || MatchSettings.transferState != MatchSettings.TransferState.STOPPED)) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+            MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
         }
     }
 

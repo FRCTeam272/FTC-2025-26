@@ -32,6 +32,9 @@ public class AimbotTeleop extends SampleCommandTeleop {
     public void onInit() {
         matchSettings = new MatchSettings(blackboard);
         MatchSettings.isAuto = false;
+        MatchSettings.launcherState = MatchSettings.LauncherState.STOPPED;
+        MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
 
         drive = new AimbotDriveSubsystem(hardwareMap, matchSettings);
         launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);
