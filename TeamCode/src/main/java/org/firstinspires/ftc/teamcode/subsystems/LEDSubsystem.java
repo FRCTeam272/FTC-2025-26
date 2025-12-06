@@ -32,9 +32,6 @@ public class LEDSubsystem implements LEDInterface{
 
     private static final Map<LedMode, RevBlinkinLedDriver.BlinkinPattern> modeLookup = new HashMap<>();
 
-    // TEAM_COLORS, ALLIANCE_RED, ALLIANCE_BLUE,INTAKING_FRONT, INTAKING_REAR,INTAKING_THRU,
-    // MOTIF_DETECTED, LAUNCHER_ATSPEED, GREEN_NEXT, PURPLE_NEXT, ELEVATING, BLACK
-
     static {
         modeLookup.put(LedMode.TEAM_COLORS, RevBlinkinLedDriver.BlinkinPattern.RAINBOW_FOREST_PALETTE);
         modeLookup.put(LedMode.ALLIANCE_RED, RevBlinkinLedDriver.BlinkinPattern.BREATH_RED);

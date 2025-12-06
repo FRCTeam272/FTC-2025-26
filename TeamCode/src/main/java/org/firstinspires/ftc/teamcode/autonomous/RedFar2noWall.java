@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -22,8 +23,8 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
 @Config
-@Autonomous (name="BlueNearOnly2", group="Auto")
-public class BlueNearOnly2 extends LinearOpMode {
+@Autonomous (name="RedFarOnly2", group="Auto")
+public class RedFar2noWall extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,39 +37,39 @@ public class BlueNearOnly2 extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = -61;
-    double startY = -36;
+    double startX = 62;
+    double startY = 15;
     double startH = Math.toRadians(180);
 
-    // Launch Position
-    double launchX = -12;
-    double launchY = -12;
-    double launchH = Constants.Util.angleToBlueGoal(launchX, launchY);
+    // Launch Preload
+    double launchX = 50;
+    double launchY = 18;
+    double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
-    double load1X = -12;
-    double load1Y = -30;
-    double load1H = Math.toRadians(270); //Red=90, Blue=270
+    double load1X = 37;
+    double load1Y = 30;
+    double load1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -12;
-    double getload1Y = -60;
-    double getload1H = Math.toRadians(270); //Red=90, Blue=270
+    double getload1X = 37;
+    double getload1Y = 60;
+    double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
-    double load2X = 12;
-    double load2Y = -30;
-    double load2H = Math.toRadians(270); //Red=90, Blue=270
+    double load2X = 13;
+    double load2Y = 30;
+    double load2H = Math.toRadians(90); //Red=90, Blue=270
 
-    // Go to Pickup Load 2 End while Intaking
-    double getload2X = 12;
-    double getload2Y = -60;
-    double getload2H = Math.toRadians(270); //Red=90, Blue=270
+    // Go to Pickup Wall Load End while Intaking
+    double getload2X = 13;
+    double getload2Y = 60;
+    double getload2H = Math.toRadians(70); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
-    double endX = 12;
-    double endY = -36;
-    double endH = Math.toRadians(90); //Red=270, Blue = 90
+    double endX = 36;
+    double endY = 36;
+    double endH = Math.toRadians(270); //Red=270, Blue = 90
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,7 +79,7 @@ public class BlueNearOnly2 extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -145,7 +146,7 @@ public class BlueNearOnly2 extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
-
+            vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
@@ -165,56 +166,55 @@ public class BlueNearOnly2 extends LinearOpMode {
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         new SequentialAction(
-                                launcher.autoSetRPMMid(),
+                                launcher.autoSetRPMFar(),
 
                                 // drive to launch position while spinning up launcher wheel
                                 launcher.autoSpinUp(),
-                                GoToLaunchPreload,
-
-
-                                // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                new ParallelAction(
+                                        GoToLaunchPreload,
+                                        new SleepAction(2)
+                                ),
+                                // launch Preload - 3 Artifacts from far position
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+                                //intake.autoSpitOut(),
 
                                 // stop launcher and drive to Load 1
-                                launcher.autoStop(),
                                 GoToIntakeLoad1,
 
                                 // Drive forward SLOWLY intaking Artifacts
                                 new ParallelAction(
                                         IntakeLoad1,
-                                        intake.autoIntake3Front()
+                                        intake.autoIntake3Front(),
+                                        intake.autoFarColors()
                                 ),
 
                                 // spin up launcher and drive to launch position for Load 1
-                                launcher.autoSpinUp(),
-                                GoToLaunchLoad1,
+                               GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+                                //intake.autoSpitOut(),
 
                                 //stop Launcher and drive to Load 2 at the wall
-                                launcher.autoStop(),
                                 GoToIntakeLoad2,
 
                                 // Drive forward SLOWLY intaking Artifacts from the wall.
                                 new ParallelAction(
                                         IntakeLoad2,
-                                        intake.autoIntake3Front()
+                                        intake.autoIntake3Front(),
+                                        intake.autoWallColors()
                                 ),
-                                launcher.autoSpinUp(),
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+                                //intake.autoSpitOut(),
 
                                 //stop launcher and drive to end position off launch lines
                                 launcher.autoStop(),

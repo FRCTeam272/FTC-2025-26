@@ -42,8 +42,8 @@ public class RedFarOnly2 extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // Launch Preload
-    double launchX = 58;
-    double launchY = 15;
+    double launchX = 50;
+    double launchY = 18;
     double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
@@ -170,9 +170,10 @@ public class RedFarOnly2 extends LinearOpMode {
 
                                 // drive to launch position while spinning up launcher wheel
                                 launcher.autoSpinUp(),
-                                GoToLaunchPreload,
-
-
+                                new ParallelAction(
+                                        GoToLaunchPreload,
+                                        new SleepAction(2)
+                                ),
                                 // launch Preload - 3 Artifacts from far position
                                 intake.autoLaunch1st(),
                                 intake.autoLaunch2nd(),
