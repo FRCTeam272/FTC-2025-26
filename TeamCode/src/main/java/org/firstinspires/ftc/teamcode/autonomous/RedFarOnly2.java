@@ -53,7 +53,7 @@ public class RedFarOnly2 extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = 63;
+    double getload1Y = 65;
     double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start
@@ -66,10 +66,16 @@ public class RedFarOnly2 extends LinearOpMode {
     double getload2wallY = 62;
     double getload2wallH = Math.toRadians(70); //Red=70, Blue=290
 
+    // Go to Launch Load 2
+    double launchload2X = 55;
+    double launchload2Y = 20;
+    double launchload2H = Constants.Util.angleToRedGoal(launchX, launchY);
+    // this is a placement correction, so use launch angle from before.
+
     // End auto off a launch line, facing away from Driver
     double endX = 36;
-    double endY = 36;
-    double endH = Math.toRadians(270); //Red=270, Blue = 90
+    double endY = 24;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {

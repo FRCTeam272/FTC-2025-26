@@ -42,39 +42,39 @@ public class RedNearOnly2 extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // Motif Scan Position
-    double motifX = -12;
-    double motifY = 12;
-    double motifH = Math.toRadians(170);
+    double motifX = -24;
+    double motifY = 20;
+    double motifH = Math.toRadians(200);
 
     // Launch Position
-    double launchX = -12;
+    double launchX = -20;
     double launchY = 20;
     double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
-    double load1X = -18;
+    double load1X = -8;
     double load1Y = 30;
     double load1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -18;
-    double getload1Y = 60;
+    double getload1X = -8;
+    double getload1Y = 63;
     double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
-    double load2X = 12;
+    double load2X = 19;
     double load2Y = 30;
     double load2H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
-    double getload2X = 12;
-    double getload2Y = 60;
+    double getload2X = 19;
+    double getload2Y = 65;
     double getload2H = Math.toRadians(90); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
-    double endX = 15;
+    double endX = 20;
     double endY = 36;
-    double endH = Math.toRadians(270); //Red=270, Blue = 90
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -175,7 +175,7 @@ public class RedNearOnly2 extends LinearOpMode {
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         new SequentialAction(
-                                launcher.autoSetRPMMid(),
+                                launcher.autoSetRPMNear(),
                                 launcher.autoSpinUp(),
                                 //go to motif scan position and be still for 1 second
                                 GoToMotifScan,
@@ -184,10 +184,10 @@ public class RedNearOnly2 extends LinearOpMode {
                                 GoToLaunchPreload,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+//                                intake.autoSpitOut(),
 
                                 // stop launcher and drive to Load 1
                                 GoToIntakeLoad1,
@@ -203,13 +203,12 @@ public class RedNearOnly2 extends LinearOpMode {
                                 GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+//                                intake.autoSpitOut(),
 
                                 //stop Launcher and drive to Load 2 at the wall
-                                launcher.autoStop(),
                                 GoToIntakeLoad2,
 
                                 // Drive forward SLOWLY intaking Artifacts from the wall.
@@ -221,10 +220,10 @@ public class RedNearOnly2 extends LinearOpMode {
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-//                                intake.autoLaunch1st(),
-//                                intake.autoLaunch2nd(),
-//                                intake.autoLaunch3rd(),
-                                intake.autoSpitOut(),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
+//                                intake.autoSpitOut(),
 
                                 //stop launcher and drive to end position off launch lines
                                 launcher.autoStop(),

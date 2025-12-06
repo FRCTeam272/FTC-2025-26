@@ -318,14 +318,14 @@ public class LauncherSubsystemV2 {
     //---------------------------------------------------------------
 
     // Set Launcher RPM MID for Auton
-    public class AutoSetRPMMid implements Action {
+    public class AutoSetRPMNear implements Action {
         @Override
         public boolean run (@NonNull TelemetryPacket packet) {
-            setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
+            setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
             return false;
         }
     }
-    public Action autoSetRPMMid() { return  new AutoSetRPMMid(); }
+    public Action autoSetRPMNear() { return  new AutoSetRPMNear(); }
 
     //---------------------------------------------------------------
 

@@ -41,7 +41,7 @@ public class RedFarDoNothing extends LinearOpMode {
     // End auto off a launch line, facing away from Driver
     double endX = 55;
     double endY = 36;
-    double endH = Math.toRadians(270); //Red=270, Blue = 90
+    double endH = Math.toRadians(180); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
