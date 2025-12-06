@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
+@Disabled
 @TeleOp (name="Motif Test Teleop", group = "Tests")
 public class MotifTeleop extends SampleCommandTeleop {
     public MatchSettings matchSettings;

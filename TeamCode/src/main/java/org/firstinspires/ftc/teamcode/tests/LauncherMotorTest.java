@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
  * THEN - Use this opmode to test launch RPMs, can increase the start speed as needed
  */
 
+@Disabled
 @TeleOp (name = "LauncherMotorTest", group = "Tests")
 public class LauncherMotorTest extends SampleCommandTeleop {
 

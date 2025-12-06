@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
-@TeleOp (name="AimbotTeleop", group = "Competition")
-public class AimbotTeleop extends SampleCommandTeleop {
+@TeleOp (name="Teleop14133", group = "Competition")
+public class Teleop14133 extends SampleCommandTeleop {
 
     public MatchSettings matchSettings;
 
