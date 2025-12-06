@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
 @Config
-@Autonomous (name="RedFarOnly2", group="Auto")
+@Autonomous (name="RedFar2noWall", group="Auto")
 public class RedFar2noWall extends LinearOpMode {
 
     private MatchSettings matchSettings;
@@ -42,8 +42,8 @@ public class RedFar2noWall extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // Launch Preload
-    double launchX = 50;
-    double launchY = 18;
+    double launchX = 55;
+    double launchY = 15;
     double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
@@ -53,7 +53,7 @@ public class RedFar2noWall extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = 60;
+    double getload1Y = 63;
     double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
@@ -63,8 +63,8 @@ public class RedFar2noWall extends LinearOpMode {
 
     // Go to Pickup Wall Load End while Intaking
     double getload2X = 13;
-    double getload2Y = 60;
-    double getload2H = Math.toRadians(70); //Red=90, Blue=270
+    double getload2Y = 63;
+    double getload2H = Math.toRadians(90); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
@@ -206,7 +206,7 @@ public class RedFar2noWall extends LinearOpMode {
                                 new ParallelAction(
                                         IntakeLoad2,
                                         intake.autoIntake3Front(),
-                                        intake.autoWallColors()
+                                        intake.autoMidColors()
                                 ),
                                 GoToLaunchLoad2,
 

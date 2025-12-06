@@ -42,8 +42,8 @@ public class RedFarOnly2 extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // Launch Preload
-    double launchX = 50;
-    double launchY = 18;
+    double launchX = 55;
+    double launchY = 15;
     double launchH = Constants.Util.angleToRedGoal(launchX, launchY);
 
     // Go to Pickup Load1 Start
@@ -53,7 +53,7 @@ public class RedFarOnly2 extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = 60;
+    double getload1Y = 63;
     double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start

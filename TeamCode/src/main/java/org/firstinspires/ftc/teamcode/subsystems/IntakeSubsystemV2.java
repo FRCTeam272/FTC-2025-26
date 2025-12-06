@@ -731,7 +731,7 @@ public class IntakeSubsystemV2 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 5) {
+            } else if (timerAction.seconds() > 3) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
