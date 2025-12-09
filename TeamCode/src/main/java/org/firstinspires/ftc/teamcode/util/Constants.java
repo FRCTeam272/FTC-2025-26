@@ -25,8 +25,8 @@ public final class Constants {
     @Config
     public static final class launcherConstants{
         public static double FAR_ZONE_LAUNCH_RPM = 1750;
-        public static double MID_ZONE_LAUNCH_RPM = 1750;
-        public static double CLOSE_ZONE_LAUNCH_RPM = 1750;
+        public static double MID_ZONE_LAUNCH_RPM = 1675;
+        public static double CLOSE_ZONE_LAUNCH_RPM = 1600;
     }
 
     @Config

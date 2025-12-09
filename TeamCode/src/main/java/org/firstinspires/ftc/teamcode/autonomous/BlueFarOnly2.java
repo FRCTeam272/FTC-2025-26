@@ -58,12 +58,12 @@ public class BlueFarOnly2 extends LinearOpMode {
 
     // Go to Pickup Wall Load Start
     double load2wallX = 48;
-    double load2wallY = -62;
+    double load2wallY = -65;
     double load2wallH = Math.toRadians(290); //Red=70, Blue=290
 
     // Go to Pickup Wall Load End while Intaking
     double getload2wallX = 68;
-    double getload2wallY = -62;
+    double getload2wallY = -65;
     double getload2wallH = Math.toRadians(290); //Red=70, Blue=290
 
     // Go to Launch Load 2
