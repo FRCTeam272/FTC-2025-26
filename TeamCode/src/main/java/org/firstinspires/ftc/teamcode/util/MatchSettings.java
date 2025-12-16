@@ -189,6 +189,7 @@ public class MatchSettings {
     public enum VisionState {
         MOTIF_DETECTED,
         GOAL_DETECTED,
+        ARTIFACT_DETECTED,
         NONE
     }
 

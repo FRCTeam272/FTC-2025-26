@@ -78,6 +78,9 @@ public class IntakeSubsystemV2 {
     private boolean initialized = false;
     private ElapsedTime launchTimer = new ElapsedTime();
 
+    private ElapsedTime autoTimer = new ElapsedTime();
+    private double autoCancelSeconds = 28;
+
     public IntakeSubsystemV2(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
 
         this.telemetry = telemetry;
@@ -588,7 +591,7 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            if (!initialized) {
+            if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 // start by clearing possession values and then bulk read
                 // for initial values for this intake load
                 clearIntakePossessions();
@@ -613,7 +616,7 @@ public class IntakeSubsystemV2 {
                     initialized = true; //so that it skips this part next rerun
                     return true;
 //                }
-            } else if (timerAction.seconds() > 3) {
+            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
@@ -653,7 +656,7 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            if (!initialized) {
+            if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
 //                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
 //                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
@@ -678,7 +681,7 @@ public class IntakeSubsystemV2 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 3) {
+            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
@@ -716,7 +719,7 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            if (!initialized) {
+            if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
 //                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
 //                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
@@ -731,7 +734,7 @@ public class IntakeSubsystemV2 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 3) {
+            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
@@ -803,4 +806,16 @@ public class IntakeSubsystemV2 {
             return false;
         }
     }public Action autoWallColors() { return new AutoWallColors(); }
+
+    //---------------------------------------------------------------
+
+    //Resets Auton Timer at the start of Auto - so that launching can be canceled
+
+    public class AutoResetAutoTimer implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            autoTimer.reset();
+            return false;
+        }
+    }public Action autoResetAutoTimer() { return new AutoResetAutoTimer(); }
 }

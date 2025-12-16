@@ -8,14 +8,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 @Disabled
 @TeleOp (name = "LauncherPIDTest", group = "Tests")
 public class LauncherPIDTest extends CommandOpMode {
 
-    LauncherSubsystem launcher;
+    LauncherSubsystemV2 launcher;
     private FtcDashboard dash;
     TelemetryPacket packet = new TelemetryPacket();
+    MatchSettings matchSettings;
 
     @Override
     public void initialize() {
@@ -23,7 +26,7 @@ public class LauncherPIDTest extends CommandOpMode {
         dash = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
 
-        launcher = new LauncherSubsystem(hardwareMap, telemetry);
+        launcher = new LauncherSubsystemV2(hardwareMap, telemetry, matchSettings);
 
         telemetry.addLine("init done");
         telemetry.update();
@@ -31,12 +34,12 @@ public class LauncherPIDTest extends CommandOpMode {
 
     // --- PIDF ---
     /**
-     * Sets shooter PIDF coefficients manually in LauncherSubsystem Configs
+     * Sets launcher PIDF coefficients manually in LauncherSubsystem Configs
      * Dashboard address - 192.168.43.1:8080/dash
-     * kf - Set to a low value, just enough that the shooter wheel
+     * kf - Set to a low value, just enough that the launcher wheel
      *           begins to rotate
-     * kp - Increase kP after kF until the shooter wheel reaches the target speed
-     * kd - Try changing the target speed of the shooter from a low value
+     * kp - Increase kP after kF until the launcher wheel reaches the target speed
+     * kd - Try changing the target speed of the launcher from a low value
      *           to a high value and vise versa. Use this to reduce the
      *           oscillations when changing speeds
      * ki - Most times this won't need to be tuned
@@ -50,8 +53,8 @@ public class LauncherPIDTest extends CommandOpMode {
         launcher.spinUp();
 
 
-        packet.put("target_shooter_rpm", launcher.getTargetRPM());
-        packet.put("current_shooter_rpm", launcher.getLauncherRPM());
+        packet.put("target_launcher_rpm", launcher.getTargetRPM());
+        packet.put("current_launcher_rpm", launcher.getLauncherRPM());
         dash.sendTelemetryPacket(packet);
 
     }

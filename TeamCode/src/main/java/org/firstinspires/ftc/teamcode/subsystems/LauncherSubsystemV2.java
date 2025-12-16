@@ -20,9 +20,9 @@ public class LauncherSubsystemV2 {
     private DcMotorEx launcherLeft;
 
     // --- Shooter Constants ---
-    public static double TARGET_RPM = 2500.0;         // desired shooter RPM
+    public static double TARGET_RPM = 2500.0;         // desired launcher RPM
     private static double MOTOR_RPM = 6000;          // motor RPM (based on max motor rpm)
-    private static double GEAR_RATIO = 1;            // gear ratio from motor to shooter
+    private static double GEAR_RATIO = 1;            // gear ratio from motor to launcher
     private static double TICKS_PER_REV = 28;       // motor encoder ticks per revolution
     private boolean active;
 
@@ -34,17 +34,17 @@ public class LauncherSubsystemV2 {
     public static double kF = 24.0;
 
     /**
-     * Initialises the shooter in the hardwareMap, sets default shooter values
+     * Initialises the launcher in the hardwareMap, sets default launcher values
      * @param hardwareMap pulls HardwareMap from teleOp class
      *                    to initialise motor
      * telemetry Allows the class to add telemetry to the phone
-     * @param defaultTargetRPM Sets the default target RPM of the shooter
+     * @param defaultTargetRPM Sets the default target RPM of the launcher
      *                        Set to the initial target RPM of your
-     *                        shooter
+     *                        launcher
      * @param defaultMotorRPM Sets the default RPM of the motor
      *                       Set to the RPM of the motor being used
-     * @param defaultGearRatio Sets the default shooter gear ratio
-     *                        Set to the gear ratio between the motor and shooterwheel
+     * @param defaultGearRatio Sets the default launcher gear ratio
+     *                        Set to the gear ratio between the motor and launcher wheel
      * @param defaultTicks Sets the default ticks of the motor
      *                    Set to the encoder ticks of your motor
      */
@@ -134,16 +134,16 @@ public class LauncherSubsystemV2 {
 
     // --- PIDF ---
     /**
-     * Sets shooter PIDF coefficients manually
-     * @param kf Set to a low value, just enough that the shooter wheel
+     * Sets launcher PIDF coefficients manually
+     * @param kf Set to a low value, just enough that the launcher wheel
      *           begins to rotate
-     * @param kp Increase kP after kF until the shooter wheel reaches the target speed
-     * @param kd Try changing the target speed of the shooter from a low value
+     * @param kp Increase kP after kF until the launcher wheel reaches the target speed
+     * @param kd Try changing the target speed of the launcher from a low value
      *           to a high value and vise versa. Use this to reduce the
      *           oscillations when changing speeds
      * @param ki Most times this won't need to be tuned
      */
-    public void setShooterPIDF(double kf, double kp, double kd, double ki) {
+    public void setLauncherPIDF(double kf, double kp, double kd, double ki) {
         kP = kp;
         kI = ki;
         kD = kd;
@@ -151,7 +151,7 @@ public class LauncherSubsystemV2 {
         applyPIDF();
     }
 
-    /** Applies current shooter velocity PIDF coefficients */
+    /** Applies current launcher velocity PIDF coefficients */
     public void applyPIDF() {
         launcherLeft.setVelocityPIDFCoefficients(kP, kI, kD, kF);
         launcherRight.setVelocityPIDFCoefficients(kP, kI, kD, kF);
@@ -160,16 +160,16 @@ public class LauncherSubsystemV2 {
     // --- Constants Control ---
     /**
      * Changes the target RPM of the shooter
-     * @param targetRPM Set to the target RPM of the shooter
+     * @param targetRPM Set to the target RPM of the launcher
      */
     public void setTargetRPM(double targetRPM) {
         TARGET_RPM = targetRPM;
     }
 
     /**
-     * Returns the target RPM of the shooter, used to check if velo
+     * Returns the target RPM of the launcher, used to check if velo
      * is within tolerance
-     * @return returns the target RPM of the shooter
+     * @return returns the target RPM of the launcher
      */
     public double getTargetRPM() {
         return TARGET_RPM;
@@ -185,9 +185,9 @@ public class LauncherSubsystemV2 {
     }
 
     /**
-     * Changes the gear ratio between the motor and the shooter
+     * Changes the gear ratio between the motor and the launcher
      * @param gearRatio Set to the gear ratio used between the
-     *                  motor and shooter
+     *                  motor and launcher
      *      1.0 is a 1:1 gear ratio
      *      2.5 is a 2.5:1 gear increase
      *      0.5 is a 0.5:1 gear reduction
@@ -197,8 +197,8 @@ public class LauncherSubsystemV2 {
     }
 
     /**
-     * Returns the current gear ratio of the shooter
-     * @return returns the current GEAR_RATIO of the shooter system
+     * Returns the current gear ratio of the launcher
+     * @return returns the current GEAR_RATIO of the launcher system
      */
     public double getGearRatio() {
         return GEAR_RATIO;
@@ -215,8 +215,8 @@ public class LauncherSubsystemV2 {
     }
 
     /**
-     * Returns the current Ticks Per Rev of the shooter
-     * @return returns the TICKS_PER_REV of the shooter flywheel
+     * Returns the current Ticks Per Rev of the launcher
+     * @return returns the TICKS_PER_REV of the launcher flywheel
      */
     public double getTicksPerRev() {
         return TICKS_PER_REV;
@@ -235,7 +235,7 @@ public class LauncherSubsystemV2 {
         active = Math.abs(getTargetRPM()) > 0;
     }
 
-    /** Stops all shooter motion immediately. */
+    /** Stops all launcher motion immediately. */
     public void eStop() {
         launcherLeft.setPower(0);
         launcherLeft.setVelocity(0);
@@ -245,8 +245,8 @@ public class LauncherSubsystemV2 {
     }
 
     /**
-     * Gets shooter current velocity
-     * @return Returns current shooter RPM based on the
+     * Gets launcher current velocity
+     * @return Returns current launcher RPM based on the
      *         motor rpm, ticks per rev, and gear ratio
      */
     public double getLauncherRPM() {
@@ -261,7 +261,7 @@ public class LauncherSubsystemV2 {
     }
 
     /**
-     * Gets shooter motor current velocity
+     * Gets launcher motor current velocity
      * @return Returns motor voltage
      */
     public double getMotorVoltage() {

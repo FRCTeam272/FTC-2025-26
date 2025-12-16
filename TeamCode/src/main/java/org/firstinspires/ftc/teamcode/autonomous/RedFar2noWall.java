@@ -172,6 +172,7 @@ public class RedFar2noWall extends LinearOpMode {
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         new SequentialAction(
+                                intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMFar(),
 
                                 // drive to launch position while spinning up launcher wheel

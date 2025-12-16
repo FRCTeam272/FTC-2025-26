@@ -80,6 +80,9 @@ public class LEDSubsystem implements LEDInterface{
         else if (MatchSettings.visionState == MatchSettings.VisionState.GOAL_DETECTED && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED) {
             setMode(LedMode.GOAL_DETECTED);
         }
+        else if (MatchSettings.visionState == MatchSettings.VisionState.ARTIFACT_DETECTED) {
+            setMode(LedMode.PURPLE_NEXT);
+        }
         else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_FRONT) {
             setMode(LedMode.INTAKING_FRONT);
         } else if (MatchSettings.intakeState == MatchSettings.IntakeState.INTAKING_REAR) {

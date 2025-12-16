@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.graphics.Color;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -19,31 +20,51 @@ import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.opencv.Circle;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorRange;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
+
+import java.util.List;
 
 public class VisionSubsystem {
+
+    public enum VisionMode {
+        APRILTAG,
+        ARTIFACT
+    }
+
+    private VisionMode visionMode = VisionMode.APRILTAG;
+
+    private ColorBlobLocatorProcessor artifactProcessor;
+    private AprilTagProcessor tagProcessor;
+
+    private Size cameraResolutionTag = new Size(640, 480);
+    private Size cameraResolutionArt = new Size(320, 240);
+    private Size camRes = cameraResolutionTag;
+
     public WebcamName webCam;
     public final MatchSettings matchSettings;
-    public static String motifTagSequence = "NONE";
     public static MatchSettings.Motif motif = MatchSettings.Motif.UNKNOWN;
     VisionPortal visionPortal;
 
     /**
      * Variables to store the position and orientation of the camera on the robot. Setting these
      * values requires a definition of the axes of the camera and robot:
-     *
+     * <p>
      * Camera axes:
      * Origin location: Center of the lens
      * Axes orientation: +x right, +y down, +z forward (from camera's perspective)
-     *
+     * <p>
      * Robot axes (this is typical, but you can define this however you want):
      * Origin location: Center of the robot at field height
      * Axes orientation: +x right, +y forward, +z upward
-     *
+     * <p>
      * Position:
      * If all values are zero (no translation), that implies the camera is at the center of the
      * robot. Suppose your camera is positioned 5 inches to the left, 7 inches forward, and 12
      * inches above the ground - you would need to set the position to (-5, 7, 12).
-     *
+     * <p>
      * Orientation:
      * If all values are zero (no rotation), that implies the camera is pointing straight up. In
      * most cases, you'll need to set the pitch to -90 degrees (rotation about the x-axis), meaning
@@ -56,17 +77,30 @@ public class VisionSubsystem {
     YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
             0, -90, 0, 0);
 
-    AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
-            .setDrawAxes(true)
-            .setDrawCubeProjection(true)
-            .setDrawTagID(true)
-            .setDrawTagOutline(true)
-            .setCameraPose(cameraPosition, cameraOrientation)
-            .build();
-
     public VisionSubsystem(HardwareMap hwMap, MatchSettings matchSettings) {
         this.matchSettings = matchSettings;
         webCam = hwMap.get(WebcamName.class, "Webcam 1");
+
+        tagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .setCameraPose(cameraPosition, cameraOrientation)
+                .build();
+
+        artifactProcessor = new ColorBlobLocatorProcessor.Builder()
+                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
+                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
+                .setDrawContours(true)
+                .setBoxFitColor(0)
+                .setCircleFitColor(Color.rgb(255, 255, 0))
+                .setBlurSize(5)
+                .setDilateSize(15)
+                .setErodeSize(15)
+                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
+                .build();
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // e.g. Some typical detection data using a Logitech C920 WebCam
@@ -77,10 +111,40 @@ public class VisionSubsystem {
         // Note: Decimation can be changed on-the-fly to adapt during a match.
         tagProcessor.setDecimation(1);
 
+//        visionPortal = new VisionPortal.Builder()
+//                .addProcessor(tagProcessor)
+//                .setCamera(webCam)
+//                .setCameraResolution(new Size(640, 480))
+//                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+//                .enableLiveView(true)
+//                .build();
+
+//        visionPortal_Artifact = new VisionPortal().Builder()
+//                .addProcessor(artifactProcessor)
+//                .setCamera(webCam)
+//                .setCameraResolution(new Size(320, 240))
+//                .build();
+    }
+
+    public void teleopFSM() {
+
+        switch (visionMode) {
+            case APRILTAG:
+                camRes = cameraResolutionTag;
+
+                if (matchSettings.getMotif() != MatchSettings.Motif.UNKNOWN) {
+                    scanMotifTagSequence();
+                }
+                break;
+            case ARTIFACT:
+                camRes = cameraResolutionArt;
+                break;
+        }
+
         visionPortal = new VisionPortal.Builder()
-                .addProcessor(tagProcessor)
+                .addProcessors(tagProcessor, artifactProcessor)
                 .setCamera(webCam)
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(camRes)
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .enableLiveView(true)
                 .build();
@@ -90,7 +154,7 @@ public class VisionSubsystem {
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
             if (tag.id == AprilTagEnums.BLUE_GOAL.getId()
-                    || tag.id == AprilTagEnums.RED_GOAL.getId()) {;
+                    || tag.id == AprilTagEnums.RED_GOAL.getId()) {
                 return true;
             }
         }
@@ -99,13 +163,20 @@ public class VisionSubsystem {
 
     public boolean isDetectingAnObeliskTag() {
         if (!tagProcessor.getDetections().isEmpty()) {
-            for (AprilTagDetection tag: tagProcessor.getDetections()) {
+            for (AprilTagDetection tag : tagProcessor.getDetections()) {
                 if (tag.id == AprilTagEnums.OBELISK_TAG_21.getId()
                         || tag.id == AprilTagEnums.OBELISK_TAG_22.getId()
                         || tag.id == AprilTagEnums.OBELISK_TAG_23.getId()) {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    public boolean isDetectingAnArtifact() {
+        if (!artifactProcessor.getBlobs().isEmpty()) {
+            return true;
         }
         return false;
     }
@@ -120,13 +191,10 @@ public class VisionSubsystem {
                 tag = detectedTag;
                 MatchSettings.visionState = MatchSettings.VisionState.MOTIF_DETECTED;
                 if (tag.id == AprilTagEnums.OBELISK_TAG_21.getId()) {
-                    motifTagSequence = AprilTagEnums.OBELISK_TAG_21.getDescription();
                     motif = MatchSettings.Motif.PPG;
                 } else if (tag.id == AprilTagEnums.OBELISK_TAG_22.getId()) {
-                    motifTagSequence = AprilTagEnums.OBELISK_TAG_22.getDescription();
                     motif = MatchSettings.Motif.PGP;
                 } else if (tag.id == AprilTagEnums.OBELISK_TAG_23.getId()) {
-                    motifTagSequence = AprilTagEnums.OBELISK_TAG_23.getDescription();
                     motif = MatchSettings.Motif.PPG;
                 }
                 matchSettings.setMotif(motif);
@@ -143,6 +211,35 @@ public class VisionSubsystem {
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
             return tag.ftcPose.bearing;
+        }
+        return 0;
+    }
+
+    public double getArtifactTurnPower() {
+        // Get the list of detected blobs
+        List<ColorBlobLocatorProcessor.Blob> blobs = artifactProcessor.getBlobs();
+
+        // Filter blobs by size and shape
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+                50, 20000, blobs);
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
+                0.6, 1.0, blobs);
+
+        // Check if any blobs were found
+        if (!blobs.isEmpty()) {
+            // Select the largest blob as the target
+            ColorBlobLocatorProcessor.Blob targetBlob = blobs.get(0);
+            Circle circleFit = targetBlob.getCircle();
+
+            // Calculate the horizontal error (160 is the middle of the 320pixel resolution)
+            double error = 160 - circleFit.getX();
+
+            // Calculate the turn power based on the error
+            // Multply by proportional gain for turning. A higher value means the robot will turn more aggressively.
+            double turnPower = error * 0.01;
+            return turnPower;
         }
         return 0;
     }
@@ -164,9 +261,9 @@ public class VisionSubsystem {
         return -1;
     }
 
-    public String getSequence() {
-        return motifTagSequence;
-    }
+    public VisionMode getVisionMode() { return visionMode; }
+
+    public void setVisionMode(VisionMode visionMode) { this.visionMode = visionMode; }
 
     /**============== AUTONOMOUS ACTIONS ==============**/
 

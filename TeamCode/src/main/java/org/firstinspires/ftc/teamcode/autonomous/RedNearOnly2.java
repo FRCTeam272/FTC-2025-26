@@ -175,6 +175,7 @@ public class RedNearOnly2 extends LinearOpMode {
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         new SequentialAction(
+                                intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMNear(),
                                 launcher.autoSpinUp(),
                                 //go to motif scan position and be still for 1 second

@@ -26,7 +26,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
  * It uses a ColorBlobLocatorProcessor to find the artifact and a simple
  * proportional control loop to steer the robot.
  */
-@Disabled
+//@Disabled
 @Autonomous(name = "Auto Drive to Artifact", group = "Concept")
 public class RobotAutoDriveToArtifact extends LinearOpMode {
 
@@ -77,7 +77,7 @@ public class RobotAutoDriveToArtifact extends LinearOpMode {
     public void runOpMode() {
         // --- VISION INITIALIZATION ---
         colorLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.ARTIFACT_GREEN )
+                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
                 .setDrawContours(true)
