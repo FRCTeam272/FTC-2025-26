@@ -98,7 +98,7 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
         }
 
         if (gamepad1.right_trigger > 0.1) {
-            vision.setVisionMode(VisionSubsystem.VisionMode.ARTIFACT);
+//            vision.setVisionMode(VisionSubsystem.VisionMode.ARTIFACT);
             //drive.setDriveMode(DriveSubsystemV2.DriveMode.LOCKED_ON_ARTIFACT);
         } else {
             vision.setVisionMode(VisionSubsystem.VisionMode.APRILTAG);
@@ -117,10 +117,10 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
             drive.runAutoAlignToTag(Math.toRadians(drive.getOtosBearingToGoal()), rb, lb, forward, strafe);
             MatchSettings.visionState = MatchSettings.VisionState.NONE;
         }
-        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.MANUAL  && vision.isDetectingAnArtifact()) {
-            drive.runManualMecanumDrive(rb, lb, forward,strafe, vision.getArtifactTurnPower(), false);
-            MatchSettings.visionState = MatchSettings.VisionState.ARTIFACT_DETECTED;
-        }
+//        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.MANUAL  && vision.isDetectingAnArtifact()) {
+//            drive.runManualMecanumDrive(rb, lb, forward,strafe, vision.getArtifactTurnPower(), false);
+//            MatchSettings.visionState = MatchSettings.VisionState.ARTIFACT_DETECTED;
+//        }
         else {
             drive.runManualMecanumDrive(rb, lb, forward, strafe, rotate, yButton);
             MatchSettings.visionState = MatchSettings.VisionState.NONE;

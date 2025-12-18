@@ -89,18 +89,18 @@ public class VisionSubsystem {
                 .setCameraPose(cameraPosition, cameraOrientation)
                 .build();
 
-        artifactProcessor = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
-                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
-                .setDrawContours(true)
-                .setBoxFitColor(0)
-                .setCircleFitColor(Color.rgb(255, 255, 0))
-                .setBlurSize(5)
-                .setDilateSize(15)
-                .setErodeSize(15)
-                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
-                .build();
+//        artifactProcessor = new ColorBlobLocatorProcessor.Builder()
+//                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
+//                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+//                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
+//                .setDrawContours(true)
+//                .setBoxFitColor(0)
+//                .setCircleFitColor(Color.rgb(255, 255, 0))
+//                .setBlurSize(5)
+//                .setDilateSize(15)
+//                .setErodeSize(15)
+//                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
+//                .build();
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // e.g. Some typical detection data using a Logitech C920 WebCam
@@ -111,13 +111,13 @@ public class VisionSubsystem {
         // Note: Decimation can be changed on-the-fly to adapt during a match.
         tagProcessor.setDecimation(1);
 
-//        visionPortal = new VisionPortal.Builder()
-//                .addProcessor(tagProcessor)
-//                .setCamera(webCam)
-//                .setCameraResolution(new Size(640, 480))
-//                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-//                .enableLiveView(true)
-//                .build();
+        visionPortal = new VisionPortal.Builder()
+                .addProcessor(tagProcessor)
+                .setCamera(webCam)
+                .setCameraResolution(new Size(640, 480))
+                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                .enableLiveView(true)
+                .build();
 
 //        visionPortal_Artifact = new VisionPortal().Builder()
 //                .addProcessor(artifactProcessor)
@@ -141,13 +141,13 @@ public class VisionSubsystem {
                 break;
         }
 
-        visionPortal = new VisionPortal.Builder()
-                .addProcessors(tagProcessor, artifactProcessor)
-                .setCamera(webCam)
-                .setCameraResolution(camRes)
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .enableLiveView(true)
-                .build();
+//        visionPortal = new VisionPortal.Builder()
+//                .addProcessor(tagProcessor)
+//                .setCamera(webCam)
+//                .setCameraResolution(camRes)
+//                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+//                .enableLiveView(true)
+//                .build();
     }
 
     public boolean isDetectingAGoalTag() {
@@ -174,12 +174,12 @@ public class VisionSubsystem {
         return false;
     }
 
-    public boolean isDetectingAnArtifact() {
-        if (!artifactProcessor.getBlobs().isEmpty()) {
-            return true;
-        }
-        return false;
-    }
+//    public boolean isDetectingAnArtifact() {
+//        if (!artifactProcessor.getBlobs().isEmpty()) {
+//            return true;
+//        }
+//        return false;
+//    }
 
 
     public void scanMotifTagSequence() {
@@ -215,34 +215,34 @@ public class VisionSubsystem {
         return 0;
     }
 
-    public double getArtifactTurnPower() {
-        // Get the list of detected blobs
-        List<ColorBlobLocatorProcessor.Blob> blobs = artifactProcessor.getBlobs();
-
-        // Filter blobs by size and shape
-        ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                50, 20000, blobs);
-        ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
-                0.6, 1.0, blobs);
-
-        // Check if any blobs were found
-        if (!blobs.isEmpty()) {
-            // Select the largest blob as the target
-            ColorBlobLocatorProcessor.Blob targetBlob = blobs.get(0);
-            Circle circleFit = targetBlob.getCircle();
-
-            // Calculate the horizontal error (160 is the middle of the 320pixel resolution)
-            double error = 160 - circleFit.getX();
-
-            // Calculate the turn power based on the error
-            // Multply by proportional gain for turning. A higher value means the robot will turn more aggressively.
-            double turnPower = error * 0.01;
-            return turnPower;
-        }
-        return 0;
-    }
+//    public double getArtifactTurnPower() {
+//        // Get the list of detected blobs
+//        List<ColorBlobLocatorProcessor.Blob> blobs = artifactProcessor.getBlobs();
+//
+//        // Filter blobs by size and shape
+//        ColorBlobLocatorProcessor.Util.filterByCriteria(
+//                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+//                50, 20000, blobs);
+//        ColorBlobLocatorProcessor.Util.filterByCriteria(
+//                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
+//                0.6, 1.0, blobs);
+//
+//        // Check if any blobs were found
+//        if (!blobs.isEmpty()) {
+//            // Select the largest blob as the target
+//            ColorBlobLocatorProcessor.Blob targetBlob = blobs.get(0);
+//            Circle circleFit = targetBlob.getCircle();
+//
+//            // Calculate the horizontal error (160 is the middle of the 320pixel resolution)
+//            double error = 160 - circleFit.getX();
+//
+//            // Calculate the turn power based on the error
+//            // Multply by proportional gain for turning. A higher value means the robot will turn more aggressively.
+//            double turnPower = error * 0.01;
+//            return turnPower;
+//        }
+//        return 0;
+//    }
 
     public SparkFunOTOS.Pose2D getCurrentPose() {
         AprilTagDetection tag = tagProcessor.getDetections().get(0);
