@@ -98,10 +98,8 @@ public class DriveSubsystemV2 {
 
         if (alliance == MatchSettings.AllianceColor.BLUE) {
             allianceSteering = -1;
-            correctedYaw = 270;
         } else {
             allianceSteering = 1;
-            correctedYaw = 90;
         }
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -141,23 +139,23 @@ public class DriveSubsystemV2 {
         }
 
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
-        SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, correctedYaw); // Baseline 0 degree
+        //SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, correctedYaw); // Baseline 0 degree
 
         // Reset the yaw if the user requests it
         if (yButton) {
             rev_imu.resetYaw();
-            myOtos.setPosition(resetYawPos);
+//            myOtos.setPosition(resetYawPos);
         }
 
         //orientation = rev_imu.getRobotYawPitchRollAngles();
 
-        //double botHeading = rev_imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        double botHeading = Math.toRadians(pos.h);
+        double botHeading = rev_imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+//        double botHeading = Math.toRadians(pos.h);
 
         double rotX = strafe * Math.cos(-botHeading) - forward * Math.sin(-botHeading);
         double rotY = strafe * Math.sin(-botHeading) + forward * Math.cos(-botHeading);
 
-        rotX = rotX * 1.1;
+//        rotX = rotX * 1.1; // does commenting out this speed up turns?
 
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rotate), 1);
         double frontLeftPower = (rotY + rotX + rotate) / denominator;

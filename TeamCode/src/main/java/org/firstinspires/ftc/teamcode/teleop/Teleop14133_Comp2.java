@@ -81,9 +81,9 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
     public void runToggledDrive() {
         boolean rb = gamepad1.right_bumper;
         boolean lb = gamepad1.left_bumper;
-        double forward = -gamepad1.left_stick_y * allianceSteering;
+        double forward = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
-        double rotate = gamepad1.right_stick_x * 1.1; // ! ADJUST TURNING SENSITIVITY HERE ! //
+        double rotate = gamepad1.right_stick_x; // * 1.1; // ! ADJUST TURNING SENSITIVITY HERE ! //
         boolean yButton = gamepad1.y;
 
         boolean lockPressed = gamepad1.right_stick_button;
@@ -97,12 +97,12 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
             lockPrevPressed = true;
         }
 
-        if (gamepad1.right_trigger > 0.1) {
-//            vision.setVisionMode(VisionSubsystem.VisionMode.ARTIFACT);
-            //drive.setDriveMode(DriveSubsystemV2.DriveMode.LOCKED_ON_ARTIFACT);
-        } else {
-            vision.setVisionMode(VisionSubsystem.VisionMode.APRILTAG);
-        }
+//        if (gamepad1.right_trigger > 0.1) {
+////            vision.setVisionMode(VisionSubsystem.VisionMode.ARTIFACT);
+//            //drive.setDriveMode(DriveSubsystemV2.DriveMode.LOCKED_ON_ARTIFACT);
+//        } else {
+//            vision.setVisionMode(VisionSubsystem.VisionMode.APRILTAG);
+//        }
 
 
         if (!lockPressed && lockPrevPressed) {

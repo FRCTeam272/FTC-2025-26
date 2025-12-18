@@ -19,6 +19,9 @@ public class LauncherSubsystemV2 {
     private DcMotorEx launcherRight;
     private DcMotorEx launcherLeft;
 
+    Gamepad currentGamepad2 = new Gamepad();
+    Gamepad previousGamepad2 = new Gamepad();
+
     // --- Shooter Constants ---
     public static double TARGET_RPM = 2500.0;         // desired launcher RPM
     private static double MOTOR_RPM = 6000;          // motor RPM (based on max motor rpm)
@@ -90,19 +93,34 @@ public class LauncherSubsystemV2 {
     }
 
     public void teleopFSM(Gamepad gamepad2){
+
+        previousGamepad2.copy(currentGamepad2);
+        currentGamepad2.copy(gamepad2);
+
+        if(currentGamepad2.right_trigger >= 0.3 && previousGamepad2.right_trigger < 0.3) {
+            setTargetRPM(getTargetRPM() + 50);
+            spinUp();
+        }
+
+        if(currentGamepad2.left_trigger >= 0.3 && previousGamepad2.left_trigger < 0.3) {
+            setTargetRPM(getTargetRPM() - 50);
+            spinUp();
+        }
+
+
         switch (MatchSettings.launcherState) {
             case STOPPED:
-                if(gamepad2.y) {
+                if(currentGamepad2.y) {
                     spinUp();
                     setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
                     MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
                 }
-                else if(gamepad2.b) {
+                else if(currentGamepad2.b) {
                     spinUp();
                     setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
                     MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
                 }
-                else if(gamepad2.a) {
+                else if(currentGamepad2.a) {
                     spinUp();
                     setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
                     MatchSettings.launcherState= MatchSettings.LauncherState.SPINNING;
@@ -110,19 +128,19 @@ public class LauncherSubsystemV2 {
                 break;
 
             case SPINNING:
-                if(gamepad2.x){
+                if(currentGamepad2.x){
                     eStop();
                     MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
                 }
-                else if(gamepad2.y){
+                else if(currentGamepad2.y){
                     setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
                     spinUp();
                 }
-                else if(gamepad2.b){
+                else if(currentGamepad2.b){
                     setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
                     spinUp();
                 }
-                else if(gamepad2.a){
+                else if(currentGamepad2.a){
                     setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
                     spinUp();
                 }
