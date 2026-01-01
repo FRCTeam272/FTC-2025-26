@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Config
+
 @Autonomous (name="RedFarDoNothing", group="Auto")
 public class RedFarDoNothing extends LinearOpMode {
 

@@ -70,10 +70,14 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
         telemetry.addData("Otos X Coordinates", drive.getOtosPose().x);
         telemetry.addData("Otos Y Coordinates", drive.getOtosPose().y);
         telemetry.addData("Otos H Coordinates", drive.getOtosPose().h);
+        telemetry.addData("Otos Bearing to Goal", drive.getOtosBearingToGoal());
+        telemetry.addData("Otos Range to Goal", drive.getOtosRangeToGoal());
         telemetry.addData("Vision Pose X", vision.getCurrentPose().x);
         telemetry.addData("Vision Pose Y", vision.getCurrentPose().y);
         telemetry.addData("Vision Pose H", vision.getCurrentPose().h);
-        telemetry.addLine("Is this thing working?");
+        telemetry.addData("Vision Bearing to Goal", vision.getTagBearing());
+        telemetry.addData("Vision Range to Goal", vision.getTagRange());
+
         telemetry.update();
 
         runToggledDrive();

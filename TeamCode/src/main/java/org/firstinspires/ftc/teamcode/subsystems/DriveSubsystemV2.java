@@ -194,8 +194,8 @@ public class DriveSubsystemV2 {
 
     public double getOtosBearingToGoal() {
 
-        double goalX = 72 * allianceSteering; // negative if Blue
-        double goalY = 72;
+        double goalX = -58.37;
+        double goalY = 55.64 * allianceSteering; // negative if blue
         SparkFunOTOS.Pose2D pose = myOtos.getPosition();
 
         double dx = goalX - pose.x;
@@ -204,6 +204,20 @@ public class DriveSubsystemV2 {
         double desiredBearing = Math.toDegrees(Math.atan2(dy, dx));
 
         return desiredBearing - pose.h; //in Degrees
+    }
+
+    public double getOtosRangeToGoal() {
+
+        double goalX = -58.37;
+        double goalY = 55.64 * allianceSteering; // negative if blue
+        SparkFunOTOS.Pose2D pose = myOtos.getPosition();
+
+        double dx = goalX - pose.x;
+        double dy = goalY - pose.y;
+
+        double range = Math.sqrt((dx*dx)+(dy*dy));
+
+        return range; //in Degrees
     }
 
     public void setCurrentPose(SparkFunOTOS.Pose2D currentPose) {

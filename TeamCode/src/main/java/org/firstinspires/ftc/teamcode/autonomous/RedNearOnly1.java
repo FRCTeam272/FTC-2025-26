@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Config
+
 @Autonomous (name="RedNearOnly1", group="Auto")
 public class RedNearOnly1 extends LinearOpMode {
 

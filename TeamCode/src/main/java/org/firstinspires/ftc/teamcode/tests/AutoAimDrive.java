@@ -35,7 +35,7 @@ public static double headingToBlueGoal(Pose2d pose) {
 @Override
     public void init() {
 
-    Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(270));
+    Pose2d beginPose = new Pose2d(0, -24, Math.toRadians(270));
     MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
     double fastpower = 1;

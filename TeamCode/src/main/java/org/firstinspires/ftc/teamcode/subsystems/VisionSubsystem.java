@@ -25,7 +25,9 @@ import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class VisionSubsystem {
 
@@ -46,6 +48,15 @@ public class VisionSubsystem {
     public WebcamName webCam;
     public final MatchSettings matchSettings;
     public static MatchSettings.Motif motif = MatchSettings.Motif.UNKNOWN;
+
+    //Moving average code for detections
+    MovingAverage xFilter = new MovingAverage(10); //averages last 10 readings
+    MovingAverage yFilter = new MovingAverage(10);
+    MovingAverage hFilter = new MovingAverage(10);
+    double smoothedX = xFilter.getAverage();
+    double smoothedY = yFilter.getAverage();
+    double smoothedH = hFilter.getAverage();
+
     VisionPortal visionPortal;
 
     /**
@@ -124,6 +135,8 @@ public class VisionSubsystem {
 //                .setCamera(webCam)
 //                .setCameraResolution(new Size(320, 240))
 //                .build();
+
+
     }
 
     public void teleopFSM() {
@@ -148,6 +161,18 @@ public class VisionSubsystem {
 //                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
 //                .enableLiveView(true)
 //                .build();
+
+        //Constantly updates Moving Average for detections
+        if (!tagProcessor.getDetections().isEmpty()) {
+            AprilTagDetection tag = tagProcessor.getDetections().get(0);
+            double poseX = tag.robotPose.getPosition().x;
+            double poseY = tag.robotPose.getPosition().y;
+            double poseH = Math.toDegrees(tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES));
+            xFilter.addReading(poseX);
+            yFilter.addReading(poseY);
+            hFilter.addReading(poseH);
+        }
+
     }
 
     public boolean isDetectingAGoalTag() {
@@ -246,11 +271,12 @@ public class VisionSubsystem {
 
     public SparkFunOTOS.Pose2D getCurrentPose() {
         if (!tagProcessor.getDetections().isEmpty()) {
-        AprilTagDetection tag = tagProcessor.getDetections().get(0);
-        double poseX = tag.robotPose.getPosition().x;
-        double poseY = tag.robotPose.getPosition().y;
-        double poseH = Math.toDegrees(tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES));
-        SparkFunOTOS.Pose2D currentPose = new SparkFunOTOS.Pose2D(poseX, poseY, poseH);
+//        AprilTagDetection tag = tagProcessor.getDetections().get(0);
+//        double poseX = tag.robotPose.getPosition().x;
+//        double poseY = tag.robotPose.getPosition().y;
+//        double poseH = Math.toDegrees(tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES));
+//        SparkFunOTOS.Pose2D currentPose = new SparkFunOTOS.Pose2D(poseX, poseY, poseH);
+            SparkFunOTOS.Pose2D currentPose = new SparkFunOTOS.Pose2D(smoothedX,smoothedY,smoothedH);
         return currentPose;}
         else { return new SparkFunOTOS.Pose2D(500,0,0);}
     }
@@ -265,6 +291,38 @@ public class VisionSubsystem {
     public VisionMode getVisionMode() { return visionMode; }
 
     public void setVisionMode(VisionMode visionMode) { this.visionMode = visionMode; }
+
+    public class MovingAverage { //filter for vision readings
+        private Queue<Double> readings = new LinkedList<>();
+        private int windowSize;
+        private double sum = 0.0;
+
+        public MovingAverage(int size) {
+            this.windowSize = size;
+        }
+
+        public void addReading(double value) {
+            readings.add(value);
+            sum += value;
+            if (readings.size() > windowSize) {
+                sum -= readings.poll(); // poll() removes and returns the head of the queue
+            }
+        }
+
+        public double getAverage() {
+            if (readings.isEmpty()) {
+                return 0.0;
+            }
+            return sum / readings.size();
+        }
+
+        // In your Robot TeleOp or Autonomous:
+        // MovingAverage distanceFilter = new MovingAverage(5); // Averages last 5 readings
+        // double currentDistance = ...; // Get sensor reading
+        // distanceFilter.addReading(currentDistance);
+        // double smoothedDistance = distanceFilter.getAverage();
+        // // Use smoothedDistance for decisions
+    }
 
     /**============== AUTONOMOUS ACTIONS ==============**/
 

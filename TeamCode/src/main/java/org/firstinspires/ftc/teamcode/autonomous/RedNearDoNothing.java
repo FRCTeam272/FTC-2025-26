@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Config
+
 @Autonomous (name="RedNearDoNothing", group="Auto")
 public class RedNearDoNothing extends LinearOpMode {
 

@@ -58,8 +58,8 @@ public class FieldCentricOtos extends OpMode {
             fastpower = 2;
         }
 
-        double forward = -gamepad1.left_stick_x / fastpower; //inverted x-axis because on the field x is forward
-        double strafe = -gamepad1.left_stick_y / fastpower;  //inverted y-axis because it's always inv & strafing on field is y
+        double forward = gamepad1.left_stick_y / fastpower; //inverted x-axis because on the field x is forward
+        double strafe = gamepad1.left_stick_x / fastpower;  //inverted x-axis because it's always inv & strafing on field is y
         double rotate = gamepad1.right_stick_x / fastpower;
 
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
