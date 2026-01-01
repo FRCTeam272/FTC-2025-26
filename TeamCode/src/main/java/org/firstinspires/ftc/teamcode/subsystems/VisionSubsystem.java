@@ -245,12 +245,14 @@ public class VisionSubsystem {
 //    }
 
     public SparkFunOTOS.Pose2D getCurrentPose() {
+        if (!tagProcessor.getDetections().isEmpty()) {
         AprilTagDetection tag = tagProcessor.getDetections().get(0);
         double poseX = tag.ftcPose.x;
         double poseY = tag.ftcPose.y;
         double poseH = Math.toDegrees(tag.ftcPose.bearing);
         SparkFunOTOS.Pose2D currentPose = new SparkFunOTOS.Pose2D(poseX, poseY, poseH);
-        return currentPose;
+        return currentPose;}
+        else { return new SparkFunOTOS.Pose2D(100,0,0);}
     }
 
     public double getTagRange() {

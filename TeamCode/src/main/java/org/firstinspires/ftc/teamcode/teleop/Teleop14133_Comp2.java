@@ -4,6 +4,7 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
@@ -39,6 +40,7 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
         MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
         alliance = matchSettings.getAllianceColor();
 
+
         if (alliance == MatchSettings.AllianceColor.BLUE) {
             allianceSteering = -1;
         } else {
@@ -65,12 +67,21 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
 
     @Override
     public void onLoop() {
-        runToggledDrive();
+        telemetry.addData("Otos X Coordinates", drive.getOtosPose().x);
+        telemetry.addData("Otos Y Coordinates", drive.getOtosPose().y);
+        telemetry.addData("Vision Pose X", vision.getCurrentPose().x);
+        telemetry.addData("Vision Pose Y", vision.getCurrentPose().y);
+        telemetry.addLine("Is this thing working?");
+        telemetry.update();
+
+        //runToggledDrive();
 
         intake.teleopFSM(gamepad2);
         launcher.teleopFSM(gamepad2);
         vision.teleopFSM();
         leds.update();
+
+
     }
 
     @Override
@@ -137,7 +148,6 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
             localizationTimer.reset();
         }
 
-        telemetry.addData("Otos Coordinates", drive.getOtosPose());
-        telemetry.addData("Vision Pose", vision.getCurrentPose());
+
     }
 }
