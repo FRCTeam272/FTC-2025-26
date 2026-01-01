@@ -9,13 +9,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-@Disabled
+//@Disabled
 @TeleOp (name = "LauncherPIDTest", group = "Tests")
 public class LauncherPIDTest extends CommandOpMode {
 
-    LauncherSubsystemV2 launcher;
+    LauncherSubsystemV3 launcher;
     private FtcDashboard dash;
     TelemetryPacket packet = new TelemetryPacket();
     MatchSettings matchSettings;
@@ -26,7 +27,7 @@ public class LauncherPIDTest extends CommandOpMode {
         dash = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
 
-        launcher = new LauncherSubsystemV2(hardwareMap, telemetry, matchSettings);
+        launcher = new LauncherSubsystemV3(hardwareMap, telemetry, matchSettings);
 
         telemetry.addLine("init done");
         telemetry.update();
@@ -36,13 +37,9 @@ public class LauncherPIDTest extends CommandOpMode {
     /**
      * Sets launcher PIDF coefficients manually in LauncherSubsystem Configs
      * Dashboard address - 192.168.43.1:8080/dash
-     * kf - Set to a low value, just enough that the launcher wheel
-     *           begins to rotate
-     * kp - Increase kP after kF until the launcher wheel reaches the target speed
-     * kd - Try changing the target speed of the launcher from a low value
-     *           to a high value and vise versa. Use this to reduce the
-     *           oscillations when changing speeds
-     * ki - Most times this won't need to be tuned
+     * Tune F first! Increase F until it reaches target velocity. BP set his at 14.098. Consider setting for each target velocity
+     * Next Tune P. Want it to quickly move between velocities. Keep increasing until it overshoots and hten bring it down slightly.
+     * Test by switching between TargetRPMs (BP did 274)
      */
 
     @Override
@@ -50,8 +47,7 @@ public class LauncherPIDTest extends CommandOpMode {
         super.run();
 
         launcher.applyPIDF();
-        launcher.spinUp();
-
+        launcher.printTelemetry(telemetry);
 
         packet.put("target_launcher_rpm", launcher.getTargetRPM());
         packet.put("current_launcher_rpm", launcher.getLauncherRPM());

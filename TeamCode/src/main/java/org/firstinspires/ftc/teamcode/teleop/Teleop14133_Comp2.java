@@ -113,7 +113,11 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
             drive.runAutoAlignToTag(Math.toRadians(vision.getTagBearing()), rb, lb, forward, strafe);
             MatchSettings.visionState = MatchSettings.VisionState.GOAL_DETECTED;
         }
-        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.LOCKED_ON_GOAL && !vision.isDetectingAGoalTag()) {
+//        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.LOCKED_ON_GOAL && !vision.isDetectingAGoalTag()) {
+//            drive.runAutoAlignToTag(Math.toRadians(drive.getOtosBearingToGoal()), rb, lb, forward, strafe);
+//            MatchSettings.visionState = MatchSettings.VisionState.NONE;
+//        }
+        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.LOCKED_ON_GOAL) {
             drive.runAutoAlignToTag(Math.toRadians(drive.getOtosBearingToGoal()), rb, lb, forward, strafe);
             MatchSettings.visionState = MatchSettings.VisionState.NONE;
         }
@@ -132,5 +136,8 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
             drive.setCurrentPose(currentPose);
             localizationTimer.reset();
         }
+
+        telemetry.addData("Otos Coordinates", drive.getOtosPose());
+        telemetry.addData("Vision Pose", vision.getCurrentPose());
     }
 }

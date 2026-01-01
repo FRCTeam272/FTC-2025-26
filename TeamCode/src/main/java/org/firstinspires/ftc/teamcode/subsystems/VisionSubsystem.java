@@ -257,8 +257,7 @@ public class VisionSubsystem {
         if (!tagProcessor.getDetections().isEmpty()) {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
             return tag.ftcPose.range;
-        }
-        return -1;
+        } else { return -1;}
     }
 
     public VisionMode getVisionMode() { return visionMode; }

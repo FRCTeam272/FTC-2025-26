@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
@@ -14,7 +15,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
 
     public MatchSettings matchSettings;
     private IntakeSubsystemV2 intake;
-    private LauncherSubsystemV2 launcher;
+    private LauncherSubsystemV3 launcher;
     private LEDSubsystem leds;
     private VisionSubsystem vision;
 
@@ -22,29 +23,28 @@ public class FeedandLaunch extends SampleCommandTeleop {
     public void onInit() {
         matchSettings = new MatchSettings(blackboard);
         intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
-        launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);
+        launcher = new LauncherSubsystemV3(hardwareMap, telemetry,matchSettings);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
         vision = new VisionSubsystem(hardwareMap, matchSettings);
     }
 
     @Override
     public void onStart() {
-        launcher.setTargetRPM(1750);
+        launcher.setTargetRPM(1000);
     }
 
     @Override
     public void onLoop() {
 
-        if(gamepad1.dpad_up){
-            launcher.setTargetRPM(launcher.getTargetRPM() + 10);
+        if(gamepad1.dpadUpWasReleased()){
+            launcher.setTargetRPM(launcher.getTargetRPM() + 25);
         }
 
-        if(gamepad1.dpad_down) {
-            launcher.setTargetRPM(launcher.getTargetRPM() - 10);
+        if(gamepad1.dpadDownWasReleased()) {
+            launcher.setTargetRPM(launcher.getTargetRPM() - 25);
         }
 
         if(gamepad1.dpad_left) {
-            launcher.spinUp();
             MatchSettings.launcherState = MatchSettings.LauncherState.SPINNING;
         }
 
@@ -66,11 +66,17 @@ public class FeedandLaunch extends SampleCommandTeleop {
             intake.stopTransfer();
             MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
+
+        if (MatchSettings.launcherState != MatchSettings.LauncherState.STOPPED) {
+            launcher.applyPIDF();
+        }
         //telemetry.addData("Range to AprilTag", vision.getTagRange());
 
         //intake.printTelemetry(telemetry);
+        telemetry.addData("TagRange",vision.getTagRange());
         launcher.printTelemetry(telemetry);
         telemetry.addData("Beambreak", intake.artifactLaunched());
+
 
         leds.update();
 

@@ -207,6 +207,10 @@ public class DriveSubsystemV2 {
         myOtos.setPosition(currentPose);
     }
 
+    public SparkFunOTOS.Pose2D getOtosPose() {
+        return myOtos.getPosition();
+    }
+
     /**
      * Otos Configuration Code
      */
