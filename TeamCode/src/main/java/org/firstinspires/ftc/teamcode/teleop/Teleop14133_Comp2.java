@@ -142,10 +142,13 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
         }
 
         // Resets localization to Otos on occasion (test for future use in running launcher RPM)
-        if(vision.isDetectingAGoalTag() && gamepad1.a) {
+        if(vision.isDetectingAGoalTag() && gamepad1.aWasPressed()) {
             SparkFunOTOS.Pose2D currentPose = vision.getCurrentPose();
-            drive.setCurrentPose(currentPose);
-            localizationTimer.reset();
+            if (currentPose.x != 500) {
+                drive.setCurrentPose(currentPose);
+                localizationTimer.reset();
+                telemetry.addLine("ReLocalized!");
+            }
         }
 
 
