@@ -26,7 +26,7 @@ public class LauncherSubsystemV3 {
     Gamepad previousGamepad2 = new Gamepad();
 
     // --- Launcher Constants ---
-    public static double TARGET_RPM = 1500.0;         // desired launcher RPM
+    public static double TARGET_RPM = 0;         // desired launcher RPM
 
     // --- PIDF Coefficients ---
     public static double F = 0; //feedforward tune first!
