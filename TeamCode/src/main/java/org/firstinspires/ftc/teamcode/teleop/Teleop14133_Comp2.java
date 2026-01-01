@@ -69,12 +69,14 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
     public void onLoop() {
         telemetry.addData("Otos X Coordinates", drive.getOtosPose().x);
         telemetry.addData("Otos Y Coordinates", drive.getOtosPose().y);
+        telemetry.addData("Otos H Coordinates", drive.getOtosPose().h);
         telemetry.addData("Vision Pose X", vision.getCurrentPose().x);
         telemetry.addData("Vision Pose Y", vision.getCurrentPose().y);
+        telemetry.addData("Vision Pose H", vision.getCurrentPose().h);
         telemetry.addLine("Is this thing working?");
         telemetry.update();
 
-        //runToggledDrive();
+        runToggledDrive();
 
         intake.teleopFSM(gamepad2);
         launcher.teleopFSM(gamepad2);

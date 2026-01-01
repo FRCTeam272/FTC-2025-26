@@ -145,7 +145,7 @@ public class DriveSubsystemV2 {
         // Reset the yaw if the user requests it
         if (yButton) {
             rev_imu.resetYaw();
-//            myOtos.setPosition(resetYawPos);
+
         }
 
         //orientation = rev_imu.getRobotYawPitchRollAngles();
