@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
@@ -29,7 +30,7 @@ public class BlueNearOnly2 extends LinearOpMode {
     private MatchSettings matchSettings;
 
     private MecanumDrive drive;
-    private LauncherSubsystemV2 launcher;
+    private LauncherSubsystemV3 launcher;
     private IntakeSubsystemV2 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
@@ -91,7 +92,7 @@ public class BlueNearOnly2 extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
         drive.localizer.setPose(StartPose);
 
-        LauncherSubsystemV2 launcher = new LauncherSubsystemV2(hardwareMap, telemetry, matchSettings);
+        LauncherSubsystemV3 launcher = new LauncherSubsystemV3(hardwareMap, telemetry, matchSettings);
         IntakeSubsystemV2 intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
         VisionSubsystem vision = new VisionSubsystem(hardwareMap,matchSettings);
         LEDSubsystem leds = new LEDSubsystem(hardwareMap,matchSettings);
@@ -174,10 +175,10 @@ public class BlueNearOnly2 extends LinearOpMode {
                 new ParallelAction( //leds update during entire auto & vision scans until it saves the motif - run in parallel to everything else
                         leds.updateAuto(),
                         vision.autoScanMotif(),
+                        launcher.autoSpinUp(),
                         new SequentialAction(
                                 intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMNear(),
-                                launcher.autoSpinUp(),
                                 //go to motif scan position and be still for 1 second
                                 GoToMotifScan,
                                 new SleepAction(0.5),

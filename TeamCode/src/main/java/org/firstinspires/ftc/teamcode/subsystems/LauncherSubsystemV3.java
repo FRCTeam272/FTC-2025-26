@@ -29,8 +29,8 @@ public class LauncherSubsystemV3 {
     public static double TARGET_RPM = 0;         // desired launcher RPM
 
     // --- PIDF Coefficients ---
-    public static double F = 0; //feedforward tune first!
-    public static double P = 0;
+    public static double F = 16.5; //feedforward tune first!
+    public static double P = 8;
 
     public LauncherSubsystemV3(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
 
@@ -60,12 +60,12 @@ public class LauncherSubsystemV3 {
         currentGamepad2.copy(gamepad2);
 
         if(currentGamepad2.right_trigger >= 0.3 && previousGamepad2.right_trigger < 0.3) {
-            setTargetRPM(getTargetRPM() + 50);
+            setTargetRPM(getTargetRPM() + 25);
 
         }
 
         if(currentGamepad2.left_trigger >= 0.3 && previousGamepad2.left_trigger < 0.3) {
-            setTargetRPM(getTargetRPM() - 50);
+            setTargetRPM(getTargetRPM() - 25);
 
         }
 
