@@ -67,11 +67,11 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
 
     @Override
     public void onLoop() {
-        telemetry.addData("Otos X Coordinates", drive.getOtosPose().x);
-        telemetry.addData("Otos Y Coordinates", drive.getOtosPose().y);
-        telemetry.addData("Otos H Coordinates", drive.getOtosPose().h);
-        telemetry.addData("Otos Bearing to Goal", drive.getOtosBearingToGoal());
-        telemetry.addData("Otos Range to Goal", drive.getOtosRangeToGoal());
+//        telemetry.addData("Otos X Coordinates", drive.getOtosPose().x);
+//        telemetry.addData("Otos Y Coordinates", drive.getOtosPose().y);
+//        telemetry.addData("Otos H Coordinates", drive.getOtosPose().h);
+//        telemetry.addData("Otos Bearing to Goal", drive.getOtosBearingToGoal());
+//        telemetry.addData("Otos Range to Goal", drive.getOtosRangeToGoal());
         telemetry.addData("Vision Pose X", vision.getCurrentPose().x);
         telemetry.addData("Vision Pose Y", vision.getCurrentPose().y);
         telemetry.addData("Vision Pose H", vision.getCurrentPose().h);
@@ -134,10 +134,10 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
 //            drive.runAutoAlignToTag(Math.toRadians(drive.getOtosBearingToGoal()), rb, lb, forward, strafe);
 //            MatchSettings.visionState = MatchSettings.VisionState.NONE;
 //        }
-        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.LOCKED_ON_GOAL) {
-            drive.runAutoAlignToTag(Math.toRadians(drive.getOtosBearingToGoal()), rb, lb, forward, strafe);
-            MatchSettings.visionState = MatchSettings.VisionState.NONE;
-        }
+//        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.LOCKED_ON_GOAL) {
+//            drive.runAutoAlignToTag(Math.toRadians(drive.getOtosBearingToGoal()), rb, lb, forward, strafe);
+//            MatchSettings.visionState = MatchSettings.VisionState.NONE;
+//        }
 //        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.MANUAL  && vision.isDetectingAnArtifact()) {
 //            drive.runManualMecanumDrive(rb, lb, forward,strafe, vision.getArtifactTurnPower(), false);
 //            MatchSettings.visionState = MatchSettings.VisionState.ARTIFACT_DETECTED;

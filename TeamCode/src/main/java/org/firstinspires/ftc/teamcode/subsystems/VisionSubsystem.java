@@ -271,13 +271,13 @@ public class VisionSubsystem {
 
     public SparkFunOTOS.Pose2D getCurrentPose() {
         if (!tagProcessor.getDetections().isEmpty()) {
-//        AprilTagDetection tag = tagProcessor.getDetections().get(0);
-//        double poseX = tag.robotPose.getPosition().x;
-//        double poseY = tag.robotPose.getPosition().y;
-//        double poseH = Math.toDegrees(tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES));
-//        SparkFunOTOS.Pose2D currentPose = new SparkFunOTOS.Pose2D(poseX, poseY, poseH);
-            SparkFunOTOS.Pose2D currentPose = new SparkFunOTOS.Pose2D(smoothedX,smoothedY,smoothedH);
-        return currentPose;}
+        AprilTagDetection tag = tagProcessor.getDetections().get(0);
+            double poseX = tag.robotPose.getPosition().x;
+            double poseY = tag.robotPose.getPosition().y;
+            double poseH = Math.toDegrees(tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES));
+            return new SparkFunOTOS.Pose2D(poseX, poseY, poseH);
+//            return new SparkFunOTOS.Pose2D(smoothedX, smoothedY, smoothedH);
+        }
         else { return new SparkFunOTOS.Pose2D(500,0,0);}
     }
 
@@ -292,7 +292,7 @@ public class VisionSubsystem {
 
     public void setVisionMode(VisionMode visionMode) { this.visionMode = visionMode; }
 
-    public class MovingAverage { //filter for vision readings
+    public static class MovingAverage { //filter for vision readings
         private Queue<Double> readings = new LinkedList<>();
         private int windowSize;
         private double sum = 0.0;

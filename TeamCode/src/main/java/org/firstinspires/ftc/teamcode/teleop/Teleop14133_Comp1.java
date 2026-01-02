@@ -62,6 +62,9 @@ public class Teleop14133_Comp1 extends SampleCommandTeleop {
         intake.teleopFSM(gamepad2);
         launcher.teleopFSM(gamepad2);
         leds.update();
+
+        telemetry.addData("launcher speed", launcher.getLauncherRPM());
+        telemetry.update();
     }
 
     @Override
