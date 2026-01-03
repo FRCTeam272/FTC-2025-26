@@ -174,7 +174,7 @@ public class LauncherSubsystemV3 {
 
     public boolean isAtTargetSpeed() {
         //return ((getLauncherRPM() > (getTargetRPM() - 75)) && (getLauncherRPM() < (getTargetRPM() + 75)) && getLauncherRPM() != 0);
-        return (launcherSpeedFilter.getAverage() > (getTargetRPM() - 50)) && (launcherSpeedFilter.getAverage() < (getTargetRPM() + 50)) && getLauncherRPM() != 0);
+        return (launcherSpeedFilter.getAverage() > (getTargetRPM() - 50) && (launcherSpeedFilter.getAverage() < (getTargetRPM() + 50)) && getLauncherRPM() != 0);
     }
 
     public boolean isNotAtTargetSpeed() {
@@ -212,7 +212,7 @@ public class LauncherSubsystemV3 {
     public class AutoSetRPMFar implements Action {
         @Override
         public boolean run (@NonNull TelemetryPacket packet) {
-            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
+            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM - 75);
             return false;
         }
     }
@@ -224,7 +224,7 @@ public class LauncherSubsystemV3 {
     public class AutoSetRPMNear implements Action {
         @Override
         public boolean run (@NonNull TelemetryPacket packet) {
-            setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM);
+            setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM + 85);
             return false;
         }
     }

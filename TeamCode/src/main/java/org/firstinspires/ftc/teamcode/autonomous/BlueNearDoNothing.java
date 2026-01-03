@@ -41,7 +41,7 @@ public class BlueNearDoNothing extends LinearOpMode {
 
     // End auto off a launch line, facing away from Driver
     double endX = -55;
-    double endY = -15;
+    double endY = -20;
     double endH = Math.toRadians(180);
 
     @Override

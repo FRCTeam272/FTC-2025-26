@@ -51,18 +51,18 @@ public class BlueNearOnly1 extends LinearOpMode {
     double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
 
     // Go to Pickup Load1 Start
-    double load1X = -8;
+    double load1X = -6;
     double load1Y = -30;
     double load1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -8;
+    double getload1X = -6;
     double getload1Y = -63;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
-    double endX = -20;
-    double endY = -36;
+    double endX = -52;
+    double endY = -20;
     double endH = Math.toRadians(270); //Red=90, Blue = 270
 
     @Override
@@ -178,8 +178,11 @@ public class BlueNearOnly1 extends LinearOpMode {
                                 GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
 //                                intake.autoSpitOut(),
 

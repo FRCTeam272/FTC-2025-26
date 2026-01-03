@@ -44,7 +44,7 @@ public class BlueFar2noWall extends LinearOpMode {
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
-    double launchH = Constants.Util.angleToBlueGoal(launchX, launchY);
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
 
     // Go to Pickup Load1 Start
     double load1X = 37;
@@ -152,7 +152,7 @@ public class BlueFar2noWall extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
-            vision.scanMotifTagSequence();
+            //vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
@@ -179,11 +179,14 @@ public class BlueFar2noWall extends LinearOpMode {
                                 // drive to launch position while spinning up launcher wheel
                                 new ParallelAction(
                                         GoToLaunchPreload,
-                                        new SleepAction(2)
+                                        new SleepAction(0.1)
                                 ),
                                 // launch Preload - 3 Artifacts from far position
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
@@ -201,8 +204,11 @@ public class BlueFar2noWall extends LinearOpMode {
                                GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
@@ -218,8 +224,11 @@ public class BlueFar2noWall extends LinearOpMode {
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
