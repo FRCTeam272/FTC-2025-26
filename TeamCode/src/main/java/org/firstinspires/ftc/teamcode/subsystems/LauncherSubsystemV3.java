@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
+import org.firstinspires.ftc.teamcode.util.MovingAverage;
 
 @Config
 public class LauncherSubsystemV3 {
@@ -24,6 +25,8 @@ public class LauncherSubsystemV3 {
 
     Gamepad currentGamepad2 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
+
+    MovingAverage launcherSpeedFilter;
 
     // --- Launcher Constants ---
     public static double TARGET_RPM = 0;         // desired launcher RPM
@@ -45,6 +48,8 @@ public class LauncherSubsystemV3 {
 
         launcherRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        launcherSpeedFilter = new MovingAverage(5);
 
         // Apply initial PIDF coefficients
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P,0,0,F);
@@ -105,12 +110,14 @@ public class LauncherSubsystemV3 {
                 MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
         }
 
+
         applyPIDF();
     }
 
 
     /** Applies current launcher velocity PIDF coefficients */
     public void applyPIDF() {
+        launcherSpeedFilter.addReading(getLauncherRPM());
 
         // Set new PIDF coefficients
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P,0,0,F);
@@ -166,7 +173,8 @@ public class LauncherSubsystemV3 {
     }
 
     public boolean isAtTargetSpeed() {
-        return ((getLauncherRPM() > (getTargetRPM() - 200)) && (getLauncherRPM() < (getTargetRPM() + 100)) && getLauncherRPM() != 0);
+        //return ((getLauncherRPM() > (getTargetRPM() - 75)) && (getLauncherRPM() < (getTargetRPM() + 75)) && getLauncherRPM() != 0);
+        return (launcherSpeedFilter.getAverage() > (getTargetRPM() - 50)) && (launcherSpeedFilter.getAverage() < (getTargetRPM() + 50)) && getLauncherRPM() != 0);
     }
 
     public boolean isNotAtTargetSpeed() {
@@ -179,6 +187,7 @@ public class LauncherSubsystemV3 {
         telemetry.addLine("LAUNCHER SUBSYSTEM");
         telemetry.addData("Target RPM", TARGET_RPM);
         telemetry.addData("Current RPM", getLauncherRPM());
+        telemetry.addData("Smoothed RPM", launcherSpeedFilter.getAverage());
         telemetry.addData("At Speed?", isAtTargetSpeed());
         telemetry.addData("Error", error);
         telemetry.update();

@@ -156,8 +156,11 @@ public class BlueNearOnly1 extends LinearOpMode {
                                 GoToLaunchPreload,
 
                                 // launch 3 Artifacts from near position, checking launcher wheel speed between each launch
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
 //                                intake.autoSpitOut(),
 
