@@ -236,10 +236,10 @@ public class IntakeSubsystemV2 {
                         launchCounter++;
                         stopTransfer(); //pause after 1st Artifact launched
                     }
-                    if (launchCounter == 1 && MatchSettings.launcherAtSpeed) {
+                    if (launchCounter == 1 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
                         outboundTransfer();
                     }
-                    if (launchCounter == 1 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
+                    if (launchCounter == 1) {
                         stopTransfer(); // pause after 2nd artifact launched
                         inboundMidFront();
                         inboundMidRear();
@@ -248,10 +248,10 @@ public class IntakeSubsystemV2 {
                         launchTimer.reset();
                         launchCounter++;
                     }
-                    if (launchCounter == 2 && MatchSettings.launcherAtSpeed) {
+                    if (launchCounter == 2 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
                         outboundTransfer();
                     }
-                    if (launchCounter == 2 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
+                    if (launchCounter == 2) {
                         stopTransfer(); //stop after 3rd Artifact launched
                         stopIntake();
                         launchCounter++;

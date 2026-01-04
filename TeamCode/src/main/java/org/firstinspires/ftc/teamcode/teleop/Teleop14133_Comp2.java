@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
@@ -20,7 +21,7 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
     MatchSettings.AllianceColor alliance;
 
     private DriveSubsystemV2 drive;
-    private LauncherSubsystemV2 launcher;
+    private LauncherSubsystemV3 launcher;
     private IntakeSubsystemV2 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
@@ -48,7 +49,7 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
         }
 
         drive = new DriveSubsystemV2(hardwareMap, matchSettings);
-        launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);
+        launcher = new LauncherSubsystemV3(hardwareMap, telemetry,matchSettings);
         intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
         vision = new VisionSubsystem(hardwareMap, matchSettings);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
@@ -72,12 +73,13 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
 //        telemetry.addData("Otos H Coordinates", drive.getOtosPose().h);
 //        telemetry.addData("Otos Bearing to Goal", drive.getOtosBearingToGoal());
 //        telemetry.addData("Otos Range to Goal", drive.getOtosRangeToGoal());
-        telemetry.addData("Vision Pose X", vision.getCurrentPose().x);
-        telemetry.addData("Vision Pose Y", vision.getCurrentPose().y);
-        telemetry.addData("Vision Pose H", vision.getCurrentPose().h);
-        telemetry.addData("Vision Bearing to Goal", vision.getTagBearing());
-        telemetry.addData("Vision Range to Goal", vision.getTagRange());
+//        telemetry.addData("Vision Pose X", vision.getCurrentPose().x);
+//        telemetry.addData("Vision Pose Y", vision.getCurrentPose().y);
+//        telemetry.addData("Vision Pose H", vision.getCurrentPose().h);
+//        telemetry.addData("Vision Bearing to Goal", vision.getTagBearing());
+//        telemetry.addData("Vision Range to Goal", vision.getTagRange());
 
+        launcher.printTelemetry(telemetry);
         telemetry.update();
 
         runToggledDrive();
