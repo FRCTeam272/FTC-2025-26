@@ -139,6 +139,10 @@ public class LauncherSubsystemV3 {
         TARGET_RPM = targetRPM;
     }
 
+    public void setP (double targetP) { P = targetP; }
+
+    public void setF (double targetF) { F = targetF; }
+
     /**
      * Returns the target RPM of the launcher, used to check if velo
      * is within tolerance
@@ -147,6 +151,10 @@ public class LauncherSubsystemV3 {
     public double getTargetRPM() {
         return TARGET_RPM;
     }
+
+    public double getP() { return P; }
+
+    public double getF() { return F; }
 
     /** Stops all launcher motion immediately. */
     public void eStop() {
@@ -191,6 +199,8 @@ public class LauncherSubsystemV3 {
         telemetry.addData("Smoothed RPM", launcherSpeedFilter.getAverage());
         telemetry.addData("At Speed?", isAtTargetSpeed());
         telemetry.addData("Error", error);
+        telemetry.addData("F", F);
+        telemetry.addData("P", P);
         telemetry.update();
     }
 
