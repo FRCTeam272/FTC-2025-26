@@ -32,8 +32,8 @@ public class LauncherSubsystemV3 {
     public static double TARGET_RPM = 0;         // desired launcher RPM
 
     // --- PIDF Coefficients ---
-    public static double F = 18.6; //feedforward tune first! (16.5 without inertia wheel)
-    public static double P = 3.7; // (8 without inertia wheel)
+    public static double F = 16.5; //feedforward tune first! (16.5 without inertia wheel)
+    public static double P = 45; // (8 without inertia wheel)
 
     public LauncherSubsystemV3(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
 
