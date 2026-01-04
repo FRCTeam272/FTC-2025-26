@@ -198,9 +198,9 @@ public class LauncherSubsystemV3 {
         telemetry.addData("Current RPM", getLauncherRPM());
         telemetry.addData("Smoothed RPM", launcherSpeedFilter.getAverage());
         telemetry.addData("At Speed?", isAtTargetSpeed());
-        telemetry.addData("Error", error);
-        telemetry.addData("F", F);
-        telemetry.addData("P", P);
+//        telemetry.addData("Error", error);
+//        telemetry.addData("F", F);
+//        telemetry.addData("P", P);
         telemetry.update();
     }
 
