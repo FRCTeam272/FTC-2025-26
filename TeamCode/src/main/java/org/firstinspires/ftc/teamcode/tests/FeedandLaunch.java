@@ -30,7 +30,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
 
     @Override
     public void onStart() {
-        launcher.setTargetRPM(1000);
+        launcher.setTargetRPM(0);
     }
 
     @Override

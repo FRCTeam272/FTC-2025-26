@@ -217,6 +217,8 @@ public class IntakeSubsystemV2 {
                         launchCounter = 0;
                         secondArtifactNeeded = matchSettings.secondArtifactNeeded();
                         initialized = true;
+                    }
+                    if (MatchSettings.launcherAtSpeed) {
                         if (intakeLoadDirection == "FRONT" || colorInSlotRear == secondArtifactNeeded) {
                             inboundRear();
                         }else if(intakeLoadDirection == "REAR" || colorInSlotFront != secondArtifactNeeded){
@@ -229,15 +231,15 @@ public class IntakeSubsystemV2 {
                         outboundTransfer();
                     }
 
-                    if (launchCounter == 0 && artifactLaunched()) {
+                    if (launchCounter == 0 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
                         launchTimer.reset();
                         launchCounter++;
                         stopTransfer(); //pause after 1st Artifact launched
                     }
-                    if (launchCounter == 1 && launchTimer.seconds() > 0.5) {
+                    if (launchCounter == 1 && MatchSettings.launcherAtSpeed) {
                         outboundTransfer();
                     }
-                    if (launchCounter == 1 && artifactLaunched()) {
+                    if (launchCounter == 1 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
                         stopTransfer(); // pause after 2nd artifact launched
                         inboundMidFront();
                         inboundMidRear();
@@ -246,10 +248,10 @@ public class IntakeSubsystemV2 {
                         launchTimer.reset();
                         launchCounter++;
                     }
-                    if (launchCounter == 2 && launchTimer.seconds() > 0.5) {
+                    if (launchCounter == 2 && MatchSettings.launcherAtSpeed) {
                         outboundTransfer();
                     }
-                    if (launchCounter == 2 && artifactLaunched()) {
+                    if (launchCounter == 2 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
                         stopTransfer(); //stop after 3rd Artifact launched
                         stopIntake();
                         launchCounter++;
@@ -263,13 +265,15 @@ public class IntakeSubsystemV2 {
             case LAUNCHING_1_SIMPLE:
                 if (!initialized) {
                     initialized = true;
+                }
+                if (MatchSettings.launcherAtSpeed) {
                     inboundFront();
                     inboundMidFront();
                     inboundMidRear();
                     inboundRear();
                     outboundTransfer();
                 }
-                if (artifactLaunched()) {
+                if (artifactLaunched() || !MatchSettings.launcherAtSpeed) {
                     stopIntake();
                     stopTransfer();
                     initialized = false;
@@ -630,8 +634,8 @@ public class IntakeSubsystemV2 {
                 timerLaunch.reset();
                 // once the artifact has gone through the launcher, stop servos
                 return true;
-            } else if (midIsLaunched && timerLaunch.seconds() < 0.5) {
-                    return true;
+//            } else if (midIsLaunched && timerLaunch.seconds() < 0.5) {
+//                    return true;
             } else {
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;
@@ -694,8 +698,8 @@ public class IntakeSubsystemV2 {
                     launchTimer.reset();
                 }
                 return true;
-            } else if (launched && launchTimer.seconds() < 0.5) {
-                return true;
+//            } else if (launched && launchTimer.seconds() < 0.5) {
+//                return true;
             } else {
                 MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 return false;

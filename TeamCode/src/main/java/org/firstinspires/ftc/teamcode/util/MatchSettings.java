@@ -28,6 +28,7 @@ public class MatchSettings {
     public static LauncherState launcherState = LauncherState.STOPPED;
     public static VisionState visionState = VisionState.NONE;
     public static boolean isAuto = true;
+    public static boolean launcherAtSpeed = false;
 
     /**
      * Returns an array of ArtifactColor representing the sequence for the given

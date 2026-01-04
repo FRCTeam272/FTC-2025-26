@@ -45,10 +45,15 @@ public class BlueNearOnly1 extends LinearOpMode {
     double motifY = -20;
     double motifH = Math.toRadians(160); //Red 200, Blue 160
 
-    // Launch Position
+    // Launch Position Preload
     double launchX = -20;
     double launchY = -20;
     double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+
+    // Launch Position Load1
+    double launch1X = -20;
+    double launch1Y = -20;
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
 
     // Go to Pickup Load1 Start
     double load1X = -6;
@@ -113,7 +118,7 @@ public class BlueNearOnly1 extends LinearOpMode {
 
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad1 = intakeLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
+                .strafeToLinearHeading(new Vector2d(launch1X, launch1Y), launch1H)
                 ;
         Action GoToLaunchLoad1 = goToLaunchLoad1.build();
 
@@ -151,7 +156,7 @@ public class BlueNearOnly1 extends LinearOpMode {
                                 launcher.autoSetRPMNear(),
                                 //go to motif scan position and be still for 1 second
                                 GoToMotifScan,
-                                new SleepAction(1),
+                                new SleepAction(0.5),
                                 // spin to launch position
                                 GoToLaunchPreload,
 

@@ -41,10 +41,25 @@ public class BlueFar2noWall extends LinearOpMode {
     double startY = -15;
     double startH = Math.toRadians(180);
 
+    // Look at Motif
+    double motifX = 36;
+    double motifY = -15;
+    double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
+
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
     double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+
+    // Launch Load1
+    double launch1X = 55;
+    double launch1Y = -15;
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
+
+    // Launch Load2
+    double launch2X = 55;
+    double launch2Y = -20;
+    double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
     double load1X = 37;
@@ -65,12 +80,6 @@ public class BlueFar2noWall extends LinearOpMode {
     double getload2X = 13;
     double getload2Y = -65;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
-
-    // Go to Launch Load 2
-    double launchload2X = 55;
-    double launchload2Y = -20;
-    double launchload2H = Constants.Util.angleToBlueGoal(launchX, launchY);
-    // this is a placement correction, so use launch angle from before.
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
@@ -100,8 +109,14 @@ public class BlueFar2noWall extends LinearOpMode {
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
+        //drive to motif view position
+        TrajectoryActionBuilder goToMotif = drive.actionBuilder(StartPose)
+                .strafeToLinearHeading(new Vector2d(motifX, motifY), motifH)
+                ;
+        Action GoToMotif = goToMotif.build();
+
         //drive to preload launch position
-        TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
+        TrajectoryActionBuilder goToLaunchPreload = goToMotif.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
                 ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
@@ -120,7 +135,7 @@ public class BlueFar2noWall extends LinearOpMode {
 
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad1 = intakeLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
+                .strafeToLinearHeading(new Vector2d(launch1X, launch1Y), launch1H)
                 ;
         Action GoToLaunchLoad1 = goToLaunchLoad1.build();
 
@@ -138,7 +153,7 @@ public class BlueFar2noWall extends LinearOpMode {
 
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad2 = intakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchload2X, launchload2Y), launchload2H)
+                .strafeToLinearHeading(new Vector2d(launch2X, launch2Y), launch2H)
                 ;
         Action GoToLaunchLoad2 = goToLaunchLoad2.build();
 
@@ -176,11 +191,13 @@ public class BlueFar2noWall extends LinearOpMode {
                                 intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMFar(),
 
-                                // drive to launch position while spinning up launcher wheel
-                                new ParallelAction(
-                                        GoToLaunchPreload,
-                                        new SleepAction(0.1)
-                                ),
+                                //go to motif scan position and be still for 1 second while spinning up wheel
+                                GoToMotif,
+                                new SleepAction(0.5),
+
+                                // drive to launch position
+                                GoToLaunchPreload,
+
                                 // launch Preload - 3 Artifacts from far position
                                 launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),

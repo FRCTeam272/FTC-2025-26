@@ -32,8 +32,8 @@ public class LauncherSubsystemV3 {
     public static double TARGET_RPM = 0;         // desired launcher RPM
 
     // --- PIDF Coefficients ---
-    public static double F = 16.5; //feedforward tune first!
-    public static double P = 8;
+    public static double F = 16.5; //feedforward tune first! (16.5 without inertia wheel)
+    public static double P = 8; // (8 without inertia wheel)
 
     public LauncherSubsystemV3(HardwareMap hardwareMap, Telemetry telemetry, MatchSettings matchSettings) {
 
@@ -118,6 +118,7 @@ public class LauncherSubsystemV3 {
     /** Applies current launcher velocity PIDF coefficients */
     public void applyPIDF() {
         launcherSpeedFilter.addReading(getLauncherRPM());
+        MatchSettings.launcherAtSpeed = isAtTargetSpeed();
 
         // Set new PIDF coefficients
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P,0,0,F);

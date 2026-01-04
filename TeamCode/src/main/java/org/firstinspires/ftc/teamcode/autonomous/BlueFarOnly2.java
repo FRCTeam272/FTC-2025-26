@@ -42,10 +42,25 @@ public class BlueFarOnly2 extends LinearOpMode {
     double startY = -15;
     double startH = Math.toRadians(180);
 
+    // Look at Motif
+    double motifX = 36;
+    double motifY = -15;
+    double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
+
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
-    double launchH = Constants.Util.angleToBlueGoal(launchX, launchY);
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+
+    // Launch Load1
+    double launch1X = 55;
+    double launch1Y = -15;
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
+
+    // Launch Load2
+    double launch2X = 55;
+    double launch2Y = -20;
+    double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
     double load1X = 37;
@@ -66,12 +81,6 @@ public class BlueFarOnly2 extends LinearOpMode {
     double getload2wallX = 68;
     double getload2wallY = -65;
     double getload2wallH = Math.toRadians(290); //Red=70, Blue=290
-
-    // Go to Launch Load 2
-    double launchload2X = 55;
-    double launchload2Y = -20;
-    double launchload2H = Constants.Util.angleToBlueGoal(launchX, launchY);
-    // this is a placement correction, so use launch angle from before.
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
@@ -101,8 +110,14 @@ public class BlueFarOnly2 extends LinearOpMode {
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
+        //drive to motif view position
+        TrajectoryActionBuilder goToMotif = drive.actionBuilder(StartPose)
+                .strafeToLinearHeading(new Vector2d(motifX, motifY), motifH)
+                ;
+        Action GoToMotif = goToMotif.build();
+
         //drive to preload launch position
-        TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
+        TrajectoryActionBuilder goToLaunchPreload = goToMotif.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
                 ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
@@ -153,7 +168,6 @@ public class BlueFarOnly2 extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
-            vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
@@ -177,14 +191,19 @@ public class BlueFarOnly2 extends LinearOpMode {
                                 intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMFar(),
 
-                                // drive to launch position while spinning up launcher wheel
-                                new ParallelAction(
-                                        GoToLaunchPreload,
-                                        new SleepAction(2)
-                                ),
+                                //go to motif scan position and be still for 1 second while spinning up wheel
+                                GoToMotif,
+                                new SleepAction(0.5),
+
+                                // drive to launch position
+                                GoToLaunchPreload,
+
                                 // launch Preload - 3 Artifacts from far position
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
@@ -202,8 +221,11 @@ public class BlueFarOnly2 extends LinearOpMode {
                                GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
@@ -219,8 +241,11 @@ public class BlueFarOnly2 extends LinearOpMode {
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
+                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
