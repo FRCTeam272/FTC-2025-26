@@ -49,7 +49,7 @@ public class BlueFar2noWall extends LinearOpMode {
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-3);
 
     // Launch Load1
     double launch1X = 55;
@@ -58,7 +58,7 @@ public class BlueFar2noWall extends LinearOpMode {
 
     // Launch Load2
     double launch2X = 55;
-    double launch2Y = -20;
+    double launch2Y = -22;
     double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
@@ -72,12 +72,12 @@ public class BlueFar2noWall extends LinearOpMode {
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
-    double load2X = 13;
+    double load2X = 16;
     double load2Y = -30;
     double load2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
-    double getload2X = 13;
+    double getload2X = 16;
     double getload2Y = -65;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
@@ -193,7 +193,7 @@ public class BlueFar2noWall extends LinearOpMode {
 
                                 //go to motif scan position and be still for 1 second while spinning up wheel
                                 GoToMotif,
-                                new SleepAction(0.5),
+                                new SleepAction(0.35),
 
                                 // drive to launch position
                                 GoToLaunchPreload,
