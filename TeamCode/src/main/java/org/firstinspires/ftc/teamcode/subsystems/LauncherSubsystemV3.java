@@ -49,7 +49,7 @@ public class LauncherSubsystemV3 {
         launcherRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        launcherSpeedFilter = new MovingAverage(5);
+        launcherSpeedFilter = new MovingAverage(10);
 
         // Apply initial PIDF coefficients
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P,0,0,F);

@@ -27,8 +27,8 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
     private LEDSubsystem leds;
 
     boolean lockPrevPressed = false;
-    double allianceSteering;
-    boolean motifFound = false;
+//    double allianceSteering;
+
 
     ElapsedTime localizationTimer;
 
@@ -38,15 +38,14 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
         MatchSettings.isAuto = false;
         MatchSettings.launcherState = MatchSettings.LauncherState.STOPPED;
         MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
-        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
         alliance = matchSettings.getAllianceColor();
 
 
-        if (alliance == MatchSettings.AllianceColor.BLUE) {
-            allianceSteering = -1;
-        } else {
-            allianceSteering = 1;
-        }
+//        if (alliance == MatchSettings.AllianceColor.BLUE) {
+//            allianceSteering = -1;
+//        } else {
+//            allianceSteering = 1;
+//        }
 
         drive = new DriveSubsystemV2(hardwareMap, matchSettings);
         launcher = new LauncherSubsystemV3(hardwareMap, telemetry,matchSettings);

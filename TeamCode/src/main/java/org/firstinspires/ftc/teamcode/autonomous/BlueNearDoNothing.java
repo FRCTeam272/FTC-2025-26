@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
@@ -40,7 +41,7 @@ public class BlueNearDoNothing extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // End auto off a launch line, facing away from Driver
-    double endX = -55;
+    double endX = -54;
     double endY = -20;
     double endH = Math.toRadians(180);
 
@@ -70,6 +71,9 @@ public class BlueNearDoNothing extends LinearOpMode {
         //drive to end position
         TrajectoryActionBuilder goToEnd = drive.actionBuilder(StartPose)
                 .strafeToLinearHeading(new Vector2d(endX, endY), endH)
+                .turnTo(Math.toRadians(Constants.Util.angleToMotifDegrees(endX,endY)))
+                .waitSeconds(1)
+                .turnTo(Math.toRadians(270)) //Red=90, Blue = 270
                 ;
         Action GoToEnd = goToEnd.build();
 

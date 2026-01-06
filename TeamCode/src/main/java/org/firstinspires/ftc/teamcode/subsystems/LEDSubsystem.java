@@ -58,10 +58,10 @@ public class LEDSubsystem implements LEDInterface{
     }
 
     public void update() {
-        if (!MatchSettings.isAuto && !endGameSignaled && endGameTimer.seconds() > 140) { //only runs during teleop
-            if (endGameTimer.seconds() < 143) {
+        if (!MatchSettings.isAuto && !endGameSignaled && endGameTimer.seconds() > 110) { //only runs during teleop
+            if (endGameTimer.seconds() < 113) {
                 setMode(LedMode.ELEVATING);
-            } else if (endGameTimer.seconds() > 143) {
+            } else if (endGameTimer.seconds() > 113) {
                 endGameSignaled = true;
                 setMode(LedMode.BLACK);
             }
@@ -77,7 +77,8 @@ public class LEDSubsystem implements LEDInterface{
                 signaled = false;
             }
         }
-        else if (MatchSettings.visionState == MatchSettings.VisionState.GOAL_DETECTED && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED) {
+        else if (MatchSettings.visionState == MatchSettings.VisionState.GOAL_DETECTED && (
+                MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED || MatchSettings.intakeState == MatchSettings.IntakeState.LAUNCHING_1_SIMPLE )) {
             setMode(LedMode.GOAL_DETECTED);
         }
         else if (MatchSettings.visionState == MatchSettings.VisionState.ARTIFACT_DETECTED) {

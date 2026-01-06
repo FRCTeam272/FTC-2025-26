@@ -50,7 +50,7 @@ public class BlueFarOnly2 extends LinearOpMode {
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-3);
 
     // Launch Load1
     double launch1X = 55;
@@ -59,7 +59,7 @@ public class BlueFarOnly2 extends LinearOpMode {
 
     // Launch Load2
     double launch2X = 55;
-    double launch2Y = -20;
+    double launch2Y = -22;
     double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
@@ -136,7 +136,7 @@ public class BlueFarOnly2 extends LinearOpMode {
 
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad1 = intakeLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
+                .strafeToLinearHeading(new Vector2d(launch1X, launch1Y), launch1H)
                 ;
         Action GoToLaunchLoad1 = goToLaunchLoad1.build();
 
@@ -154,7 +154,7 @@ public class BlueFarOnly2 extends LinearOpMode {
 
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad2 = intakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
+                .strafeToLinearHeading(new Vector2d(launch2X, launch2Y), launch2H)
                 ;
         Action GoToLaunchLoad2 = goToLaunchLoad2.build();
 
@@ -193,7 +193,7 @@ public class BlueFarOnly2 extends LinearOpMode {
 
                                 //go to motif scan position and be still for 1 second while spinning up wheel
                                 GoToMotif,
-                                new SleepAction(0.5),
+                                new SleepAction(0.35),
 
                                 // drive to launch position
                                 GoToLaunchPreload,

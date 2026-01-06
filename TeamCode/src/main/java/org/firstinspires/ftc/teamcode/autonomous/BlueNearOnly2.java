@@ -45,7 +45,7 @@ public class BlueNearOnly2 extends LinearOpMode {
     // Motif Scan Position
     double motifX = -24;
     double motifY = -20;
-    double motifH = Math.toRadians(160); //Red 200, Blue 160
+    double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
 
     // Launch Position Preload
     double launchX = -20;

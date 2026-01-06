@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.service.autofill.FieldClassification;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -121,8 +123,18 @@ public class IntakeSubsystemV2 {
     }
 
     public void teleopFSM(Gamepad gamepad2) {
+
+        //cancel intaking/transfer & STOP button
+        if (gamepad2.dpad_right) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+        }
+
         switch (MatchSettings.intakeState) {
             case STOPPED:
+                initialized = false;
                 // waiting for input
                 if (gamepad2.dpad_up) {
                     MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_FRONT;
@@ -130,11 +142,14 @@ public class IntakeSubsystemV2 {
                     MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_REAR;
                 } else if (gamepad2.dpad_left) {
                     MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_THRU;
+                } else if (gamepad2.right_bumper) {
+                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
                 }
                 break;
             case INTAKING_FRONT:
                 if (!initialized) { // powers on intake, if it is not on
                     clearIntakeLoadColors();
+                    stopTransfer();
                     inboundFront(); // turn on all front intaking servos
                     inboundMidFront();
                     outboundMidRear();
@@ -155,7 +170,7 @@ public class IntakeSubsystemV2 {
                     stopMidFront(); //otherwise stop checking, stop servo, and move on
                 }
                 if (rearPossession() && midPossession() && frontPossession()) {
-                    stopFront();
+                    stopIntake();
                     initialized = false;
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
@@ -163,6 +178,7 @@ public class IntakeSubsystemV2 {
             case INTAKING_REAR:
                 if (!initialized) { // powers on intake, if it is not on
                     clearIntakeLoadColors();
+                    stopTransfer();
                     inboundRear(); // turn on all rear intaking servos
                     inboundMidRear();
                     outboundMidFront();
@@ -193,79 +209,10 @@ public class IntakeSubsystemV2 {
                 thruFrontAll();
                 inboundTransfer();
                 break;
-            default: // should never be reached
-                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
-        }
-
-        switch (MatchSettings.transferState) {
-            case STOPPED:
-                if (gamepad2.left_bumper && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED && MatchSettings.launcherState == MatchSettings.LauncherState.SPINNING) {
-                    MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
-                } else if (gamepad2.right_bumper && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED && MatchSettings.launcherState == MatchSettings.LauncherState.SPINNING) {
-                    MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_1_SIMPLE;
-                }
-                break;
-            case LAUNCHING_3_SIMPLE:
-                if (gamepad2.dpad_right) {
-                    stopIntake();
-                    stopTransfer();
-                    initialized = false;
-                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
-                } else {
-                    if (!initialized) {
-                        launchCounter = 0;
-                        secondArtifactNeeded = matchSettings.secondArtifactNeeded();
-                        initialized = true;
-                    }
-                    if (MatchSettings.launcherAtSpeed) {
-                        if (intakeLoadDirection == "FRONT" || colorInSlotRear == secondArtifactNeeded) {
-                            inboundRear();
-                        }else if(intakeLoadDirection == "REAR" || colorInSlotFront != secondArtifactNeeded){
-                            inboundRear();
-                        } else {
-                            inboundFront();
-                        }
-                        inboundMidFront();
-                        inboundMidRear();
-                        outboundTransfer();
-                    }
-
-                    if (launchCounter == 0 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
-                        launchTimer.reset();
-                        launchCounter++;
-                        stopTransfer(); //pause after 1st Artifact launched
-                    }
-                    if (launchCounter == 1 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
-                        outboundTransfer();
-                    }
-                    if (launchCounter == 1) {
-                        stopTransfer(); // pause after 2nd artifact launched
-                        inboundMidFront();
-                        inboundMidRear();
-                        inboundFront();
-                        inboundRear();
-                        launchTimer.reset();
-                        launchCounter++;
-                    }
-                    if (launchCounter == 2 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
-                        outboundTransfer();
-                    }
-                    if (launchCounter == 2) {
-                        stopTransfer(); //stop after 3rd Artifact launched
-                        stopIntake();
-                        launchCounter++;
-                    }
-                    if (launchCounter == 3) {
-                        initialized = false;
-                        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-                    }
-                }
-                break;
             case LAUNCHING_1_SIMPLE:
-                if (!initialized) {
-                    initialized = true;
-                }
+//                if (!initialized) {
+//                    initialized = true;
+//                }
                 if (MatchSettings.launcherAtSpeed) {
                     inboundFront();
                     inboundMidFront();
@@ -280,19 +227,99 @@ public class IntakeSubsystemV2 {
                     MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
                 }
                 break;
-            default: //should never be reached
-                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-
+            default: // should never be reached
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
 
-        //cancel intaking/transfer & STOP button
-        if (gamepad2.dpad_right && (MatchSettings.intakeState != MatchSettings.IntakeState.STOPPED || MatchSettings.transferState != MatchSettings.TransferState.STOPPED)) {
-            stopIntake();
-            stopTransfer();
-            initialized = false;
-            MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
-            MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-        }
+//        switch (MatchSettings.transferState) {
+//            case STOPPED:
+//                if (gamepad2.left_bumper && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED && MatchSettings.launcherState == MatchSettings.LauncherState.SPINNING) {
+//                    MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
+//                } else if (gamepad2.right_bumper && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED && MatchSettings.launcherState == MatchSettings.LauncherState.SPINNING) {
+//                    MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_1_SIMPLE;
+//                }
+//                break;
+//            case LAUNCHING_3_SIMPLE:
+//                if (gamepad2.dpad_right) {
+//                    stopIntake();
+//                    stopTransfer();
+//                    initialized = false;
+//                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+//                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+//                } else {
+//                    if (!initialized) {
+//                        launchCounter = 0;
+//                        secondArtifactNeeded = matchSettings.secondArtifactNeeded();
+//                        initialized = true;
+//                    }
+//                    if (MatchSettings.launcherAtSpeed) {
+//                        if (intakeLoadDirection == "FRONT" || colorInSlotRear == secondArtifactNeeded) {
+//                            inboundRear();
+//                        }else if(intakeLoadDirection == "REAR" || colorInSlotFront != secondArtifactNeeded){
+//                            inboundRear();
+//                        } else {
+//                            inboundFront();
+//                        }
+//                        inboundMidFront();
+//                        inboundMidRear();
+//                        outboundTransfer();
+//                    }
+//
+//                    if (launchCounter == 0 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
+//                        launchTimer.reset();
+//                        launchCounter++;
+//                        stopTransfer(); //pause after 1st Artifact launched
+//                    }
+//                    if (launchCounter == 1 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
+//                        outboundTransfer();
+//                    }
+//                    if (launchCounter == 1) {
+//                        stopTransfer(); // pause after 2nd artifact launched
+//                        inboundMidFront();
+//                        inboundMidRear();
+//                        inboundFront();
+//                        inboundRear();
+//                        launchTimer.reset();
+//                        launchCounter++;
+//                    }
+//                    if (launchCounter == 2 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
+//                        outboundTransfer();
+//                    }
+//                    if (launchCounter == 2) {
+//                        stopTransfer(); //stop after 3rd Artifact launched
+//                        stopIntake();
+//                        launchCounter++;
+//                    }
+//                    if (launchCounter == 3) {
+//                        initialized = false;
+//                        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+//                    }
+//                }
+//                break;
+//            case LAUNCHING_1_SIMPLE:
+//                if (!initialized) {
+//                    initialized = true;
+//                }
+//                if (MatchSettings.launcherAtSpeed) {
+//                    inboundFront();
+//                    inboundMidFront();
+//                    inboundMidRear();
+//                    inboundRear();
+//                    outboundTransfer();
+//                }
+//                if (artifactLaunched() || !MatchSettings.launcherAtSpeed) {
+//                    stopIntake();
+//                    stopTransfer();
+//                    initialized = false;
+//                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+//                }
+//                break;
+//            default: //should never be reached
+//                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+//
+//        }
+
+
     }
 
     //============== CONTROL METHODS ==============\\
@@ -601,7 +628,7 @@ public class IntakeSubsystemV2 {
                 clearIntakePossessions();
                 readIntakePossessions(); //saves initial possession values (lets us know how many Artifacts were loaded
                 secondArtifactToLaunch = "TBD";
-                MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
+                MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
 
                 // check for possession in midSlot and frontSlot and skip the rest of the action if nothing there
                 // we need to know about the Front so that we can read the color there before moving on
@@ -620,10 +647,10 @@ public class IntakeSubsystemV2 {
                     initialized = true; //so that it skips this part next rerun
                     return true;
 //                }
-            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
+            } else if (timerAction.seconds() > 2 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
-                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //if the whole thing is taking too long
             } else if (!artifactLaunched() && !midIsLaunched) {
                 return true; //if the mid ball hasn't launched yet - RERUN
@@ -637,7 +664,7 @@ public class IntakeSubsystemV2 {
 //            } else if (midIsLaunched && timerLaunch.seconds() < 0.5) {
 //                    return true;
             } else {
-                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
             }
         }
@@ -661,7 +688,7 @@ public class IntakeSubsystemV2 {
         public boolean run(@NonNull TelemetryPacket packet) {
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
-                MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
+                MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
 //                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
 //                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
 //                    return false;
@@ -685,10 +712,10 @@ public class IntakeSubsystemV2 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
+            } else if (timerAction.seconds() > 2 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
-                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //if the whole thing is taking too long
             } else if (!launched) {
                 if (artifactLaunched()) {
@@ -701,7 +728,7 @@ public class IntakeSubsystemV2 {
 //            } else if (launched && launchTimer.seconds() < 0.5) {
 //                return true;
             } else {
-                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
             }
         }
@@ -724,7 +751,7 @@ public class IntakeSubsystemV2 {
         public boolean run(@NonNull TelemetryPacket packet) {
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
-                MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
+                MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
 //                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
 //                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
 //                    return false;
@@ -738,17 +765,17 @@ public class IntakeSubsystemV2 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
+            } else if (timerAction.seconds() > 2 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
-                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //if the whole thing is taking too long
             } else if (!artifactLaunched()) {
                 return true;
             } else {
                 stopTransfer();
                 stopIntake();
-                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
             }
         }
