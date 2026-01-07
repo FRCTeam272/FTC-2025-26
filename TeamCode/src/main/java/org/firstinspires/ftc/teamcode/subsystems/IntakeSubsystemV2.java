@@ -153,6 +153,7 @@ public class IntakeSubsystemV2 {
                     inboundFront(); // turn on all front intaking servos
                     inboundMidFront();
                     outboundMidRear();
+                    inboundTransfer();
                     intakeLoadDirection = "FRONT";
                     initialized = true;
                 }
@@ -171,6 +172,7 @@ public class IntakeSubsystemV2 {
                 }
                 if (rearPossession() && midPossession() && frontPossession()) {
                     stopIntake();
+                    stopTransfer();
                     initialized = false;
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
@@ -182,6 +184,7 @@ public class IntakeSubsystemV2 {
                     inboundRear(); // turn on all rear intaking servos
                     inboundMidRear();
                     outboundMidFront();
+                    inboundTransfer();
                     intakeLoadDirection = "REAR";
                     initialized = true;
                 }
@@ -201,6 +204,7 @@ public class IntakeSubsystemV2 {
                 }
                 if (rearPossession() && midPossession() && frontPossession()) {
                     stopIntake();
+                    stopTransfer();
                     initialized = false;
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
@@ -210,17 +214,19 @@ public class IntakeSubsystemV2 {
                 inboundTransfer();
                 break;
             case LAUNCHING_1_SIMPLE:
-//                if (!initialized) {
-//                    initialized = true;
+                if (!initialized) {
+                    initialized = true;
 //                }
-                if (MatchSettings.launcherAtSpeed) {
+//                if (MatchSettings.launcherAtSpeed) {
                     inboundFront();
                     inboundMidFront();
                     inboundMidRear();
                     inboundRear();
                     outboundTransfer();
                 }
-                if (artifactLaunched() || !MatchSettings.launcherAtSpeed) {
+                if (artifactLaunched() )
+                        //|| !MatchSettings.launcherAtSpeed)
+                {
                     stopIntake();
                     stopTransfer();
                     initialized = false;
