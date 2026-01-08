@@ -48,8 +48,8 @@ public class BlueNearOnly2 extends LinearOpMode {
     double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
 
     // Launch Position Preload
-    double launchX = -20;
-    double launchY = -20;
+    double launchX = -18;
+    double launchY = -18;
     double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-3);
 
     // Launch Position Load1
@@ -81,6 +81,11 @@ public class BlueNearOnly2 extends LinearOpMode {
     double getload2X = 19;
     double getload2Y = -65;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
+
+    // Backing up from Load 2 to avoid gate
+    double avoidGateX = 19;
+    double avoidGateY = -48;
+    double avoidGateH = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = -52;
@@ -153,6 +158,7 @@ public class BlueNearOnly2 extends LinearOpMode {
 
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad2 = intakeLoad2.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(avoidGateX, avoidGateY), avoidGateH)
                 .strafeToLinearHeading(new Vector2d(launch2X, launch2Y), launch2H)
                 ;
         Action GoToLaunchLoad2 = goToLaunchLoad2.build();
