@@ -524,7 +524,7 @@ public class IntakeSubsystemV2 {
         telemetry.addData("Mid Color Detected", colorDetected(midColorSens));
         telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
         telemetry.addData("Launcher Beam Break", artifactLaunched());
-        telemetry.addData("Rear Beam Break", rearPossession());
+        telemetry.addData("Rear Beam Break New", rearPossession());
         telemetry.update();
     }
 
