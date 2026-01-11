@@ -34,6 +34,8 @@ public class IntakeSubsystemV2 {
     private final RevColorSensorV3 midColorSens;
     private final RevColorSensorV3 rearColorSens;
     private final DigitalChannel launcherBeamBreak;
+    private final DigitalChannel frontBeamBreak;
+    private final DigitalChannel rearBeamBreak;
 
     double possessionDistanceFront = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_FRONT;
     double possessionDistanceMid = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_MID;
@@ -119,6 +121,9 @@ public class IntakeSubsystemV2 {
         rearColorSens.setGain(10);
 
         launcherBeamBreak = hardwareMap.get(DigitalChannel.class, "launcherBB");
+        frontBeamBreak = hardwareMap.get(DigitalChannel.class, "frontBB");
+        rearBeamBreak = hardwareMap.get(DigitalChannel.class, "rearBB");
+
 
     }
 
@@ -422,7 +427,8 @@ public class IntakeSubsystemV2 {
     }
 
     public boolean rearPossession() { // returns true if there is an artifact in distance
-        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
+        //possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
+        possession = !rearBeamBreak.getState();
         return possession;
     }
 
@@ -518,6 +524,7 @@ public class IntakeSubsystemV2 {
         telemetry.addData("Mid Color Detected", colorDetected(midColorSens));
         telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
         telemetry.addData("Launcher Beam Break", artifactLaunched());
+        telemetry.addData("Rear Beam Break", rearPossession());
         telemetry.update();
     }
 
