@@ -7,27 +7,27 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.commands.IntakeFromFrontCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeFromRearCommand;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
-@Disabled
 @TeleOp (name = "IntakeServoSensorTest", group = "Tests")
 public class IntakeServoSensorTest extends SampleCommandTeleop {
 
     public MatchSettings matchSettings;
-    private IntakeSubsystem intake;
+    private IntakeSubsystemV2 intake;
 
-    private IntakeFromFrontCommand intakeFromFrontCommand;
-    private IntakeFromRearCommand intakeFromRearCommand;
+//    private IntakeFromFrontCommand intakeFromFrontCommand;
+//    private IntakeFromRearCommand intakeFromRearCommand;
 
     @Override
     public void onInit() {
 
         matchSettings = new MatchSettings(blackboard);
-        intake = new IntakeSubsystem(hardwareMap, telemetry, matchSettings);
+        intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
 
-        intakeFromFrontCommand = new IntakeFromFrontCommand(intake);
-        intakeFromRearCommand = new IntakeFromRearCommand(intake);
+//        intakeFromFrontCommand = new IntakeFromFrontCommand(intake);
+//        intakeFromRearCommand = new IntakeFromRearCommand(intake);
 
     }
 
@@ -35,7 +35,7 @@ public class IntakeServoSensorTest extends SampleCommandTeleop {
     public void onStart() {
 
         g1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> {
-            intake.stopAll();
+            intake.stopIntake();
         });
 
         g1.getGamepadButton(GamepadKeys.Button.B).whenPressed(() -> {
@@ -49,11 +49,11 @@ public class IntakeServoSensorTest extends SampleCommandTeleop {
             intake.thruFrontAll();
         });
 
-        g1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(intakeFromFrontCommand);
-
-        g1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(intakeFromRearCommand);
+//        g1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+//                .whenPressed(intakeFromFrontCommand);
+//
+//        g1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+//                .whenPressed(intakeFromRearCommand);
 
         g1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(() -> {
             intake.outboundTransfer();
@@ -70,17 +70,17 @@ public class IntakeServoSensorTest extends SampleCommandTeleop {
 
         intake.printTelemetry(telemetry);
 
-        // Print Instructions every loop
-        telemetry.addLine("INTAKE CONTROLS");
-        telemetry.addLine("Press B to Inbound All");
-        telemetry.addLine("Press DpadUP to Intake from Front");
-        telemetry.addLine("Press DpadDOWN to Intake from Rear");
-        telemetry.addLine("Press DpadLEFT to PASS THRU from Front");
-        telemetry.addLine("Press DpadRIGHT to stop Intake");
-        telemetry.addLine();
-        telemetry.addLine("Press Y to Outbound Transfer");
-        telemetry.addLine("Press X to Stop Transfer");
-        telemetry.addLine("Intake will run until stopped by Button");
+//        // Print Instructions every loop
+//        telemetry.addLine("INTAKE CONTROLS");
+//        telemetry.addLine("Press B to Inbound All");
+//        telemetry.addLine("Press DpadUP to Intake from Front");
+//        telemetry.addLine("Press DpadDOWN to Intake from Rear");
+//        telemetry.addLine("Press DpadLEFT to PASS THRU from Front");
+//        telemetry.addLine("Press DpadRIGHT to stop Intake");
+//        telemetry.addLine();
+//        telemetry.addLine("Press Y to Outbound Transfer");
+//        telemetry.addLine("Press X to Stop Transfer");
+//        telemetry.addLine("Intake will run until stopped by Button");
 
     }
 

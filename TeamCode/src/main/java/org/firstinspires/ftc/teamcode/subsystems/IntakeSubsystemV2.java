@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -35,7 +37,7 @@ public class IntakeSubsystemV2 {
     private final RevColorSensorV3 rearColorSens;
     private final DigitalChannel launcherBeamBreak;
     private final DigitalChannel frontBeamBreak;
-    private final DigitalChannel rearBeamBreak;
+    private final AnalogInput rearBeamBreak;
 
     double possessionDistanceFront = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_FRONT;
     double possessionDistanceMid = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_MID;
@@ -122,7 +124,7 @@ public class IntakeSubsystemV2 {
 
         launcherBeamBreak = hardwareMap.get(DigitalChannel.class, "launcherBB");
         frontBeamBreak = hardwareMap.get(DigitalChannel.class, "frontBB");
-        rearBeamBreak = hardwareMap.get(DigitalChannel.class, "rearBB");
+        rearBeamBreak = hardwareMap.get(AnalogInput.class, "rearBB");
 
 
     }
@@ -427,9 +429,9 @@ public class IntakeSubsystemV2 {
     }
 
     public boolean rearPossession() { // returns true if there is an artifact in distance
-        //possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
-        possession = !rearBeamBreak.getState();
-        return possession;
+        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
+       return possession;
+//        return !rearBeamBreak.getState();
     }
 
     // IN-BOUND METHODS ==========================\\
@@ -524,7 +526,7 @@ public class IntakeSubsystemV2 {
         telemetry.addData("Mid Color Detected", colorDetected(midColorSens));
         telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
         telemetry.addData("Launcher Beam Break", artifactLaunched());
-        telemetry.addData("Rear Beam Break New", rearPossession());
+        telemetry.addData("Rear Beam Break New", rearBeamBreak.getVoltage());
         telemetry.update();
     }
 
