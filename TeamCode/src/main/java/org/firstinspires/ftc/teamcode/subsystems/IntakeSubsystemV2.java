@@ -36,8 +36,8 @@ public class IntakeSubsystemV2 {
     private final RevColorSensorV3 midColorSens;
     private final RevColorSensorV3 rearColorSens;
     private final DigitalChannel launcherBeamBreak;
-    private final DigitalChannel frontBeamBreak;
-    private final AnalogInput rearBeamBreak;
+//    private final DigitalChannel frontBeamBreak;
+//    private final AnalogInput rearBeamBreak;
 
     double possessionDistanceFront = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_FRONT;
     double possessionDistanceMid = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_MID;
@@ -52,6 +52,9 @@ public class IntakeSubsystemV2 {
     boolean possessionFront = false;
     boolean possessionMid = false;
     boolean possessionRear = false;
+
+    boolean previousLauncherBB = false;
+    boolean currentLauncherBB = false;
 
     String secondArtifactToLaunch = "TBD";
     String intakeLoadDirection = "TBD";
@@ -123,13 +126,16 @@ public class IntakeSubsystemV2 {
         rearColorSens.setGain(10);
 
         launcherBeamBreak = hardwareMap.get(DigitalChannel.class, "launcherBB");
-        frontBeamBreak = hardwareMap.get(DigitalChannel.class, "frontBB");
-        rearBeamBreak = hardwareMap.get(AnalogInput.class, "rearBB");
+//        frontBeamBreak = hardwareMap.get(DigitalChannel.class, "frontBB");
+//        rearBeamBreak = hardwareMap.get(AnalogInput.class, "rearBB");
 
 
     }
 
     public void teleopFSM(Gamepad gamepad2) {
+
+        previousLauncherBB = currentLauncherBB;
+        currentLauncherBB = !launcherBeamBreak.getState();
 
         //cancel intaking/transfer & STOP button
         if (gamepad2.dpad_right) {
@@ -341,7 +347,11 @@ public class IntakeSubsystemV2 {
 
     // Checks the launcher beam break to see if an artifact has passed through
     public boolean artifactLaunched() {
-        return !launcherBeamBreak.getState();
+        if (previousLauncherBB && !currentLauncherBB) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private MatchSettings.ArtifactColor colorDetected(RevColorSensorV3 sensor) { // Returns color detected if there is one
@@ -526,7 +536,7 @@ public class IntakeSubsystemV2 {
         telemetry.addData("Mid Color Detected", colorDetected(midColorSens));
         telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
         telemetry.addData("Launcher Beam Break", artifactLaunched());
-        telemetry.addData("Rear Beam Break New", rearBeamBreak.getVoltage());
+//        telemetry.addData("Rear Beam Break New", rearBeamBreak.getVoltage());
         telemetry.update();
     }
 
@@ -637,6 +647,9 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
+            previousLauncherBB = currentLauncherBB;
+            currentLauncherBB = !launcherBeamBreak.getState();
+
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 // start by clearing possession values and then bulk read
                 // for initial values for this intake load
@@ -702,6 +715,9 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
+            previousLauncherBB = currentLauncherBB;
+            currentLauncherBB = !launcherBeamBreak.getState();
+
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
 //                if (!possessionFront && !possessionRear) { // check to see if there's an Artifact to launch
@@ -764,6 +780,9 @@ public class IntakeSubsystemV2 {
         // actions are formatted via telemetry packets as below
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
+
+            previousLauncherBB = currentLauncherBB;
+            currentLauncherBB = !launcherBeamBreak.getState();
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
