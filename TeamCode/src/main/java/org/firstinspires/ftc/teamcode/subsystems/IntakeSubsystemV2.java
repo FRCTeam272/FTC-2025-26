@@ -647,8 +647,8 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            previousLauncherBB = currentLauncherBB;
-            currentLauncherBB = !launcherBeamBreak.getState();
+//            previousLauncherBB = currentLauncherBB;
+//            currentLauncherBB = !launcherBeamBreak.getState();
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 // start by clearing possession values and then bulk read
@@ -715,8 +715,8 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            previousLauncherBB = currentLauncherBB;
-            currentLauncherBB = !launcherBeamBreak.getState();
+//            previousLauncherBB = currentLauncherBB;
+//            currentLauncherBB = !launcherBeamBreak.getState();
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
@@ -781,8 +781,8 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            previousLauncherBB = currentLauncherBB;
-            currentLauncherBB = !launcherBeamBreak.getState();
+//            previousLauncherBB = currentLauncherBB;
+//            currentLauncherBB = !launcherBeamBreak.getState();
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
