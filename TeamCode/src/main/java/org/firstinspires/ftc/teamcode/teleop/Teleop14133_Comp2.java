@@ -78,7 +78,8 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
 //        telemetry.addData("Vision Bearing to Goal", vision.getTagBearing());
 //        telemetry.addData("Vision Range to Goal", vision.getTagRange());
 
-        launcher.printTelemetry(telemetry);
+        //launcher.printTelemetry(telemetry);
+        intake.printTelemetry(telemetry);
         telemetry.update();
 
         runToggledDrive();

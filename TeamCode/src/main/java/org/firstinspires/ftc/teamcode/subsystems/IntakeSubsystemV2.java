@@ -258,6 +258,7 @@ public class IntakeSubsystemV2 {
                 if (!initialized) {
                     launchCounter = 0;
                     secondArtifactNeeded = matchSettings.secondArtifactNeeded();
+                    readIntakePossessions();
                     initialized = true;
 
                     if (colorInSlotRear == secondArtifactNeeded) {
@@ -282,7 +283,7 @@ public class IntakeSubsystemV2 {
                     outboundTransfer();
                     launchTimer.reset();
                 }
-                if (launchTimer.seconds() > 0.1 && launchCounter == 0) {
+                if (launchTimer.seconds() > 0.01 && launchCounter == 0) {
                     if (secondArtifactToLaunch.equals("Front")) {
                         stopRear();
                     } else { stopFront(); }
@@ -290,10 +291,11 @@ public class IntakeSubsystemV2 {
 
                 if (launchCounter == 0 && artifactLaunched()) {
                     launchCounter++;
+                    launchTimer.reset();
                     stopIntake();
                     stopTransfer(); //pause after 1st Artifact launched
                 }
-                if (launchCounter == 1 && !artifactLaunched()) {
+                if (launchCounter == 1 && launchTimer.seconds() > 0.25) {
                     if (secondArtifactToLaunch.equals("Front")) {
                         inboundFront();
                         inboundMidFront();
@@ -310,8 +312,9 @@ public class IntakeSubsystemV2 {
                     stopIntake();
                     stopTransfer();
                     launchCounter++;
+                    launchTimer.reset();
                 }
-                if (launchCounter == 2 && !artifactLaunched()) {
+                if (launchCounter == 2 && launchTimer.seconds() > 0.25) {
                     inboundFront();
                     inboundMidFront();
                     inboundMidRear();
@@ -540,6 +543,7 @@ public class IntakeSubsystemV2 {
 
     public void printTelemetry(Telemetry telemetry) { // Only for Testing. DO NOT constantly read sensors during teleop
         telemetry.addLine("INTAKE SUBSYSTEM");
+        telemetry.addData("launch counter", launchCounter);
 //        telemetry.addData("Front Sensor Distance", frontColorSens.getDistance(DistanceUnit.CM));
         telemetry.addData("Mid Sensor Distance", midColorSens.getDistance(DistanceUnit.CM));
 //        telemetry.addData("Rear Sensor Distance", rearColorSens.getDistance(DistanceUnit.CM));
@@ -702,7 +706,7 @@ public class IntakeSubsystemV2 {
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //if the whole thing is taking too long
             } else if (!artifactLaunched()) {
-                if (timerAction.seconds() > 0.1) {
+                if (timerAction.seconds() > 0.03) {
                     if (secondArtifactToLaunch.equals("Front")) {
                         stopRear();
                     }
