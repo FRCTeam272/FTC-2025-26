@@ -7,13 +7,11 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-//@Disabled
+@Disabled
 @TeleOp (name = "LauncherPIDTest", group = "Tests")
 public class LauncherPIDTest extends CommandOpMode {
 

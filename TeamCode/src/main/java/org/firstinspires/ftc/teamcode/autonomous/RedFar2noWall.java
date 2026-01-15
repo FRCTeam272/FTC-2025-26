@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -16,7 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
@@ -29,7 +28,7 @@ public class RedFar2noWall extends LinearOpMode {
     private MatchSettings matchSettings;
 
     private MecanumDrive drive;
-    private LauncherSubsystemV2 launcher;
+    private LauncherSubsystemV3 launcher;
     private IntakeSubsystemV2 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
@@ -92,7 +91,7 @@ public class RedFar2noWall extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
         drive.localizer.setPose(StartPose);
 
-        LauncherSubsystemV2 launcher = new LauncherSubsystemV2(hardwareMap, telemetry, matchSettings);
+        LauncherSubsystemV3 launcher = new LauncherSubsystemV3(hardwareMap, telemetry, matchSettings);
         IntakeSubsystemV2 intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
         VisionSubsystem vision = new VisionSubsystem(hardwareMap,matchSettings);
         LEDSubsystem leds = new LEDSubsystem(hardwareMap,matchSettings);

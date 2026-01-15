@@ -1,16 +1,11 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.commands.IntakeFromFrontCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeFromRearCommand;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 import org.firstinspires.ftc.teamcode.util.SampleCommandTeleop;
 
@@ -20,7 +15,7 @@ public class IntakeFSMTest extends SampleCommandTeleop {
 
     public MatchSettings matchSettings;
     private IntakeSubsystemV2 intake;
-    private LauncherSubsystemV2 launcher;
+    private LauncherSubsystemV3 launcher;
     private LEDSubsystem leds;
 
     @Override
@@ -28,7 +23,7 @@ public class IntakeFSMTest extends SampleCommandTeleop {
 
         matchSettings = new MatchSettings(blackboard);
         intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
-        launcher = new LauncherSubsystemV2(hardwareMap, telemetry,matchSettings);
+        launcher = new LauncherSubsystemV3(hardwareMap, telemetry,matchSettings);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
     }
 

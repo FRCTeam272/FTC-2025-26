@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import android.service.autofill.FieldClassification;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -157,10 +153,10 @@ public class IntakeSubsystemV2 {
                     MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_REAR;
                 } else if (gamepad2.dpad_left) {
                     MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_THRU;
-                } else if (gamepad2.right_bumper) {
-                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
                 } else if (gamepad2.left_bumper) {
-                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_SORTED;
+                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
+                } else if (gamepad2.right_bumper) {
+                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_SIMPLE;
                 }
                 break;
             case INTAKING_FRONT:
@@ -254,83 +250,148 @@ public class IntakeSubsystemV2 {
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
                 break;
-            case LAUNCHING_3_SORTED:
+            case LAUNCHING_3_SIMPLE:
                 if (!initialized) {
                     launchCounter = 0;
-                    secondArtifactNeeded = matchSettings.secondArtifactNeeded();
-                    readIntakePossessions();
                     initialized = true;
 
-                    if (colorInSlotRear == secondArtifactNeeded) {
-                        secondArtifactToLaunch = "Rear";
-                    } else if (colorInSlotFront == secondArtifactNeeded) {
-                        secondArtifactToLaunch = "Front";
-                    } else if (possessionFront) {
-                        secondArtifactToLaunch = "Front";
-                    } else {
-                        secondArtifactToLaunch = "Rear";
-                    }
-
-                    if (secondArtifactToLaunch.equals("Front")) {
-                        inboundFront();
-                        outboundRear();
-                    } else {
-                        inboundRear();
-                        outboundFront();
-                    }
-                    inboundMidFront();
-                    inboundMidRear();
-                    outboundTransfer();
-                    launchTimer.reset();
-                }
-                if (launchTimer.seconds() > 0.01 && launchCounter == 0) {
-                    if (secondArtifactToLaunch.equals("Front")) {
-                        stopRear();
-                    } else { stopFront(); }
-                }
-
-                if (launchCounter == 0 && artifactLaunched()) {
-                    launchCounter++;
-                    launchTimer.reset();
-                    stopIntake();
-                    stopTransfer(); //pause after 1st Artifact launched
-                }
-                if (launchCounter == 1 && launchTimer.seconds() > 0.25) {
-                    if (secondArtifactToLaunch.equals("Front")) {
-                        inboundFront();
-                        inboundMidFront();
-                        inboundMidRear();
-                        outboundTransfer();
-                    } else {
-                        inboundRear();
-                        inboundMidRear();
-                        inboundMidFront();
-                        outboundTransfer();
-                    }
-                }
-                if (launchCounter == 1 && artifactLaunched()) {
-                    stopIntake();
-                    stopTransfer();
-                    launchCounter++;
-                    launchTimer.reset();
-                }
-                if (launchCounter == 2 && launchTimer.seconds() > 0.25) {
                     inboundFront();
                     inboundMidFront();
                     inboundMidRear();
                     inboundRear();
                     outboundTransfer();
+                    launchTimer.reset();
+
                 }
-                if (launchCounter == 2 && artifactLaunched()) {
-                    stopTransfer(); //stop after 3rd Artifact launched
+                if (launchTimer.seconds() > 2.5) {
                     stopIntake();
-                    launchCounter++;
+                    stopTransfer();
+                    initialized = false;
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                }
+                if (launchCounter == 0) {
+                    telemetry.addLine("launching 1st");
+                    telemetry.update();
+                    if (artifactLaunched()) {
+                        stopIntake();
+                        stopTransfer();
+                        launchCounter++;
+                        launchTimer.reset();
+                    }
+                }
+                if (launchCounter == 1 && launchTimer.seconds() > 0.25) {
+                    telemetry.addLine("launching 2nd");
+                    telemetry.update();
+                    inboundFront();
+                    inboundMidFront();
+                    inboundMidRear();
+                    inboundRear();
+                    outboundTransfer();
+                    if (artifactLaunched()) {
+                        stopIntake();
+                        stopTransfer();
+                        launchCounter++;
+                        launchTimer.reset();
+                    }
+                }
+                if (launchCounter == 2 && launchTimer.seconds() > 0.25) {
+                    telemetry.addLine("launching 3rd");
+                    telemetry.update();
+                    inboundFront();
+                    inboundMidFront();
+                    inboundMidRear();
+                    inboundRear();
+                    outboundTransfer();
+
+                    if (artifactLaunched()) {
+                        stopIntake();
+                        stopTransfer();
+                        launchCounter++;
+                        launchTimer.reset();
+                    }
                 }
                 if (launchCounter == 3) {
                     initialized = false;
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
                 break;
+//            case LAUNCHING_3_SORTED:
+//                if (!initialized) {
+//                    launchCounter = 0;
+//                    secondArtifactNeeded = matchSettings.secondArtifactNeeded();
+//                    readIntakePossessions();
+//                    initialized = true;
+//
+//                    if (colorInSlotRear == secondArtifactNeeded) {
+//                        secondArtifactToLaunch = "Rear";
+//                    } else if (colorInSlotFront == secondArtifactNeeded) {
+//                        secondArtifactToLaunch = "Front";
+//                    } else if (possessionFront) {
+//                        secondArtifactToLaunch = "Front";
+//                    } else {
+//                        secondArtifactToLaunch = "Rear";
+//                    }
+//
+//                    if (secondArtifactToLaunch.equals("Front")) {
+//                        inboundFront();
+//                        outboundRear();
+//                    } else {
+//                        inboundRear();
+//                        outboundFront();
+//                    }
+//                    inboundMidFront();
+//                    inboundMidRear();
+//                    outboundTransfer();
+//                    launchTimer.reset();
+//                }
+//                if (launchTimer.seconds() > 0.01 && launchCounter == 0) {
+//                    if (secondArtifactToLaunch.equals("Front")) {
+//                        stopRear();
+//                    } else { stopFront(); }
+//                }
+//
+//                if (launchCounter == 0 && artifactLaunched()) {
+//                    launchCounter++;
+//                    launchTimer.reset();
+//                    stopIntake();
+//                    stopTransfer(); //pause after 1st Artifact launched
+//                }
+//                if (launchCounter == 1 && launchTimer.seconds() > 0.25) {
+//                    if (secondArtifactToLaunch.equals("Front")) {
+//                        inboundFront();
+//                        inboundMidFront();
+//                        inboundMidRear();
+//                        outboundTransfer();
+//                    } else {
+//                        inboundRear();
+//                        inboundMidRear();
+//                        inboundMidFront();
+//                        outboundTransfer();
+//                    }
+//                }
+//                if (launchCounter == 1 && artifactLaunched()) {
+//                    stopIntake();
+//                    stopTransfer();
+//                    launchCounter++;
+//                    launchTimer.reset();
+//                }
+//                if (launchCounter == 2 && launchTimer.seconds() > 0.25) {
+//                    inboundFront();
+//                    inboundMidFront();
+//                    inboundMidRear();
+//                    inboundRear();
+//                    outboundTransfer();
+//                }
+//                if (launchCounter == 2 && artifactLaunched()) {
+//                    stopTransfer(); //stop after 3rd Artifact launched
+//                    stopIntake();
+//                    launchCounter++;
+//                }
+//                if (launchCounter == 3) {
+//                    initialized = false;
+//                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+//                }
+//                break;
             default: // should never be reached
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
@@ -351,14 +412,14 @@ public class IntakeSubsystemV2 {
 
     // Checks the launcher beam break to see if an artifact has passed through
     public boolean artifactLaunched() {
-        if (launchTimer.seconds() > 0.6) {
+        if (launchTimer.seconds() > 0.55) {
             launchBBTripped = false;
         }
         if (!launcherBeamBreak.getState() && !launchBBTripped) {
             launchBBTripped = true;
             launchTimer.reset();
             return false;
-        } else if (launchBBTripped && launchTimer.seconds() > 0.5 ) {
+        } else if (launchBBTripped && launchTimer.seconds() > 0.4 ) {
             launchBBTripped = false;
             return true;
         } else {
@@ -680,7 +741,6 @@ public class IntakeSubsystemV2 {
                 secondArtifactToLaunch = "TBD";
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
 
-
                 timerAction.reset();
                 inboundMidFront();
                 inboundMidRear();
@@ -706,7 +766,7 @@ public class IntakeSubsystemV2 {
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //if the whole thing is taking too long
             } else if (!artifactLaunched()) {
-                if (timerAction.seconds() > 0.03) {
+                if (timerAction.seconds() > 0.01) {
                     if (secondArtifactToLaunch.equals("Front")) {
                         stopRear();
                     }

@@ -7,13 +7,11 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
@@ -90,7 +88,14 @@ public class AutoLaunchTest extends LinearOpMode {
                                 intake.autoLaunch1st(),
                                 intake.autoLaunch2nd(),
                                 intake.autoLaunch3rd(),
+                                new SleepAction(2),
+                                intake.autoIntake3Front(),
+                                new SleepAction(2),
+                                intake.autoLaunch1st(),
+                                intake.autoLaunch2nd(),
+                                intake.autoLaunch3rd(),
                                 launcher.autoStop()
+
                         )
 
                 )));

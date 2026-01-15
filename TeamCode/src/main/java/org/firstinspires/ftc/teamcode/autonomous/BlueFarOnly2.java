@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -16,7 +15,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.Constants;

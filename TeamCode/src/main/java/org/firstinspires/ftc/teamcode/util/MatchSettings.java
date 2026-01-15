@@ -173,7 +173,7 @@ public class MatchSettings {
         INTAKING_REAR,
         INTAKING_THRU,
         LAUNCHING_1_SIMPLE,
-        LAUNCHING_3_SORTED
+        LAUNCHING_3_SIMPLE
     }
 
     public enum TransferState {
