@@ -192,17 +192,14 @@ public class BlueFarWallBounce extends LinearOpMode {
 
                                 //go to motif scan position and be still for 1 second while spinning up wheel
                                 GoToMotif,
-                                new SleepAction(0.35),
+                                new SleepAction(0.4),
 
                                 // drive to launch position
                                 GoToLaunchPreload,
 
                                 // launch Preload - 3 Artifacts from far position
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
@@ -220,11 +217,8 @@ public class BlueFarWallBounce extends LinearOpMode {
                                GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 
@@ -240,11 +234,8 @@ public class BlueFarWallBounce extends LinearOpMode {
                                 GoToLaunchLoad2,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch1st(),
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch2nd(),
-                                launcher.autoCheckAtSpeed(),
                                 intake.autoLaunch3rd(),
                                 //intake.autoSpitOut(),
 

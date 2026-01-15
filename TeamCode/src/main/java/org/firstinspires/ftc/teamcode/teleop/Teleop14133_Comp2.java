@@ -116,7 +116,7 @@ public class Teleop14133_Comp2 extends SampleCommandTeleop {
         }
 
 //        if (gamepad1.right_trigger > 0.1) {
-////            vision.setVisionMode(VisionSubsystem.VisionMode.ARTIFACT);
+//           vision.setVisionMode(VisionSubsystem.VisionMode.ARTIFACT);
 //            //drive.setDriveMode(DriveSubsystemV2.DriveMode.LOCKED_ON_ARTIFACT);
 //        } else {
 //            vision.setVisionMode(VisionSubsystem.VisionMode.APRILTAG);

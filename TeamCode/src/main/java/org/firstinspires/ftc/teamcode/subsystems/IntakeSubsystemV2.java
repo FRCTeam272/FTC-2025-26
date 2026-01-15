@@ -32,9 +32,9 @@ public class IntakeSubsystemV2 {
     private final CRServo rightTransfer;
 
     // ================== SENSORS ================== \\
-    private final RevColorSensorV3 frontColorSens;
+//    private final RevColorSensorV3 frontColorSens;
     private final RevColorSensorV3 midColorSens;
-    private final RevColorSensorV3 rearColorSens;
+//    private final RevColorSensorV3 rearColorSens;
     private final DigitalChannel launcherBeamBreak;
     private final DigitalChannel frontBeamBreak;
     private final DigitalChannel rearBeamBreak;
@@ -52,9 +52,6 @@ public class IntakeSubsystemV2 {
     boolean possessionFront = true;
     boolean possessionMid = true;
     boolean possessionRear = true;
-
-    boolean previousLauncherBB = false;
-    boolean currentLauncherBB = false;
 
     String secondArtifactToLaunch = "TBD";
     String intakeLoadDirection = "TBD";
@@ -118,13 +115,13 @@ public class IntakeSubsystemV2 {
         rightTransfer.setDirection(CRServo.Direction.FORWARD);
 
         // ================== SENSORS ================== \\
-        frontColorSens = hardwareMap.get(RevColorSensorV3.class, "frontColor");
+//        frontColorSens = hardwareMap.get(RevColorSensorV3.class, "frontColor");
         midColorSens = hardwareMap.get(RevColorSensorV3.class, "midColor");
-        rearColorSens = hardwareMap.get(RevColorSensorV3.class, "rearColor");
+//        rearColorSens = hardwareMap.get(RevColorSensorV3.class, "rearColor");
 
-        frontColorSens.setGain(10);
+//        frontColorSens.setGain(10);
         midColorSens.setGain(10);
-        rearColorSens.setGain(10);
+//        rearColorSens.setGain(10);
 
         launcherBeamBreak = hardwareMap.get(DigitalChannel.class, "launcherBB");
         frontBeamBreak = hardwareMap.get(DigitalChannel.class, "frontBB");
@@ -162,11 +159,14 @@ public class IntakeSubsystemV2 {
                     MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_THRU;
                 } else if (gamepad2.right_bumper) {
                     MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
+                } else if (gamepad2.left_bumper) {
+                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_SORTED;
                 }
                 break;
             case INTAKING_FRONT:
                 if (!initialized) { // powers on intake, if it is not on
                     clearIntakeLoadColors();
+                    clearIntakePossessions();
                     stopTransfer();
                     inboundFront(); // turn on all front intaking servos
                     inboundMidFront();
@@ -183,14 +183,17 @@ public class IntakeSubsystemV2 {
                 }
                 if (rearPossession() && !midPossession()) {
                     stopMidRear();
+                    possessionRear = true;
                 }
                 if (rearPossession() && midPossession() && !frontPossession()) {
                     colorInSlotMid = colorDetected(midColorSens);
                     stopMidFront(); //otherwise stop checking, stop servo, and move on
+                    possessionMid = true;
                 }
                 if (rearPossession() && midPossession() && frontPossession()) {
                     stopIntake();
                     stopTransfer();
+                    possessionFront = true;
                     initialized = false;
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
@@ -198,6 +201,7 @@ public class IntakeSubsystemV2 {
             case INTAKING_REAR:
                 if (!initialized) { // powers on intake, if it is not on
                     clearIntakeLoadColors();
+                    clearIntakePossessions();
                     stopTransfer();
                     inboundRear(); // turn on all rear intaking servos
                     inboundMidRear();
@@ -214,15 +218,18 @@ public class IntakeSubsystemV2 {
                 }
                 if (frontPossession() && !midPossession()) {
                     stopMidFront();
+                    possessionFront = true;
                 }
                 if (frontPossession() && midPossession() && !rearPossession()) {
                     if (colorInSlotMid == MatchSettings.ArtifactColor.UNKNOWN) {
                     colorInSlotMid = colorDetected(midColorSens);}
                     stopMidRear(); //otherwise stop checking, stop servo, and move on
+                    possessionMid = true;
                 }
                 if (rearPossession() && midPossession() && frontPossession()) {
                     stopIntake();
                     stopTransfer();
+                    possessionRear = true;
                     initialized = false;
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
@@ -247,99 +254,83 @@ public class IntakeSubsystemV2 {
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
                 break;
+            case LAUNCHING_3_SORTED:
+                if (!initialized) {
+                    launchCounter = 0;
+                    secondArtifactNeeded = matchSettings.secondArtifactNeeded();
+                    initialized = true;
+
+                    if (colorInSlotRear == secondArtifactNeeded) {
+                        secondArtifactToLaunch = "Rear";
+                    } else if (colorInSlotFront == secondArtifactNeeded) {
+                        secondArtifactToLaunch = "Front";
+                    } else if (possessionFront) {
+                        secondArtifactToLaunch = "Front";
+                    } else {
+                        secondArtifactToLaunch = "Rear";
+                    }
+
+                    if (secondArtifactToLaunch.equals("Front")) {
+                        inboundFront();
+                        outboundRear();
+                    } else {
+                        inboundRear();
+                        outboundFront();
+                    }
+                    inboundMidFront();
+                    inboundMidRear();
+                    outboundTransfer();
+                    launchTimer.reset();
+                }
+                if (launchTimer.seconds() > 0.1 && launchCounter == 0) {
+                    if (secondArtifactToLaunch.equals("Front")) {
+                        stopRear();
+                    } else { stopFront(); }
+                }
+
+                if (launchCounter == 0 && artifactLaunched()) {
+                    launchCounter++;
+                    stopIntake();
+                    stopTransfer(); //pause after 1st Artifact launched
+                }
+                if (launchCounter == 1 && !artifactLaunched()) {
+                    if (secondArtifactToLaunch.equals("Front")) {
+                        inboundFront();
+                        inboundMidFront();
+                        inboundMidRear();
+                        outboundTransfer();
+                    } else {
+                        inboundRear();
+                        inboundMidRear();
+                        inboundMidFront();
+                        outboundTransfer();
+                    }
+                }
+                if (launchCounter == 1 && artifactLaunched()) {
+                    stopIntake();
+                    stopTransfer();
+                    launchCounter++;
+                }
+                if (launchCounter == 2 && !artifactLaunched()) {
+                    inboundFront();
+                    inboundMidFront();
+                    inboundMidRear();
+                    inboundRear();
+                    outboundTransfer();
+                }
+                if (launchCounter == 2 && artifactLaunched()) {
+                    stopTransfer(); //stop after 3rd Artifact launched
+                    stopIntake();
+                    launchCounter++;
+                }
+                if (launchCounter == 3) {
+                    initialized = false;
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                }
+                break;
             default: // should never be reached
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
-
-//        switch (MatchSettings.transferState) {
-//            case STOPPED:
-//                if (gamepad2.left_bumper && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED && MatchSettings.launcherState == MatchSettings.LauncherState.SPINNING) {
-//                    MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_3_SIMPLE;
-//                } else if (gamepad2.right_bumper && MatchSettings.intakeState == MatchSettings.IntakeState.STOPPED && MatchSettings.launcherState == MatchSettings.LauncherState.SPINNING) {
-//                    MatchSettings.transferState = MatchSettings.TransferState.LAUNCHING_1_SIMPLE;
-//                }
-//                break;
-//            case LAUNCHING_3_SIMPLE:
-//                if (gamepad2.dpad_right) {
-//                    stopIntake();
-//                    stopTransfer();
-//                    initialized = false;
-//                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-//                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
-//                } else {
-//                    if (!initialized) {
-//                        launchCounter = 0;
-//                        secondArtifactNeeded = matchSettings.secondArtifactNeeded();
-//                        initialized = true;
-//                    }
-//                    if (MatchSettings.launcherAtSpeed) {
-//                        if (intakeLoadDirection == "FRONT" || colorInSlotRear == secondArtifactNeeded) {
-//                            inboundRear();
-//                        }else if(intakeLoadDirection == "REAR" || colorInSlotFront != secondArtifactNeeded){
-//                            inboundRear();
-//                        } else {
-//                            inboundFront();
-//                        }
-//                        inboundMidFront();
-//                        inboundMidRear();
-//                        outboundTransfer();
-//                    }
-//
-//                    if (launchCounter == 0 && (artifactLaunched() || !MatchSettings.launcherAtSpeed)) {
-//                        launchTimer.reset();
-//                        launchCounter++;
-//                        stopTransfer(); //pause after 1st Artifact launched
-//                    }
-//                    if (launchCounter == 1 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
-//                        outboundTransfer();
-//                    }
-//                    if (launchCounter == 1) {
-//                        stopTransfer(); // pause after 2nd artifact launched
-//                        inboundMidFront();
-//                        inboundMidRear();
-//                        inboundFront();
-//                        inboundRear();
-//                        launchTimer.reset();
-//                        launchCounter++;
-//                    }
-//                    if (launchCounter == 2 && (!artifactLaunched() || MatchSettings.launcherAtSpeed)) {
-//                        outboundTransfer();
-//                    }
-//                    if (launchCounter == 2) {
-//                        stopTransfer(); //stop after 3rd Artifact launched
-//                        stopIntake();
-//                        launchCounter++;
-//                    }
-//                    if (launchCounter == 3) {
-//                        initialized = false;
-//                        MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-//                    }
-//                }
-//                break;
-//            case LAUNCHING_1_SIMPLE:
-//                if (!initialized) {
-//                    initialized = true;
-//                }
-//                if (MatchSettings.launcherAtSpeed) {
-//                    inboundFront();
-//                    inboundMidFront();
-//                    inboundMidRear();
-//                    inboundRear();
-//                    outboundTransfer();
-//                }
-//                if (artifactLaunched() || !MatchSettings.launcherAtSpeed) {
-//                    stopIntake();
-//                    stopTransfer();
-//                    initialized = false;
-//                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-//                }
-//                break;
-//            default: //should never be reached
-//                MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
-//
-//        }
-
-
     }
 
     //============== CONTROL METHODS ==============\\
@@ -678,8 +669,6 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            previousLauncherBB = currentLauncherBB;
-            currentLauncherBB = !launcherBeamBreak.getState();
             telemetry.addLine("launching ball 1");
             telemetry.update();
 
