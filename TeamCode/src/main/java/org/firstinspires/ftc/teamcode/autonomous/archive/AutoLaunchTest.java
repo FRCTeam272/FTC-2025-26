@@ -14,10 +14,11 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-@Disabled
+
 @Config
 @Autonomous (name="AutoLaunchTest", group="Tests")
 public class AutoLaunchTest extends LinearOpMode {
@@ -25,7 +26,7 @@ public class AutoLaunchTest extends LinearOpMode {
     private MatchSettings matchSettings;
 
     private MecanumDrive drive;
-    private LauncherSubsystemV2 launcher;
+    private LauncherSubsystemV3 launcher;
     private IntakeSubsystemV2 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
@@ -52,7 +53,7 @@ public class AutoLaunchTest extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
         drive.localizer.setPose(StartPose);
 
-        LauncherSubsystemV2 launcher = new LauncherSubsystemV2(hardwareMap, telemetry, matchSettings);
+        LauncherSubsystemV3 launcher = new LauncherSubsystemV3(hardwareMap, telemetry, matchSettings);
         IntakeSubsystemV2 intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
         VisionSubsystem vision = new VisionSubsystem(hardwareMap,matchSettings);
         LEDSubsystem leds = new LEDSubsystem(hardwareMap,matchSettings);
@@ -82,13 +83,14 @@ public class AutoLaunchTest extends LinearOpMode {
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
                 new ParallelAction( //leds update during entire auto - run in parallel to everything else
                         leds.updateAuto(),
-                        vision.autoScanMotif(),
+//                        launcher.autoSetRPMNear(),
+//                        launcher.autoSpinUp(),
                         new SequentialAction(
-                                launcher.autoSetRPMFar(),
-                                launcher.autoSpinUp(),
                                 new SleepAction(2),
                                 intake.autoLaunch1st(),
+                                new SleepAction(2),
                                 intake.autoLaunch2nd(),
+                                new SleepAction(2),
                                 intake.autoLaunch3rd(),
                                 launcher.autoStop()
                         )

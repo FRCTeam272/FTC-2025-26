@@ -36,8 +36,8 @@ public class IntakeSubsystemV2 {
     private final RevColorSensorV3 midColorSens;
     private final RevColorSensorV3 rearColorSens;
     private final DigitalChannel launcherBeamBreak;
-//    private final DigitalChannel frontBeamBreak;
-//    private final AnalogInput rearBeamBreak;
+    private final DigitalChannel frontBeamBreak;
+    private final DigitalChannel rearBeamBreak;
 
     double possessionDistanceFront = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_FRONT;
     double possessionDistanceMid = Constants.intakeConstants.DISTANCE_FOR_POSSESSION_MID;
@@ -48,10 +48,10 @@ public class IntakeSubsystemV2 {
     MatchSettings.ArtifactColor colorInSlot = MatchSettings.ArtifactColor.UNKNOWN;
     boolean possession = false; // Variable telling whether we have possession of a game piece or not
 
-    // Possession and Color Variables for each intake round. Remember to reset!
-    boolean possessionFront = false;
-    boolean possessionMid = false;
-    boolean possessionRear = false;
+    // Possession and Color Variables for each auto intake round. Starts true for preload. Resets and reads during intake!
+    boolean possessionFront = true;
+    boolean possessionMid = true;
+    boolean possessionRear = true;
 
     boolean previousLauncherBB = false;
     boolean currentLauncherBB = false;
@@ -85,6 +85,7 @@ public class IntakeSubsystemV2 {
 
     //FSM tracker variables
     private boolean initialized = false;
+    private boolean launchBBTripped = false;
     private ElapsedTime launchTimer = new ElapsedTime();
 
     private ElapsedTime autoTimer = new ElapsedTime();
@@ -126,16 +127,20 @@ public class IntakeSubsystemV2 {
         rearColorSens.setGain(10);
 
         launcherBeamBreak = hardwareMap.get(DigitalChannel.class, "launcherBB");
-//        frontBeamBreak = hardwareMap.get(DigitalChannel.class, "frontBB");
-//        rearBeamBreak = hardwareMap.get(AnalogInput.class, "rearBB");
+        frontBeamBreak = hardwareMap.get(DigitalChannel.class, "frontBB");
+        rearBeamBreak = hardwareMap.get(DigitalChannel.class, "rearBB");
+
+        launcherBeamBreak.setMode(DigitalChannel.Mode.INPUT);
+        frontBeamBreak.setMode(DigitalChannel.Mode.INPUT);
+        rearBeamBreak.setMode(DigitalChannel.Mode.INPUT);
 
 
     }
 
     public void teleopFSM(Gamepad gamepad2) {
 
-        previousLauncherBB = currentLauncherBB;
-        currentLauncherBB = !launcherBeamBreak.getState();
+//        previousLauncherBB = currentLauncherBB;
+//        currentLauncherBB = !launcherBeamBreak.getState();
 
         //cancel intaking/transfer & STOP button
         if (gamepad2.dpad_right) {
@@ -346,8 +351,25 @@ public class IntakeSubsystemV2 {
     // COLOR SENSOR METHODS ==========================\\
 
     // Checks the launcher beam break to see if an artifact has passed through
+//    public boolean artifactLaunched() {
+//        if (previousLauncherBB && !currentLauncherBB) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
+    // Checks the launcher beam break to see if an artifact has passed through
     public boolean artifactLaunched() {
-        if (previousLauncherBB && !currentLauncherBB) {
+        if (launchTimer.seconds() > 0.4) {
+            launchBBTripped = false;
+        }
+        if (!launcherBeamBreak.getState() && !launchBBTripped) {
+            launchBBTripped = true;
+            launchTimer.reset();
+            return false;
+        } else if (launchBBTripped && launchTimer.seconds() > 0.2 ) {
+            launchBBTripped = false;
             return true;
         } else {
             return false;
@@ -400,26 +422,27 @@ public class IntakeSubsystemV2 {
 
     // DISTANCE SENSOR METHODS ==========================\\
 
-    private boolean possessionDetectedFront(RevColorSensorV3 sensor) { //for bulk read before launching
-        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceFront;
-        return possession;
-    }
+//    private boolean possessionDetectedFront(RevColorSensorV3 sensor) { //for bulk read before launching
+//        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceFront;
+//        return possession;
+//    }
 
     private boolean possessionDetectedMid(RevColorSensorV3 sensor) { //for bulk read before launching
         possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceMid;
         return possession;
     }
 
-    private boolean possessionDetectedRear(RevColorSensorV3 sensor) { //for bulk read before launching
-        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceRear;
-        return possession;
-    }
+//    private boolean possessionDetectedRear(RevColorSensorV3 sensor) { //for bulk read before launching
+//        possession = sensor.getDistance(DistanceUnit.CM) < possessionDistanceRear;
+//        return possession;
+//    }
 
 
     public void readIntakePossessions() { // bulk read all sensors for initial possession values prior to launching
-        possessionFront = possessionDetectedFront(frontColorSens);
+        possessionFront = !frontBeamBreak.getState();
         possessionMid = possessionDetectedMid(midColorSens);
-        possessionRear = possessionDetectedRear(rearColorSens);
+//        possessionRear = possessionDetectedRear(rearColorSens);
+        possessionRear = !rearBeamBreak.getState();
     }
 
     public void clearIntakePossessions() { // clear Intake load possession values
@@ -429,8 +452,9 @@ public class IntakeSubsystemV2 {
     }
 
     public boolean frontPossession() { // returns true if there is an artifact in distance
-        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
-        return possession;
+//        possession = frontColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
+//        return possession;
+        return !frontBeamBreak.getState();
     }
 
     public boolean midPossession() { // returns true if there is an artifact in distance
@@ -439,9 +463,9 @@ public class IntakeSubsystemV2 {
     }
 
     public boolean rearPossession() { // returns true if there is an artifact in distance
-        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
-       return possession;
-//        return !rearBeamBreak.getState();
+//        possession = rearColorSens.getDistance(DistanceUnit.CM) < possessionDistanceFront;
+//       return possession;
+        return !rearBeamBreak.getState(); //returns true if an artifact breaks beam
     }
 
     // IN-BOUND METHODS ==========================\\
@@ -529,14 +553,15 @@ public class IntakeSubsystemV2 {
 
     public void printTelemetry(Telemetry telemetry) { // Only for Testing. DO NOT constantly read sensors during teleop
         telemetry.addLine("INTAKE SUBSYSTEM");
-        telemetry.addData("Front Sensor Distance", frontColorSens.getDistance(DistanceUnit.CM));
+//        telemetry.addData("Front Sensor Distance", frontColorSens.getDistance(DistanceUnit.CM));
         telemetry.addData("Mid Sensor Distance", midColorSens.getDistance(DistanceUnit.CM));
-        telemetry.addData("Rear Sensor Distance", rearColorSens.getDistance(DistanceUnit.CM));
-        telemetry.addData("Front Color Detected", colorDetected(frontColorSens));
+//        telemetry.addData("Rear Sensor Distance", rearColorSens.getDistance(DistanceUnit.CM));
+//        telemetry.addData("Front Color Detected", colorDetected(frontColorSens));
         telemetry.addData("Mid Color Detected", colorDetected(midColorSens));
-        telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
-        telemetry.addData("Launcher Beam Break", artifactLaunched());
-//        telemetry.addData("Rear Beam Break New", rearBeamBreak.getVoltage());
+//        telemetry.addData("Rear Color Detected", colorDetected(rearColorSens));
+        telemetry.addData("Launcher Beam Break", !launcherBeamBreak.getState());
+        telemetry.addData("Rear Beam Break New", !rearBeamBreak.getState());
+        telemetry.addData("Front Beam Break", !frontBeamBreak.getState());
         telemetry.update();
     }
 
@@ -560,6 +585,8 @@ public class IntakeSubsystemV2 {
             if (!initialized) { // turn on all front intaking servos
                 MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_FRONT;
                 clearIntakeLoadColors();
+                clearIntakePossessions();
+                inboundTransfer();
                 inboundFront();
                 inboundMidFront();
                 outboundMidRear();
@@ -569,34 +596,43 @@ public class IntakeSubsystemV2 {
 
             if (timer.time() > 2.25) { //stop intakes if it's been intaking longer than ## seconds
                 stopIntake();
+                stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
             }
 
-            if (!rearPossession()) { //check for rear possession
+            if (!possessionRear) { //check for rear possession
+                if (rearPossession()) {
+                    possessionRear = true;
+                    stopMidRear();
+                }
                 // Check for color passing through Mid while waiting
                 if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
                     colorInSlotRear = colorDetected(midColorSens);
                 }
                 return true;  // rerun if sensor doesn't read possession
-            } else {
-                stopMidRear(); //otherwise stop checking, stop servo, and move on
             }
 
-            if (!midPossession()) { //check for mid possession
+            if (possessionRear && !possessionMid) { //check for mid possession
+                if (midPossession()) {
+                    possessionMid = true;
+                    colorInSlotMid = colorDetected(midColorSens);
+                    stopMidFront();
+                }
                 return true; //rerun if sensor doesn't read anything
-            } else {
-                colorInSlotMid = colorDetected(midColorSens);
-                stopMidFront(); //otherwise stop checking, stop servo, and move on
             }
 
-            if (!frontPossession()) { // check for front possession
-                return true; // rerun if sensor doesn't read anything
-            } else {
-                stopFront(); //otherwise, turn off servo
-                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
-                return false; //and return since action is complete
+            if (possessionMid && !possessionFront) { // check for front possession
+                if (frontPossession()) {
+                    possessionFront = true;
+                    stopIntake(); //otherwise, turn off servos
+                    stopTransfer();
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                    return false;
+                }
             }
+
+            return false; // rerun if sensors don't read anything
         }
     }
 
@@ -640,58 +676,57 @@ public class IntakeSubsystemV2 {
         private boolean initialized = false;
         private boolean midIsLaunched = false;
         private ElapsedTime timerAction = new ElapsedTime();
-        private ElapsedTime timerLaunch = new ElapsedTime();
-        private MatchSettings.ArtifactColor desiredColor = matchSettings.secondArtifactNeeded();;
+        private MatchSettings.ArtifactColor desiredColor = matchSettings.secondArtifactNeeded();
 
         // actions are formatted via telemetry packets as below
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-//            previousLauncherBB = currentLauncherBB;
-//            currentLauncherBB = !launcherBeamBreak.getState();
+            previousLauncherBB = currentLauncherBB;
+            currentLauncherBB = !launcherBeamBreak.getState();
+            telemetry.addLine("launching ball 1");
+            telemetry.update();
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
-                // start by clearing possession values and then bulk read
-                // for initial values for this intake load
-                clearIntakePossessions();
-                readIntakePossessions(); //saves initial possession values (lets us know how many Artifacts were loaded
                 secondArtifactToLaunch = "TBD";
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
 
+
+                timerAction.reset();
+                inboundMidFront();
+                inboundMidRear();
+                outboundTransfer();
+                if (colorInSlotFront == desiredColor && colorInSlotRear != desiredColor && desiredColor != MatchSettings.ArtifactColor.UNKNOWN) {
+                    inboundFront();
+                    outboundRear();
+                    secondArtifactToLaunch = "Front";
+                } else {
+                    inboundRear();
+                    outboundFront();
+                    secondArtifactToLaunch = "Rear";
+                }
+                initialized = true; //so that it skips this part next rerun
                 // check for possession in midSlot and frontSlot and skip the rest of the action if nothing there
-                // we need to know about the Front so that we can read the color there before moving on
 //                if (!possessionMid) {
 //                    return false;
 //                }
-//                else {
-                    timerAction.reset();
-                    inboundMidFront();
-                    inboundMidRear();
-                    outboundTransfer();
-                    if(colorInSlotFront == desiredColor && colorInSlotRear !=desiredColor && desiredColor != MatchSettings.ArtifactColor.UNKNOWN){
-                        inboundFront();
-                        secondArtifactToLaunch = "Front";
-                    } else { inboundRear(); secondArtifactToLaunch = "Rear"; }
-                    initialized = true; //so that it skips this part next rerun
-                    return true;
-//                }
+                return true;
             } else if (timerAction.seconds() > 2 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //if the whole thing is taking too long
-            } else if (!artifactLaunched() && !midIsLaunched) {
+            } else if (!artifactLaunched()) {
+                if (timerAction.seconds() > 0.1) {
+                    if (secondArtifactToLaunch.equals("Front")) {
+                        stopRear();
+                    }
+                    else { stopFront(); }
+                }
                 return true; //if the mid ball hasn't launched yet - RERUN
-            } else if (artifactLaunched() && !midIsLaunched) { //skip next time
-                midIsLaunched = true;
+            } else { //artifact launched, return
                 stopTransfer();
                 stopIntake();
-                timerLaunch.reset();
-                // once the artifact has gone through the launcher, stop servos
-                return true;
-//            } else if (midIsLaunched && timerLaunch.seconds() < 0.5) {
-//                    return true;
-            } else {
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
             }
@@ -707,16 +742,14 @@ public class IntakeSubsystemV2 {
     public class AutoLaunch2nd implements Action {
         // checks if the action has been initialized
         private boolean initialized = false;
-        private boolean launched = false;
         private ElapsedTime timerAction = new ElapsedTime();
-        private String launchSlot = "TBD";
 
         // actions are formatted via telemetry packets as below
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-//            previousLauncherBB = currentLauncherBB;
-//            currentLauncherBB = !launcherBeamBreak.getState();
+            telemetry.addLine("launching ball 2");
+            telemetry.update();
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
@@ -724,14 +757,9 @@ public class IntakeSubsystemV2 {
 //                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
 //                    return false;
 //                }
-                if (secondArtifactToLaunch == "Front") { // choose a launch slot
-                    launchSlot = "Front";
-                } else {
-                    launchSlot = "Rear";
-                }
                 timerAction.reset();
                 // turn on front or rear servos depending on which artifact to be launched and where the front Artifact is
-                if (launchSlot == "Front") {
+                if (secondArtifactToLaunch.equals("Front")) {
                     inboundMidFront(); //send Front into launcher
                     inboundMidRear();
                     inboundFront();
@@ -748,19 +776,14 @@ public class IntakeSubsystemV2 {
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false; //if the whole thing is taking too long
-            } else if (!launched) {
-                if (artifactLaunched()) {
-                    launched = true;
-                    stopIntake();
-                    stopTransfer();
-                    launchTimer.reset();
-                }
+            } else if (!artifactLaunched()) {
                 return true;
-//            } else if (launched && launchTimer.seconds() < 0.5) {
-//                return true;
-            } else {
+            } else { //artifact launched, return
+                stopTransfer();
+                stopIntake();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 return false;
+                // once the artifact has gone through the launcher, stop servos
             }
         }
     }
@@ -781,8 +804,8 @@ public class IntakeSubsystemV2 {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-//            previousLauncherBB = currentLauncherBB;
-//            currentLauncherBB = !launcherBeamBreak.getState();
+            telemetry.addLine("launching ball 3");
+            telemetry.update();
 
             if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
                 MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
@@ -806,7 +829,7 @@ public class IntakeSubsystemV2 {
                 return false; //if the whole thing is taking too long
             } else if (!artifactLaunched()) {
                 return true;
-            } else {
+            } else { //artifact launched, return
                 stopTransfer();
                 stopIntake();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;

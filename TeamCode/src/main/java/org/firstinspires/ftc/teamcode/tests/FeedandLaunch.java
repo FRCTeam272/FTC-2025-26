@@ -75,7 +75,7 @@ public class FeedandLaunch extends SampleCommandTeleop {
         //intake.printTelemetry(telemetry);
         telemetry.addData("TagRange",vision.getTagRange());
         launcher.printTelemetry(telemetry);
-        telemetry.addData("Beambreak", intake.artifactLaunched());
+
 
 
         leds.update();
