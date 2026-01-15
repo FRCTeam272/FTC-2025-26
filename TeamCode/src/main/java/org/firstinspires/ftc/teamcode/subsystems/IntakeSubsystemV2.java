@@ -234,21 +234,17 @@ public class IntakeSubsystemV2 {
             case LAUNCHING_1_SIMPLE:
                 if (!initialized) {
                     initialized = true;
-//                }
-//                if (MatchSettings.launcherAtSpeed) {
                     inboundFront();
                     inboundMidFront();
                     inboundMidRear();
                     inboundRear();
                     outboundTransfer();
                 }
-                if (artifactLaunched() )
-                        //|| !MatchSettings.launcherAtSpeed)
-                {
+                if (artifactLaunched() ) {
                     stopIntake();
                     stopTransfer();
                     initialized = false;
-                    MatchSettings.transferState = MatchSettings.TransferState.STOPPED;
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
                 break;
             default: // should never be reached
@@ -361,14 +357,14 @@ public class IntakeSubsystemV2 {
 
     // Checks the launcher beam break to see if an artifact has passed through
     public boolean artifactLaunched() {
-        if (launchTimer.seconds() > 0.4) {
+        if (launchTimer.seconds() > 0.6) {
             launchBBTripped = false;
         }
         if (!launcherBeamBreak.getState() && !launchBBTripped) {
             launchBBTripped = true;
             launchTimer.reset();
             return false;
-        } else if (launchBBTripped && launchTimer.seconds() > 0.2 ) {
+        } else if (launchBBTripped && launchTimer.seconds() > 0.5 ) {
             launchBBTripped = false;
             return true;
         } else {

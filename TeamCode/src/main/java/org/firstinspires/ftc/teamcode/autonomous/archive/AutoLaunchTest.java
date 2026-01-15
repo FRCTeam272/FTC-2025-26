@@ -83,14 +83,12 @@ public class AutoLaunchTest extends LinearOpMode {
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
                 new ParallelAction( //leds update during entire auto - run in parallel to everything else
                         leds.updateAuto(),
-//                        launcher.autoSetRPMNear(),
-//                        launcher.autoSpinUp(),
+                        launcher.autoSetRPMNear(),
+                        launcher.autoSpinUp(),
                         new SequentialAction(
                                 new SleepAction(2),
                                 intake.autoLaunch1st(),
-                                new SleepAction(2),
                                 intake.autoLaunch2nd(),
-                                new SleepAction(2),
                                 intake.autoLaunch3rd(),
                                 launcher.autoStop()
                         )
