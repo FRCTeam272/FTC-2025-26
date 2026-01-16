@@ -71,12 +71,12 @@ public class BlueFarWallDriveAlong extends LinearOpMode {
 
     // Go to Pickup Wall Load Start
     double load2wallX = 40;
-    double load2wallY = -60;
+    double load2wallY = -62;
     double load2wallH = Math.toRadians(0);
 
     // Go to Pickup Wall Load End while Intaking
     double getload2wallX = 60;
-    double getload2wallY = -60;
+    double getload2wallY = -62;
     double getload2wallH = Math.toRadians(0);
 
     // End auto off a launch line, facing away from Driver

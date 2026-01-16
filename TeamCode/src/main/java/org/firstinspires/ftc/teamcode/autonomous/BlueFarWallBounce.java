@@ -70,12 +70,12 @@ public class BlueFarWallBounce extends LinearOpMode {
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start
-    double load2wallX = 60;
+    double load2wallX = 65;
     double load2wallY = -52;
     double load2wallH = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Wall Load End while Intaking (bounce forward and then go back and drive slowly forward, all while intaking
-    double getload2wallX = 60;
+    double getload2wallX = 65;
     double getload2wallY = -63;
     double getload2wallH = Math.toRadians(270); //Red=90, Blue=270
 
