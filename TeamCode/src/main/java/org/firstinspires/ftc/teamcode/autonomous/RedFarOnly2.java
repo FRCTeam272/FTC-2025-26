@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueFarWallBounce", group="Auto")
-public class BlueFarWallBounce extends LinearOpMode {
+@Autonomous (name="RedFarOnly2", group="Auto")
+public class RedFarOnly2 extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,53 +36,53 @@ public class BlueFarWallBounce extends LinearOpMode {
 
     // Starting Coordinates
     double startX = 62;
-    double startY = -15;
+    double startY = 15;
     double startH = Math.toRadians(180);
 
     // Look at Motif
     double motifX = 36;
-    double motifY = -15;
+    double motifY = 15;
     double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
 
     // Launch Preload
     double launchX = 55;
-    double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5);
+    double launchY = 15;
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+5);
 
     // Launch Load1
     double launch1X = 55;
-    double launch1Y = -15;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
+    double launch1Y = 15;
+    double launch1H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch1X, launch1Y));
 
     // Launch Load2
     double launch2X = 55;
-    double launch2Y = -22;
-    double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
+    double launch2Y = 22;
+    double launch2H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
     double load1X = 37;
-    double load1Y = -30;
-    double load1H = Math.toRadians(270); //Red=90, Blue=270
+    double load1Y = 30;
+    double load1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = -65;
-    double getload1H = Math.toRadians(270); //Red=90, Blue=270
+    double getload1Y = 65;
+    double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start
-    double load2wallX = 65;
-    double load2wallY = -52;
-    double load2wallH = Math.toRadians(270); //Red=90, Blue=270
+    double load2wallX = 48;
+    double load2wallY = 65;
+    double load2wallH = Math.toRadians(70); //Red=70, Blue=290
 
-    // Go to Pickup Wall Load End while Intaking (bounce forward and then go back and drive slowly forward, all while intaking
-    double getload2wallX = 65;
-    double getload2wallY = -63;
-    double getload2wallH = Math.toRadians(270); //Red=90, Blue=270
+    // Go to Pickup Wall Load End while Intaking
+    double getload2wallX = 68;
+    double getload2wallY = 65;
+    double getload2wallH = Math.toRadians(70); //Red=70, Blue=290
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
-    double endY = -24;
-    double endH = Math.toRadians(270); //Red=90, Blue = 270
+    double endY = 24;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -92,7 +92,7 @@ public class BlueFarWallBounce extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -145,8 +145,6 @@ public class BlueFarWallBounce extends LinearOpMode {
 
         //get wall load, slowly
         TrajectoryActionBuilder  intakeLoad2 = goToIntakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload2wallX,getload2wallY), getload2wallH) // while intaking, drive forward quickly, then back up to let the balls come off the wall, then slowly forward again.
-                .strafeToLinearHeading(new Vector2d(load2wallX,load2wallY),load2wallH)
                 .strafeToLinearHeading(new Vector2d(getload2wallX,getload2wallY),getload2wallH, new TranslationalVelConstraint(20.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action IntakeLoad2 = intakeLoad2.build();

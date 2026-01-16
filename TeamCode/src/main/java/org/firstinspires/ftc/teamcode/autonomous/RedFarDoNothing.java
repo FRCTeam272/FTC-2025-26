@@ -1,13 +1,13 @@
-package org.firstinspires.ftc.teamcode.autonomous.archive;
+package org.firstinspires.ftc.teamcode.autonomous;
 
-import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -15,12 +15,12 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-@Disabled
-@Config
-@Autonomous (name="AutoLaunchTest", group="Tests")
-public class AutoLaunchTest extends LinearOpMode {
+
+@Autonomous (name="RedFarDoNothing", group="Auto")
+public class RedFarDoNothing extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -33,9 +33,14 @@ public class AutoLaunchTest extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = 0;
-    double startY = 0;
+    double startX = 62;
+    double startY = 15;
     double startH = Math.toRadians(180);
+
+    // End auto off a launch line, facing away from Driver
+    double endX = 55;
+    double endY = 36;
+    double endH = Math.toRadians(180);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -60,7 +65,14 @@ public class AutoLaunchTest extends LinearOpMode {
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
-
+        //drive to end position
+        TrajectoryActionBuilder goToEnd = drive.actionBuilder(StartPose)
+                .strafeToLinearHeading(new Vector2d(endX, endY), endH)
+                .turnTo(Math.toRadians(Constants.Util.angleToMotifDegrees(endX,endY)))
+                .waitSeconds(1)
+                .turnTo(Math.toRadians(90)) //Red=90, Blue = 270
+                ;
+        Action GoToEnd = goToEnd.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
@@ -82,22 +94,8 @@ public class AutoLaunchTest extends LinearOpMode {
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
                 new ParallelAction( //leds update during entire auto - run in parallel to everything else
                         leds.updateAuto(),
-                        launcher.autoSetRPMNear(),
-                        launcher.autoSpinUp(),
-                        new SequentialAction(
-                                new SleepAction(2),
-                                intake.autoLaunch1st(),
-                                intake.autoLaunch2nd(),
-                                intake.autoLaunch3rd(),
-                                new SleepAction(2),
-                                intake.autoIntake3Front(),
-                                new SleepAction(2),
-                                intake.autoLaunch1st(),
-                                intake.autoLaunch2nd(),
-                                intake.autoLaunch3rd(),
-                                launcher.autoStop()
-
-                        )
+                        vision.autoScanMotif(),
+                        GoToEnd
 
                 )));
 

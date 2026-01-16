@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.archive;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -20,9 +21,9 @@ import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-
-@Autonomous (name="RedFar2noWall", group="Auto")
-public class RedFar2noWall extends LinearOpMode {
+@Disabled
+@Autonomous (name="BlueFarWallBounce", group="Auto")
+public class BlueFarWallBounce extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,53 +37,53 @@ public class RedFar2noWall extends LinearOpMode {
 
     // Starting Coordinates
     double startX = 62;
-    double startY = 15;
+    double startY = -15;
     double startH = Math.toRadians(180);
 
     // Look at Motif
     double motifX = 36;
-    double motifY = 15;
+    double motifY = -15;
     double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
 
     // Launch Preload
     double launchX = 55;
-    double launchY = 15;
-    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+5);
+    double launchY = -15;
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5);
 
     // Launch Load1
     double launch1X = 55;
-    double launch1Y = 15;
-    double launch1H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch1X, launch1Y));
+    double launch1Y = -15;
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
 
     // Launch Load2
     double launch2X = 55;
-    double launch2Y = 22;
-    double launch2H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch2X, launch2Y));
+    double launch2Y = -22;
+    double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
     double load1X = 37;
-    double load1Y = 30;
-    double load1H = Math.toRadians(90); //Red=90, Blue=270
+    double load1Y = -30;
+    double load1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = 65;
-    double getload1H = Math.toRadians(90); //Red=90, Blue=270
+    double getload1Y = -65;
+    double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
-    // Go to Pickup Load 2 Start
-    double load2X = 16;
-    double load2Y = 30;
-    double load2H = Math.toRadians(90); //Red=90, Blue=270
+    // Go to Pickup Wall Load Start
+    double load2wallX = 65;
+    double load2wallY = -52;
+    double load2wallH = Math.toRadians(270); //Red=90, Blue=270
 
-    // Go to Pickup Load 2 End while Intaking
-    double getload2X = 16;
-    double getload2Y = 65;
-    double getload2H = Math.toRadians(90); //Red=90, Blue=270
+    // Go to Pickup Wall Load End while Intaking (bounce forward and then go back and drive slowly forward, all while intaking
+    double getload2wallX = 65;
+    double getload2wallY = -63;
+    double getload2wallH = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
-    double endY = 24;
-    double endH = Math.toRadians(90); //Red=90, Blue = 270
+    double endY = -24;
+    double endH = Math.toRadians(270); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -92,7 +93,7 @@ public class RedFar2noWall extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -139,13 +140,15 @@ public class RedFar2noWall extends LinearOpMode {
 
         //drive to position to load 2nd set of artifacts on Wall
         TrajectoryActionBuilder goToIntakeLoad2 = goToLaunchLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(load2X, load2Y), load2H)
+                .strafeToLinearHeading(new Vector2d(load2wallX,load2wallY),load2wallH)
                 ;
         Action GoToIntakeLoad2 = goToIntakeLoad2.build();
 
         //get wall load, slowly
         TrajectoryActionBuilder  intakeLoad2 = goToIntakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload2X, getload2Y), getload2H, new TranslationalVelConstraint(20.0)) //drive SLOWLY to position to loading 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(getload2wallX,getload2wallY), getload2wallH) // while intaking, drive forward quickly, then back up to let the balls come off the wall, then slowly forward again.
+                .strafeToLinearHeading(new Vector2d(load2wallX,load2wallY),load2wallH)
+                .strafeToLinearHeading(new Vector2d(getload2wallX,getload2wallY),getload2wallH, new TranslationalVelConstraint(20.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action IntakeLoad2 = intakeLoad2.build();
 
@@ -165,7 +168,6 @@ public class RedFar2noWall extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
-            //vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
@@ -228,7 +230,7 @@ public class RedFar2noWall extends LinearOpMode {
                                 new ParallelAction(
                                         IntakeLoad2,
                                         intake.autoIntake3Front(),
-                                        intake.autoMidColors()
+                                        intake.autoWallColors()
                                 ),
                                 GoToLaunchLoad2,
 

@@ -235,7 +235,7 @@ public class LauncherSubsystemV3 {
     public class AutoSetRPMNear implements Action {
         @Override
         public boolean run (@NonNull TelemetryPacket packet) {
-            setTargetRPM(Constants.launcherConstants.CLOSE_ZONE_LAUNCH_RPM+50);
+            setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM);
             return false;
         }
     }
