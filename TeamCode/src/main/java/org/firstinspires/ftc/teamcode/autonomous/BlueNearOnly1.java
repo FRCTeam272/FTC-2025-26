@@ -55,12 +55,12 @@ public class BlueNearOnly1 extends LinearOpMode {
     double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
 
     // Go to Pickup Load1 Start
-    double load1X = -6;
+    double load1X = -8;
     double load1Y = -30;
     double load1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -6;
+    double getload1X = -8;
     double getload1Y = -59;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 

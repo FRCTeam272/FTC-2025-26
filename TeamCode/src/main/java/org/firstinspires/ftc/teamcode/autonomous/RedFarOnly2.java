@@ -71,13 +71,13 @@ public class RedFarOnly2 extends LinearOpMode {
 
     // Go to Pickup Wall Load Start
     double load2wallX = 48;
-    double load2wallY = 65;
-    double load2wallH = Math.toRadians(70); //Red=70, Blue=290
+    double load2wallY = 64.5;
+    double load2wallH = Math.toRadians(50); //Red=50, Blue=310
 
     // Go to Pickup Wall Load End while Intaking
     double getload2wallX = 68;
-    double getload2wallY = 65;
-    double getload2wallH = Math.toRadians(70); //Red=70, Blue=290
+    double getload2wallY = 64.5;
+    double getload2wallH = Math.toRadians(50); //Red=50, Blue=310
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
