@@ -47,7 +47,7 @@ public class RedFar2noWall extends LinearOpMode {
     // Launch Preload
     double launchX = 55;
     double launchY = 15;
-    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+5);
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+3);
 
     // Launch Load1
     double launch1X = 55;
