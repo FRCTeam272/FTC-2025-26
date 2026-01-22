@@ -143,6 +143,41 @@ public class IntakeSubsystemV2 {
             MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
         }
 
+        if (gamepad2.dpad_up) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_FRONT;
+        }
+
+        if (gamepad2.dpad_down) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_REAR;
+        }
+
+        if (gamepad2.dpad_left) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_THRU;
+        }
+
+        if (gamepad2.left_bumper) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_SIMPLE;
+        }
+
+        if (gamepad2.right_bumper) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_FAST;
+        }
+
         switch (MatchSettings.intakeState) {
             case STOPPED:
                 initialized = false;
@@ -154,9 +189,9 @@ public class IntakeSubsystemV2 {
                 } else if (gamepad2.dpad_left) {
                     MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_THRU;
                 } else if (gamepad2.left_bumper) {
-                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
-                } else if (gamepad2.right_bumper) {
                     MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_SIMPLE;
+                } else if (gamepad2.right_bumper) {
+                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_FAST;
                 }
                 break;
             case INTAKING_FRONT:
@@ -311,6 +346,25 @@ public class IntakeSubsystemV2 {
                     }
                 }
                 if (launchCounter == 3) {
+                    initialized = false;
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                }
+                break;
+            case LAUNCHING_3_FAST:
+                if (!initialized) {
+                    initialized = true;
+
+                    inboundFront();
+                    inboundMidFront();
+                    inboundMidRear();
+                    inboundRear();
+                    outboundTransfer();
+                    launchTimer.reset();
+
+                }
+                if (launchTimer.seconds() > 3) {
+                    stopIntake();
+                    stopTransfer();
                     initialized = false;
                     MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
                 }
@@ -888,6 +942,47 @@ public class IntakeSubsystemV2 {
     }
     public Action autoLaunch3rd() {
         return new AutoLaunch3rd();
+    }
+
+    //---------------------------------------------------------------
+
+    // Launches a 3rd artifact. Chooses between front and rear depending on where remaining Artifact is
+    public class AutoLaunch3Fast implements Action {
+        // checks if the action has been initialized
+        private boolean initialized = false;
+        private ElapsedTime timerAction = new ElapsedTime();
+
+        // actions are formatted via telemetry packets as below
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+            telemetry.addLine("launching 3 by Timer");
+            telemetry.update();
+
+            if (!initialized && autoTimer.seconds() < autoCancelSeconds) {
+                MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_3_FAST;
+
+                timerAction.reset();
+                // turn on servos to feed whatever up
+                inboundMidRear();
+                inboundMidFront();
+                inboundFront();
+                inboundRear();
+                outboundTransfer();
+                initialized = true; //so that it skips this part next rerun
+                return true;
+            } else if (timerAction.seconds() > 2.5 || autoTimer.seconds() >= autoCancelSeconds) {
+                stopIntake();
+                stopTransfer();
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                return false; //if the whole thing is taking too long
+            } else {
+                return true;
+            }
+        }
+    }
+    public Action autoLaunch3Fast() {
+        return new AutoLaunch3Fast();
     }
 
     //---------------------------------------------------------------

@@ -74,7 +74,7 @@ public final class MecanumDrive {
         public double kA = 0.01; //tuned before Lancaster
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
+        public double maxWheelVel = 65; //tuned at 50, changed 1/22/26
         public double minProfileAccel = -30;
         public double maxProfileAccel = 50;
 

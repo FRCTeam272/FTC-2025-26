@@ -240,6 +240,21 @@ public class VisionSubsystem {
         return 0;
     }
 
+    public double getTagBearingAdjusted() {
+       double goalX = -72;
+       double goalY = 72;
+
+        if (!tagProcessor.getDetections().isEmpty()) {
+            AprilTagDetection tag = tagProcessor.getDetections().get(0);
+            if (tag.id == 20) {
+                goalY = -72; }
+            double angleToGoal = Math.toDegrees(Math.atan2((goalY - tag.robotPose.getPosition().y),(goalX- tag.robotPose.getPosition().x)))
+            double adjustedBearing = angleToGoal - (Math.toDegrees(tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+            return adjustedBearing;
+        }
+        return 0;
+    }
+
 //    public double getArtifactTurnPower() {
 //        // Get the list of detected blobs
 //        List<ColorBlobLocatorProcessor.Blob> blobs = artifactProcessor.getBlobs();
