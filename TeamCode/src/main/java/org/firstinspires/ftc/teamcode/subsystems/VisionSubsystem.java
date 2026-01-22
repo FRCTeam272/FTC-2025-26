@@ -248,7 +248,7 @@ public class VisionSubsystem {
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
             if (tag.id == 20) {
                 goalY = -72; }
-            double angleToGoal = Math.toDegrees(Math.atan2((goalY - tag.robotPose.getPosition().y),(goalX- tag.robotPose.getPosition().x)))
+            double angleToGoal = Math.toDegrees(Math.atan2((goalY - tag.robotPose.getPosition().y),(goalX- tag.robotPose.getPosition().x)));
             double adjustedBearing = angleToGoal - (Math.toDegrees(tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
             return adjustedBearing;
         }
