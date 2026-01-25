@@ -128,7 +128,7 @@ public class Teleop14133_Comp3 extends SampleCommandTeleop {
         }
 
         if (drive.getDriveMode() == DriveSubsystemV3.DriveMode.LOCKED_ON_GOAL && vision.isDetectingAGoalTag()) {
-            drive.runAutoAlignToTag(Math.toRadians(vision.getTagBearingAdjusted()), rb, lb, forward, strafe);
+            drive.runAutoAlignToTag(Math.toRadians(vision.getTagBearing()), rb, lb, forward, strafe);
             MatchSettings.visionState = MatchSettings.VisionState.GOAL_DETECTED;
         }
 //        else if (drive.getDriveMode() == DriveSubsystemV2.DriveMode.LOCKED_ON_GOAL && !vision.isDetectingAGoalTag()) {

@@ -700,7 +700,7 @@ public class IntakeSubsystemV2 {
                 initialized = true; //so that it skips this part next rerun
             }
 
-            if (timer.time() > 2.25) { //stop intakes if it's been intaking longer than ## seconds
+            if (timer.time() > 1.75) { //stop intakes if it's been intaking longer than ## seconds
                 stopIntake();
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
@@ -971,7 +971,7 @@ public class IntakeSubsystemV2 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 2.5 || autoTimer.seconds() >= autoCancelSeconds) {
+            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;

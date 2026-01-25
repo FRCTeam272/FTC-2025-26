@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueNearOnly2", group="Auto")
+@Autonomous (name="BlueNear12", group="Auto")
 public class BlueNear12 extends LinearOpMode {
 
     private MatchSettings matchSettings;
@@ -80,12 +80,12 @@ public class BlueNear12 extends LinearOpMode {
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 3 Start
-    double load3X = 36;
+    double load3X = 43;
     double load3Y = -30;
     double load3H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 3 End while Intaking
-    double getload3X = 36;
+    double getload3X = 43;
     double getload3Y = -65;
     double getload3H = Math.toRadians(270); //Red=90, Blue=270
 
