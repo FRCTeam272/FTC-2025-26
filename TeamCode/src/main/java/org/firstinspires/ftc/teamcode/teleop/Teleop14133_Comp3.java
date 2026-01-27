@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
@@ -21,7 +22,7 @@ public class Teleop14133_Comp3 extends SampleCommandTeleop {
 
     private DriveSubsystemV3 drive;
     private LauncherSubsystemV3 launcher;
-    private IntakeSubsystemV2 intake;
+    private IntakeSubsystemV3 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
 
@@ -48,7 +49,7 @@ public class Teleop14133_Comp3 extends SampleCommandTeleop {
 
         drive = new DriveSubsystemV3(hardwareMap, matchSettings);
         launcher = new LauncherSubsystemV3(hardwareMap, telemetry,matchSettings);
-        intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
+        intake = new IntakeSubsystemV3(hardwareMap, telemetry, matchSettings);
         vision = new VisionSubsystem(hardwareMap, matchSettings);
         leds = new LEDSubsystem(hardwareMap,matchSettings);
 
@@ -78,7 +79,7 @@ public class Teleop14133_Comp3 extends SampleCommandTeleop {
 //        telemetry.addData("Vision Range to Goal", vision.getTagRange());
 
         //launcher.printTelemetry(telemetry);
-        //intake.printTelemetry(telemetry);
+        intake.printTelemetry(telemetry);
         telemetry.update();
 
         runToggledDrive();

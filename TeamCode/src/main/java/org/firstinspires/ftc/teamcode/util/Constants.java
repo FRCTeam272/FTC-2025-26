@@ -15,10 +15,10 @@ public final class Constants {
     }
     @Config
     public static final class intakeConstants{
-        public static double INTAKE_POWER = 1;
-        public static double REVERSE_INTAKE_POWER = -1;
+        public static double INTAKE_POWER = 0.5;
+        public static double REVERSE_INTAKE_POWER = -0.5;
         public static double DISTANCE_FOR_POSSESSION_FRONT = 4.5; //TUNE!!!!! max range is 10
-        public static double DISTANCE_FOR_POSSESSION_MID = 2.5;
+        public static double DISTANCE_FOR_POSSESSION_MID = 6.5;
         public static double DISTANCE_FOR_POSSESSION_REAR = 5.5; //TUNE!!!!! max range is 10
     }
 

@@ -39,7 +39,7 @@ public class IntakeSubsystemV3 {
     double intaking = Constants.intakeConstants.INTAKE_POWER;
     double outtaking = Constants.intakeConstants.REVERSE_INTAKE_POWER;
 
-    int artifactHoldPosition = 20; //tune and test
+    int artifactHoldPosition = -50; //tune and test
 
     boolean possession = false; // Variable telling whether we have possession of a game piece or not
 
@@ -191,32 +191,30 @@ public class IntakeSubsystemV3 {
                     clearIntakeLoadColors();
                     clearIntakePossessions();
                     inboundFront(); // turn on all front intake motor
+                    outboundRear();
                     inboundTransfer();
                     intakeLoadDirection = "FRONT";
                     midTransferred = false;
                     initialized = true;
                 }
-                if (!rearPossession()) { //check for rear possession
-                    if (!midTransferred) {
-                        if (midPossession()) {
-                            // Check for color passing through Mid
-                            if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
-                                colorInSlotRear = colorDetected(midColorSens);
-                            }
-                            holdArtifactRear();
-                            midTransferred = true;
+                if (!rearPossession() && !possessionRear) { //check for rear possession
+                    if (midPossession()) {
+                        // Check for color passing through Mid
+                        if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
+                            colorInSlotRear = colorDetected(midColorSens);
                         }
                     }
                 }
-                if (rearPossession() && !midPossession()) {
+                if (rearPossession() && !possessionRear && !midPossession()) {
                     possessionRear = true;
+                    stopRear();
                 }
-                if (rearPossession() && midPossession() && !frontPossession()) {
+                if (possessionRear && midPossession() && !possessionMid) {
                     colorInSlotMid = colorDetected(midColorSens);
+                    //holdArtifactRear();
                     possessionMid = true;
-                    possessionRear = true;
                 }
-                if (rearPossession() && midPossession() && frontPossession()) {
+                if (possessionRear && possessionMid && frontPossession()) {
                     stopIntake();
                     stopTransfer();
                     possessionFront = true;
@@ -229,35 +227,29 @@ public class IntakeSubsystemV3 {
                     clearIntakeLoadColors();
                     clearIntakePossessions();
                     inboundRear(); // turn on all rear intaking servos
+                    outboundFront();
                     inboundTransfer();
                     intakeLoadDirection = "REAR";
                     midTransferred = false;
                     initialized = true;
                 }
-                if (!frontPossession()) { //check for front possession
-                    if (!midTransferred) {
-                        if (midPossession()) {
-                            // Check for color passing through Mid
-                            if (colorInSlotFront == MatchSettings.ArtifactColor.UNKNOWN) {
-                                colorInSlotFront = colorDetected(midColorSens);
-                            }
-                            holdArtifactFront();
-                            midTransferred = true;
+                if (!frontPossession() && !possessionFront) { //check for rear possession
+                    if (midPossession()) {
+                        // Check for color passing through Mid
+                        if (colorInSlotFront == MatchSettings.ArtifactColor.UNKNOWN) {
+                            colorInSlotFront = colorDetected(midColorSens);
                         }
                     }
-
                 }
-                if (frontPossession() && !midPossession()) {
+                if (frontPossession() && !possessionFront && !midPossession()) {
                     possessionFront = true;
+                    stopFront();
                 }
-                if (frontPossession() && midPossession() && !rearPossession()) {
-                    if (colorInSlotMid == MatchSettings.ArtifactColor.UNKNOWN) {
-                        colorInSlotMid = colorDetected(midColorSens);
-                    }
+                if (possessionFront && midPossession() && !possessionMid) {
+                    colorInSlotMid = colorDetected(midColorSens);
                     possessionMid = true;
-                    possessionFront = true;
                 }
-                if (rearPossession() && midPossession() && frontPossession()) {
+                if (possessionFront && possessionMid && rearPossession()) {
                     stopIntake();
                     stopTransfer();
                     possessionRear = true;
@@ -266,8 +258,7 @@ public class IntakeSubsystemV3 {
                 }
                 break;
             case INTAKING_THRU:
-                inboundFront();
-                outboundRear();
+                inboundThru();
                 inboundTransfer();
                 break;
             case LAUNCHING_1_SIMPLE:
@@ -417,6 +408,13 @@ public class IntakeSubsystemV3 {
         intakeRear.setPower(intaking);
     }
 
+    public void inboundThru() {
+        intakeFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeFront.setPower(intaking);
+        intakeRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeRear.setPower(outtaking);
+    }
+
     public void inboundTransfer() {
         leftTransfer.setPower(intaking);
         rightTransfer.setPower(intaking);
@@ -425,12 +423,12 @@ public class IntakeSubsystemV3 {
     // OUT-BOUND METHODS ==========================\\
     public void outboundFront() {
         intakeFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeFront.setPower(outtaking);
+        intakeFront.setPower(outtaking/2);
     }
 
     public void outboundRear() {
         intakeRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeRear.setPower(outtaking);
+        intakeRear.setPower(outtaking/2);
     }
 
     public void outboundTransfer() {
