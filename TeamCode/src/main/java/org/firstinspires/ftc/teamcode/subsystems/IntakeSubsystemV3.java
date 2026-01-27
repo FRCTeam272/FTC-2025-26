@@ -508,9 +508,9 @@ public class IntakeSubsystemV3 {
                 clearIntakeLoadColors();
                 clearIntakePossessions();
                 inboundFront();
+                outboundRear();
                 inboundTransfer();
                 timer.reset();
-                midTransferred = false;
                 initialized = true; //so that it skips this part next rerun
             }
 
@@ -522,17 +522,15 @@ public class IntakeSubsystemV3 {
             }
 
             if (!possessionRear) { //check for rear possession
-                if (!midTransferred) {
                     if (midPossession()) {
                         // Check for color passing through Mid
                         if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
                             colorInSlotRear = colorDetected(midColorSens);
                         }
-                        holdArtifactRear();
-                        midTransferred = true;
                     }
-                }
-                if (rearPossession()) {
+
+                if (rearPossession() && !possessionRear && !midPossession()) {
+                    stopRear();
                     possessionRear = true;
                 }
                 return true;  // rerun if sensor doesn't read possession
@@ -619,7 +617,7 @@ public class IntakeSubsystemV3 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 3 || autoTimer.seconds() >= autoCancelSeconds) {
+            } else if (timerAction.seconds() > 2 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;

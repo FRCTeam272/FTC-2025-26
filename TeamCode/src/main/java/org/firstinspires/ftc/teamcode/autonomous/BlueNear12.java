@@ -132,7 +132,7 @@ public class BlueNear12 extends LinearOpMode {
 
         //get load one, slowly
         TrajectoryActionBuilder  intakeLoad1= goToIntakeLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload1X,getload1Y),getload1H, new TranslationalVelConstraint(30.0)) //drive SLOWLY to position to loading 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(getload1X,getload1Y),getload1H, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action IntakeLoad1 = intakeLoad1.build();
 
@@ -150,7 +150,7 @@ public class BlueNear12 extends LinearOpMode {
 
         //get load2, slowly
         TrajectoryActionBuilder  intakeLoad2 = goToIntakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload2X, getload2Y), getload2H, new TranslationalVelConstraint(30.0)) //drive SLOWLY to position to loading 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(getload2X, getload2Y), getload2H, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action IntakeLoad2 = intakeLoad2.build();
 
@@ -169,7 +169,7 @@ public class BlueNear12 extends LinearOpMode {
 
         //get load one, slowly
         TrajectoryActionBuilder  intakeLoad3= goToIntakeLoad3.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload3X,getload3Y),getload3H, new TranslationalVelConstraint(30.0)) //drive SLOWLY to position to loading 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(getload3X,getload3Y),getload3H, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action IntakeLoad3 = intakeLoad3.build();
 
