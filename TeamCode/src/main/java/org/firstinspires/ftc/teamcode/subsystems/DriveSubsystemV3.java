@@ -29,7 +29,7 @@ public class DriveSubsystemV3 {
     // CREATE DEVICES ==========================\\
 
     SparkFunOTOS myOtos; //Declare Odometry Computer
-    public IMU rev_imu;
+    //public IMU rev_imu;
     public YawPitchRollAngles orientation;
     boolean imuYawFromAuton;
 
@@ -40,9 +40,9 @@ public class DriveSubsystemV3 {
     private DcMotorEx rightFront;
 
     public double finalSpeedMode = 0.0;
-    public final double driveSpeed = 0.85;
+    public final double driveSpeed = 1;
     public final double fastSpeed = 0.66;
-    public final double slowSpeed = 0.16;
+    public final double slowSpeed = 0.2;
 
 
     // CREATE MATCH SETTINGS / ALLIANCE ==============\\
@@ -61,13 +61,13 @@ public class DriveSubsystemV3 {
 
         alliance = matchSettings.getAllianceColor();
 
-        rev_imu = hardwareMap.get(IMU.class, "imu");
+        //rev_imu = hardwareMap.get(IMU.class, "imu");
 
         RevHubOrientationOnRobot RevOrientation = new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         );
-        rev_imu.initialize(new IMU.Parameters(RevOrientation));
+        //rev_imu.initialize(new IMU.Parameters(RevOrientation));
         imuYawFromAuton = false;
 
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
@@ -140,7 +140,7 @@ public class DriveSubsystemV3 {
 
         // Reset the yaw if the user requests it
         if (yButton) {
-            rev_imu.resetYaw();
+            //rev_imu.resetYaw();
            // myOtos.setPosition(resetYawPos);
             myOtos.resetTracking();
         }
