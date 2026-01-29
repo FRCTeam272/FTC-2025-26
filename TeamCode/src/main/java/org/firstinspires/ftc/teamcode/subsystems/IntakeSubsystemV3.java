@@ -423,12 +423,12 @@ public class IntakeSubsystemV3 {
     // OUT-BOUND METHODS ==========================\\
     public void outboundFront() {
         intakeFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeFront.setPower(outtaking/2);
+        intakeFront.setPower(outtaking/3);
     }
 
     public void outboundRear() {
         intakeRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeRear.setPower(outtaking/2);
+        intakeRear.setPower(outtaking/3);
     }
 
     public void outboundTransfer() {
@@ -514,7 +514,7 @@ public class IntakeSubsystemV3 {
                 initialized = true; //so that it skips this part next rerun
             }
 
-            if (timer.time() > 2) { //stop intakes if it's been intaking longer than ## seconds
+            if (timer.time() > 1.75) { //stop intakes if it's been intaking longer than ## seconds
                 stopIntake();
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
@@ -617,7 +617,7 @@ public class IntakeSubsystemV3 {
                 outboundTransfer();
                 initialized = true; //so that it skips this part next rerun
                 return true;
-            } else if (timerAction.seconds() > 2 || autoTimer.seconds() >= autoCancelSeconds) {
+            } else if (timerAction.seconds() > 1.75 || autoTimer.seconds() >= autoCancelSeconds) {
                 stopIntake();
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;

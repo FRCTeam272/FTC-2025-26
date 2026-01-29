@@ -12,12 +12,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
-@Disabled
+//@Disabled
 @Config
 @Autonomous (name="AutoLaunchTest", group="Tests")
 public class AutoLaunchTest extends LinearOpMode {
@@ -26,7 +27,7 @@ public class AutoLaunchTest extends LinearOpMode {
 
     private MecanumDrive drive;
     private LauncherSubsystemV3 launcher;
-    private IntakeSubsystemV2 intake;
+    private IntakeSubsystemV3 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
 
@@ -86,15 +87,11 @@ public class AutoLaunchTest extends LinearOpMode {
                         launcher.autoSpinUp(),
                         new SequentialAction(
                                 new SleepAction(2),
-                                intake.autoLaunch1st(),
-                                intake.autoLaunch2nd(),
-                                intake.autoLaunch3rd(),
+                                intake.autoLaunch3Fast(),
                                 new SleepAction(2),
                                 intake.autoIntake3Front(),
                                 new SleepAction(2),
-                                intake.autoLaunch1st(),
-                                intake.autoLaunch2nd(),
-                                intake.autoLaunch3rd(),
+                                intake.autoLaunch3Fast(),
                                 launcher.autoStop()
 
                         )

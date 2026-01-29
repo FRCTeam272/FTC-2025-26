@@ -40,8 +40,8 @@ public class DriveSubsystemV3 {
     private DcMotorEx rightFront;
 
     public double finalSpeedMode = 0.0;
-    public final double driveSpeed = 1.0;
-    public final double fastSpeed = 1.0;
+    public final double driveSpeed = 0.85;
+    public final double fastSpeed = 0.66;
     public final double slowSpeed = 0.16;
 
 
