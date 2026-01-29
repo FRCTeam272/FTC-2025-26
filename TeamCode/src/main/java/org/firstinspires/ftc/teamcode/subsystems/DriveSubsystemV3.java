@@ -84,8 +84,8 @@ public class DriveSubsystemV3 {
         SparkFunOTOS.Pose2D storedPose = matchSettings.getStoredPose(); //get from Auton if one ran
         matchSettings.clearStoredPose(); //and then clear it so that if you are running practice it won't get a stale position
 
-        SparkFunOTOS.Pose2D bluePosition = new SparkFunOTOS.Pose2D(0, -24, 270); // default blue for practice
-        SparkFunOTOS.Pose2D redPosition = new SparkFunOTOS.Pose2D(0, 24, 90); // default red for practice
+        SparkFunOTOS.Pose2D bluePosition = new SparkFunOTOS.Pose2D(0, -24, 0); // default blue for practice 270
+        SparkFunOTOS.Pose2D redPosition = new SparkFunOTOS.Pose2D(0, 24, 0); // default red for practice 90
 
 
         if (storedPose != null) {
@@ -138,19 +138,20 @@ public class DriveSubsystemV3 {
             finalSpeedMode = driveSpeed;
         }
 
-        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
-        //SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, correctedYaw); // Baseline 0 degree
-
         // Reset the yaw if the user requests it
         if (yButton) {
             rev_imu.resetYaw();
-
+           // myOtos.setPosition(resetYawPos);
+            myOtos.resetTracking();
         }
+
+        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
+        //SparkFunOTOS.Pose2D resetYawPos = new SparkFunOTOS.Pose2D(pos.x, pos.y, 0); // Baseline 0 degree
 
         //orientation = rev_imu.getRobotYawPitchRollAngles();
 
-        double botHeading = rev_imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-//        double botHeading = Math.toRadians(pos.h);
+        //double botHeading = rev_imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        double botHeading = Math.toRadians(pos.h);
 
         double rotX = strafe * Math.cos(-botHeading) - forward * Math.sin(-botHeading);
         double rotY = strafe * Math.sin(-botHeading) + forward * Math.cos(-botHeading);

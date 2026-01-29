@@ -4,14 +4,15 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
@@ -20,9 +21,8 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-
-@Autonomous (name="BlueFarDoNothing", group="Auto")
-public class BlueFarDoNothing extends LinearOpMode {
+@Autonomous (name="BlueNearPreloadOnly", group="Auto")
+public class BlueNearPreloadOnly extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -35,14 +35,19 @@ public class BlueFarDoNothing extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = 62;
-    double startY = -15;
+    double startX = -62;
+    double startY = -39.5;
     double startH = Math.toRadians(180);
 
+    // Launch Position Preload
+    double launchX = -48;
+    double launchY = -12;
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+
     // End auto off a launch line, facing away from Driver
-    double endX = 58;
-    double endY = -40;
-    double endH = Math.toRadians(180);
+    double endX = -52;
+    double endY = -20;
+    double endH = Math.toRadians(270); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -67,14 +72,17 @@ public class BlueFarDoNothing extends LinearOpMode {
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
-        //drive to end position
-        TrajectoryActionBuilder goToEnd = drive.actionBuilder(StartPose)
-                .strafeToLinearHeading(new Vector2d(endX, endY), endH)
-                .turnTo(Math.toRadians(Constants.Util.angleToMotifDegrees(endX,endY)))
-                .waitSeconds(1)
-                .turnTo(Math.toRadians(270)) //Red=90, Blue = 270
+        TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
+                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
                 ;
-        Action GoToEnd = goToEnd.build();
+        Action GoToLaunchPreload = goToLaunchPreload.build();
+
+        //end Auto off a launch line, facing away from driver
+        TrajectoryActionBuilder endAuto = goToLaunchPreload.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(endX, endY), endH)
+                ;
+        Action EndAuto = endAuto.build();
+
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
@@ -94,11 +102,24 @@ public class BlueFarDoNothing extends LinearOpMode {
 
 
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
-                new ParallelAction( //leds update during entire auto - run in parallel to everything else
+                new ParallelAction( //leds update during entire auto & vision scans until it saves the motif - run in parallel to everything else
                         leds.updateAuto(),
                         vision.autoScanMotif(),
-                        GoToEnd
+                        launcher.autoSpinUp(),
+                        new SequentialAction(
+                                intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
+                                launcher.autoSetRPMNear(),
+                                new SleepAction(0.5),
+                                // spin to launch position
+                                GoToLaunchPreload,
 
+                                // launch 3 Artifacts from near position, checking launcher wheel speed between each launch
+                                intake.autoLaunch3Fast(),
+
+                                //stop launcher and drive to end position off launch lines
+                                launcher.autoStop(),
+                                EndAuto
+                        )
                 )));
 
         // Stores ending pose for use by Teleop

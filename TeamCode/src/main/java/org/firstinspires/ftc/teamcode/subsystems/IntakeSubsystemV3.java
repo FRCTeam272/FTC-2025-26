@@ -455,10 +455,22 @@ public class IntakeSubsystemV3 {
     // STOPPING METHODS ==========================\\
     public void stopFront() {
         intakeFront.setPower(0);
+
+        intakeFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        intakeFront.setTargetPosition(0);
+        intakeFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeFront.setPower(intaking);
     }
 
     public void stopRear() {
         intakeRear.setPower(0);
+
+        intakeRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        intakeRear.setTargetPosition(0);
+        intakeRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeRear.setPower(intaking);
     }
 
     public void stopIntake() {
