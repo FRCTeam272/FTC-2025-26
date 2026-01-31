@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -59,33 +60,33 @@ public class BlueNear3 extends LinearOpMode {
     double launch3H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch3X, launch3Y));
 
     // Go to Pickup Load1 Start
-    double load1X = -8;
+    double load1X = -7;
     double load1Y = -30;
     double load1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -8;
-    double getload1Y = -62;
+    double getload1X = -7;
+    double getload1Y = -60.5;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
-    double load2X = 17.5;
+    double load2X = 18;
     double load2Y = -30;
     double load2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
-    double getload2X = 17.5;
-    double getload2Y = -65;
+    double getload2X = 18;
+    double getload2Y = -66;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 3 Start
-    double load3X = 41;
+    double load3X = 42;
     double load3Y = -30;
     double load3H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 3 End while Intaking
-    double getload3X = 41;
-    double getload3Y = -65;
+    double getload3X = 42;
+    double getload3Y = -66;
     double getload3H = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
@@ -211,10 +212,15 @@ public class BlueNear3 extends LinearOpMode {
                                 intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMNear(),
                                 // spin to launch position
-                                GoToLaunchPreload,
+                                new ParallelAction( //start spinning up firing before getting into position
+                                        GoToLaunchPreload,
+                                        new SequentialAction(
+                                                new SleepAction(1.75),
+                                                intake.autoLaunch3Fast()
+                                        )
+                                ),
 
-                                // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
-                                intake.autoLaunch3Fast(),
+                                // launch 3 Artifacts from far position, checking launcher wheel speed between each launc
 
 
                                 // stop launcher and drive to Load 1

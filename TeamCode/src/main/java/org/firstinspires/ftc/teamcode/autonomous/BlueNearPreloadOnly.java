@@ -45,7 +45,7 @@ public class BlueNearPreloadOnly extends LinearOpMode {
     double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
 
     // End auto off a launch line, facing away from Driver
-    double endX = -52;
+    double endX = -54;
     double endY = -20;
     double endH = Math.toRadians(270); //Red=90, Blue = 270
 

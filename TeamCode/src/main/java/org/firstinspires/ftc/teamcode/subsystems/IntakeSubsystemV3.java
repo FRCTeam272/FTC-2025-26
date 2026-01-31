@@ -423,12 +423,12 @@ public class IntakeSubsystemV3 {
     // OUT-BOUND METHODS ==========================\\
     public void outboundFront() {
         intakeFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeFront.setPower(outtaking/3);
+        intakeFront.setPower(outtaking/2);
     }
 
     public void outboundRear() {
         intakeRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeRear.setPower(outtaking/3);
+        intakeRear.setPower(outtaking/2);
     }
 
     public void outboundTransfer() {
@@ -454,23 +454,29 @@ public class IntakeSubsystemV3 {
 
     // STOPPING METHODS ==========================\\
     public void stopFront() {
+        intakeFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeFront.setPower(0);
 
+/*
         intakeFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         intakeFront.setTargetPosition(0);
         intakeFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeFront.setPower(intaking);
+*/
     }
 
     public void stopRear() {
+        intakeRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeRear.setPower(0);
 
+/*
         intakeRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         intakeRear.setTargetPosition(0);
         intakeRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeRear.setPower(intaking);
+*/
     }
 
     public void stopIntake() {
@@ -526,7 +532,7 @@ public class IntakeSubsystemV3 {
                 initialized = true; //so that it skips this part next rerun
             }
 
-            if (timer.time() > 1.75) { //stop intakes if it's been intaking longer than ## seconds
+            if (timer.time() > 1.5) { //stop intakes if it's been intaking longer than ## seconds
                 stopIntake();
                 stopTransfer();
                 MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
@@ -534,14 +540,14 @@ public class IntakeSubsystemV3 {
             }
 
             if (!possessionRear) { //check for rear possession
-                    if (midPossession()) {
-                        // Check for color passing through Mid
-                        if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
-                            colorInSlotRear = colorDetected(midColorSens);
-                        }
-                    }
+//                    if (midPossession()) {
+//                        // Check for color passing through Mid
+//                        if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
+//                            colorInSlotRear = colorDetected(midColorSens);
+//                        }
+//                    }
 
-                if (rearPossession() && !possessionRear && !midPossession()) {
+                if (rearPossession() && !possessionRear) {
                     stopRear();
                     possessionRear = true;
                 }

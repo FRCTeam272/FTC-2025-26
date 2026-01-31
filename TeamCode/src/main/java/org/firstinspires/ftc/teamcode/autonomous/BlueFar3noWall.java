@@ -90,8 +90,8 @@ public class BlueFar3noWall extends LinearOpMode {
     double getload3H = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
-    double endX = -36;
-    double endY = 0;
+    double endX = 0;
+    double endY = -36;
     double endH = Math.toRadians(270); //Red=90, Blue = 270
 
     @Override
