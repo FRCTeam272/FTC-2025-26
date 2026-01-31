@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -39,15 +38,10 @@ public class BlueNear1 extends LinearOpMode {
     double startY = -39.5;
     double startH = Math.toRadians(180);
 
-    // Motif Scan Position
-    double motifX = -24;
-    double motifY = -20;
-    double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
-
     // Launch Position Preload
     double launchX = -12;
     double launchY = -12;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-3);
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY) +180);
 
     // Launch Position Load1
     double launch1X = -12;
@@ -55,18 +49,18 @@ public class BlueNear1 extends LinearOpMode {
     double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
 
     // Go to Pickup Load1 Start
-    double load1X = -8;
+    double load1X = -7;
     double load1Y = -30;
     double load1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -8;
-    double getload1Y = -62;
+    double getload1X = -7;
+    double getload1Y = -60.5;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = -52;
-    double endY = -20;
+    double endY = -18;
     double endH = Math.toRadians(270); //Red=90, Blue = 270
 
     @Override
@@ -93,14 +87,10 @@ public class BlueNear1 extends LinearOpMode {
         // because robot will do other actions timed by where in the trajectory it is
 
         //drive to preload launch position
-        TrajectoryActionBuilder goToMotifScan = drive.actionBuilder(StartPose)
-                .strafeToLinearHeading(new Vector2d(motifX, motifY), motifH)
-                ;
-        Action GoToMotifScan = goToMotifScan.build();
-
-        TrajectoryActionBuilder goToLaunchPreload = goToMotifScan.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
-                ;
+        TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
+                .setReversed(true)
+                .splineTo(new Vector2d(launchX,launchY),launchH) //drive to preload shooting position
+        ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
 
         //drive to position to load 1st set of artifacts
@@ -153,14 +143,12 @@ public class BlueNear1 extends LinearOpMode {
                         new SequentialAction(
                                 intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMNear(),
-                                //go to motif scan position and be still for 1 second
-                                GoToMotifScan,
-                                new SleepAction(0.4),
                                 // spin to launch position
                                 GoToLaunchPreload,
 
-                                // launch 3 Artifacts from near position, checking launcher wheel speed between each launch
+                                // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
                                 intake.autoLaunch3Fast(),
+
 
                                 // stop launcher and drive to Load 1
                                 GoToIntakeLoad1,

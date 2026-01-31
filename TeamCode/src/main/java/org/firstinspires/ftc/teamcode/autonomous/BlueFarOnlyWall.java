@@ -40,15 +40,10 @@ public class BlueFarOnlyWall extends LinearOpMode {
     double startY = -15;
     double startH = Math.toRadians(180);
 
-    // Look at Motif
-    double motifX = 48;
-    double motifY = -15;
-    double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
-
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5);
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
 
     // Launch Load1
     double launch1X = 55;
@@ -56,7 +51,7 @@ public class BlueFarOnlyWall extends LinearOpMode {
     double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
 
     // Go to Pickup Wall Load Start
-    double load1wallX = 51;
+    double load1wallX = 56;
     double load1wallY = -64.5;
     double load1wallH = Math.toRadians(310); //Red=50, Blue=310
 
@@ -93,15 +88,9 @@ public class BlueFarOnlyWall extends LinearOpMode {
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
-        //drive to motif view position
-        TrajectoryActionBuilder goToMotif = drive.actionBuilder(StartPose)
-                .strafeToLinearHeading(new Vector2d(motifX, motifY), motifH)
-                ;
-        Action GoToMotif = goToMotif.build();
-
         //drive to preload launch position
-        TrajectoryActionBuilder goToLaunchPreload = goToMotif.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
+        TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
+                .splineTo(new Vector2d(launchX, launchY), launchH)
                 ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
 
@@ -156,12 +145,9 @@ public class BlueFarOnlyWall extends LinearOpMode {
                                 intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
                                 launcher.autoSetRPMFar(),
 
-                                //go to motif scan position and be still for 1 second while spinning up wheel
-                                GoToMotif,
-                                new SleepAction(0.4),
-
                                 // drive to launch position
                                 GoToLaunchPreload,
+                                new SleepAction(0.4),
 
                                 // launch Preload - 3 Artifacts from far position
                                 intake.autoLaunch3Fast(),

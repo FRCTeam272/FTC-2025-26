@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
@@ -26,7 +26,7 @@ public class RedNearDoNothing extends LinearOpMode {
 
     private MecanumDrive drive;
     private LauncherSubsystemV3 launcher;
-    private IntakeSubsystemV2 intake;
+    private IntakeSubsystemV3 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
 
@@ -58,7 +58,7 @@ public class RedNearDoNothing extends LinearOpMode {
         drive.localizer.setPose(StartPose);
 
         LauncherSubsystemV3 launcher = new LauncherSubsystemV3(hardwareMap, telemetry, matchSettings);
-        IntakeSubsystemV2 intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
+        IntakeSubsystemV3 intake = new IntakeSubsystemV3(hardwareMap, telemetry, matchSettings);
         VisionSubsystem vision = new VisionSubsystem(hardwareMap,matchSettings);
         LEDSubsystem leds = new LEDSubsystem(hardwareMap,matchSettings);
 

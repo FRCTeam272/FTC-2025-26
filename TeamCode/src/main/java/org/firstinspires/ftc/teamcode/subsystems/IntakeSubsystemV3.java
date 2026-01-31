@@ -197,20 +197,20 @@ public class IntakeSubsystemV3 {
                     midTransferred = false;
                     initialized = true;
                 }
-                if (!rearPossession() && !possessionRear) { //check for rear possession
-                    if (midPossession()) {
-                        // Check for color passing through Mid
-                        if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
-                            colorInSlotRear = colorDetected(midColorSens);
-                        }
-                    }
-                }
-                if (rearPossession() && !possessionRear && !midPossession()) {
+//                if (!rearPossession() && !possessionRear) { //check for rear possession
+//                    if (midPossession()) {
+//                        // Check for color passing through Mid
+//                        if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
+//                            colorInSlotRear = colorDetected(midColorSens);
+//                        }
+//                    }
+//                }
+                if (rearPossession() && !possessionRear) {
                     possessionRear = true;
                     stopRear();
                 }
                 if (possessionRear && midPossession() && !possessionMid) {
-                    colorInSlotMid = colorDetected(midColorSens);
+                    //colorInSlotMid = colorDetected(midColorSens);
                     //holdArtifactRear();
                     possessionMid = true;
                 }
@@ -233,20 +233,20 @@ public class IntakeSubsystemV3 {
                     midTransferred = false;
                     initialized = true;
                 }
-                if (!frontPossession() && !possessionFront) { //check for rear possession
-                    if (midPossession()) {
-                        // Check for color passing through Mid
-                        if (colorInSlotFront == MatchSettings.ArtifactColor.UNKNOWN) {
-                            colorInSlotFront = colorDetected(midColorSens);
-                        }
-                    }
-                }
-                if (frontPossession() && !possessionFront && !midPossession()) {
+//                if (!frontPossession() && !possessionFront) { //check for rear possession
+//                    if (midPossession()) {
+//                        // Check for color passing through Mid
+//                        if (colorInSlotFront == MatchSettings.ArtifactColor.UNKNOWN) {
+//                            colorInSlotFront = colorDetected(midColorSens);
+//                        }
+//                    }
+//                }
+                if (frontPossession() && !possessionFront) {
                     possessionFront = true;
                     stopFront();
                 }
                 if (possessionFront && midPossession() && !possessionMid) {
-                    colorInSlotMid = colorDetected(midColorSens);
+//                    colorInSlotMid = colorDetected(midColorSens);
                     possessionMid = true;
                 }
                 if (possessionFront && possessionMid && rearPossession()) {
@@ -285,7 +285,7 @@ public class IntakeSubsystemV3 {
                     launchTimer.reset();
 
                 }
-                if (launchTimer.seconds() > 3) {
+                if (launchTimer.seconds() > 2.5) {
                     stopIntake();
                     stopTransfer();
                     initialized = false;

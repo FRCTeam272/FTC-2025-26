@@ -41,17 +41,17 @@ public class BlueFar3noWall extends LinearOpMode {
 
     // Launch Preload
     double launchX = 55;
-    double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5); // -5 blue, +3 red
+    double launchY = -12;
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)); // -5 blue, +3 red
 
     // Launch Load1
     double launch1X = 55;
-    double launch1Y = -15;
+    double launch1Y = -12;
     double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
 
     // Launch Load2
     double launch2X = 55;
-    double launch2Y = -22;
+    double launch2Y = -12;
     double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Launch Load3
@@ -119,7 +119,7 @@ public class BlueFar3noWall extends LinearOpMode {
 
         //drive to preload launch position
         TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
+                .splineTo(new Vector2d(launchX, launchY), launchH)
                 ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
 

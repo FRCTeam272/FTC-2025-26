@@ -40,15 +40,10 @@ public class BlueFar2noWall extends LinearOpMode {
     double startY = -15;
     double startH = Math.toRadians(180);
 
-    // Look at Motif
-    double motifX = 36;
-    double motifY = -15;
-    double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
-
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5); // -5 blue, +3 red
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)); // -5 blue, +3 red
 
     // Launch Load1
     double launch1X = 55;

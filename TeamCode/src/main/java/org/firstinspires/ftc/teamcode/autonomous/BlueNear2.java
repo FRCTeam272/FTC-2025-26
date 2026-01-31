@@ -54,28 +54,28 @@ public class BlueNear2 extends LinearOpMode {
     double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
-    double load1X = -8;
+    double load1X = -7;
     double load1Y = -30;
     double load1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -8;
-    double getload1Y = -62;
+    double getload1X = -7;
+    double getload1Y = -60.5;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
-    double load2X = 17.5;
+    double load2X = 18.5;
     double load2Y = -30;
     double load2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
-    double getload2X = 17.5;
-    double getload2Y = -65;
+    double getload2X = 18.5;
+    double getload2Y = -66;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
-    double endX = -52;
-    double endY = -20;
+    double endX = 0;
+    double endY = -36;
     double endH = Math.toRadians(270); //Red=90, Blue = 270
 
     @Override
@@ -141,7 +141,7 @@ public class BlueNear2 extends LinearOpMode {
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad2 = intakeLoad2.endTrajectory().fresh()
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(launch2X,launch2Y,launch2H),Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(launch2X,launch2Y,launch2H),Math.toRadians(135)) //-135 Red
                 ;
         Action GoToLaunchLoad2 = goToLaunchLoad2.build();
 

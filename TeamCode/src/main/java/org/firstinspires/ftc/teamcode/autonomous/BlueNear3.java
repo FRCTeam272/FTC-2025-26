@@ -70,12 +70,12 @@ public class BlueNear3 extends LinearOpMode {
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
-    double load2X = 18;
+    double load2X = 18.5;
     double load2Y = -30;
     double load2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
-    double getload2X = 18;
+    double getload2X = 18.5;
     double getload2Y = -66;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
@@ -157,7 +157,7 @@ public class BlueNear3 extends LinearOpMode {
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad2 = intakeLoad2.endTrajectory().fresh()
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(launch2X,launch2Y,launch2H),Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(launch2X,launch2Y,launch2H),Math.toRadians(135)) //-135 Red
                 ;
         Action GoToLaunchLoad2 = goToLaunchLoad2.build();
 

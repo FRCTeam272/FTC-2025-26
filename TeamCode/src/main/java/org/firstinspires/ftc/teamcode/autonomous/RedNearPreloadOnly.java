@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV2;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystemV3;
 import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
@@ -19,28 +20,33 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="RedFarDoNothing", group="Auto")
-public class RedFarDoNothing extends LinearOpMode {
+@Autonomous (name="RedNearPreloadOnly", group="Auto")
+public class RedNearPreloadOnly extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
     private MecanumDrive drive;
     private LauncherSubsystemV3 launcher;
-    private IntakeSubsystemV2 intake;
+    private IntakeSubsystemV3 intake;
     private VisionSubsystem vision;
     private LEDSubsystem leds;
 
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = 62;
-    double startY = 15;
+    double startX = -62;
+    double startY = 39.5;
     double startH = Math.toRadians(180);
 
+    // Launch Position Preload
+    double launchX = -48;
+    double launchY = 12;
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY));
+
     // End auto off a launch line, facing away from Driver
-    double endX = 58;
-    double endY = 40;
-    double endH = Math.toRadians(180);
+    double endX = -54;
+    double endY = 20;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -58,21 +64,24 @@ public class RedFarDoNothing extends LinearOpMode {
         drive.localizer.setPose(StartPose);
 
         LauncherSubsystemV3 launcher = new LauncherSubsystemV3(hardwareMap, telemetry, matchSettings);
-        IntakeSubsystemV2 intake = new IntakeSubsystemV2(hardwareMap, telemetry, matchSettings);
+        IntakeSubsystemV3 intake = new IntakeSubsystemV3(hardwareMap, telemetry, matchSettings);
         VisionSubsystem vision = new VisionSubsystem(hardwareMap,matchSettings);
         LEDSubsystem leds = new LEDSubsystem(hardwareMap,matchSettings);
 
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
-        //drive to end position
-        TrajectoryActionBuilder goToEnd = drive.actionBuilder(StartPose)
-                .strafeToLinearHeading(new Vector2d(endX, endY), endH)
-                .turnTo(Math.toRadians(Constants.Util.angleToMotifDegrees(endX,endY)))
-                .waitSeconds(1)
-                .turnTo(Math.toRadians(90)) //Red=90, Blue = 270
+        TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
+                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
                 ;
-        Action GoToEnd = goToEnd.build();
+        Action GoToLaunchPreload = goToLaunchPreload.build();
+
+        //end Auto off a launch line, facing away from driver
+        TrajectoryActionBuilder endAuto = goToLaunchPreload.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(endX, endY), endH)
+                ;
+        Action EndAuto = endAuto.build();
+
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
@@ -92,11 +101,24 @@ public class RedFarDoNothing extends LinearOpMode {
 
 
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
-                new ParallelAction( //leds update during entire auto - run in parallel to everything else
+                new ParallelAction( //leds update during entire auto & vision scans until it saves the motif - run in parallel to everything else
                         leds.updateAuto(),
                         vision.autoScanMotif(),
-                        GoToEnd
+                        launcher.autoSpinUp(),
+                        new SequentialAction(
+                                intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
+                                launcher.autoSetRPMNear(),
+                                new SleepAction(0.5),
+                                // spin to launch position
+                                GoToLaunchPreload,
 
+                                // launch 3 Artifacts from near position, checking launcher wheel speed between each launch
+                                intake.autoLaunch3Fast(),
+
+                                //stop launcher and drive to end position off launch lines
+                                launcher.autoStop(),
+                                EndAuto
+                        )
                 )));
 
         // Stores ending pose for use by Teleop
