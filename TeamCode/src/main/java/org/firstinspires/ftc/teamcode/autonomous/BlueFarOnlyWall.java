@@ -43,25 +43,25 @@ public class BlueFarOnlyWall extends LinearOpMode {
     // Launch Preload
     double launchX = 55;
     double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-4.75);
 
     // Launch Load1
     double launch1X = 55;
     double launch1Y = -15;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)-8);
 
     // Go to Pickup Wall Load Start
-    double load1wallX = 56;
-    double load1wallY = -64.5;
-    double load1wallH = Math.toRadians(310); //Red=50, Blue=310
+    double load1wallX = 59;
+    double load1wallY = -67;
+    double load1wallH = Math.toRadians(364.5); //Red=50, Blue=310
 
     // Go to Pickup Wall Load End while Intaking
-    double getload1wallX = 68;
-    double getload1wallY = -64.5;
-    double getload1wallH = Math.toRadians(310); //Red=50, Blue=310
+    double getload1wallX = 69;
+    double getload1wallY = -67;
+    double getload1wallH = Math.toRadians(10); //Red=50, Blue=310
 
     // End auto off a launch line, facing away from Driver
-    double endX = 55;
+    double endX = 62.5;
     double endY = -36;
     double endH = Math.toRadians(270); //Red=90, Blue = 270
 
@@ -90,7 +90,7 @@ public class BlueFarOnlyWall extends LinearOpMode {
 
         //drive to preload launch position
         TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
-                .splineTo(new Vector2d(launchX, launchY), launchH)
+                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
                 ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
 
@@ -103,6 +103,8 @@ public class BlueFarOnlyWall extends LinearOpMode {
         //get wall load, slowly
         TrajectoryActionBuilder  intakeLoad1 = goToIntakeLoad1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(getload1wallX, getload1wallY), getload1wallH, new TranslationalVelConstraint(30.0)) //drive SLOWLY to position to loading 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(load1wallX, load1wallY), load1wallH)
+                .strafeToLinearHeading(new Vector2d(getload1wallX, getload1wallY), getload1wallH)
                 ;
         Action IntakeLoad1 = intakeLoad1.build();
 
@@ -147,9 +149,10 @@ public class BlueFarOnlyWall extends LinearOpMode {
 
                                 // drive to launch position
                                 GoToLaunchPreload,
-                                new SleepAction(0.4),
+                                new SleepAction(1),
 
                                 // launch Preload - 3 Artifacts from far position
+                                intake.autoLaunch3Fast(),
                                 intake.autoLaunch3Fast(),
 
                                 // stop launcher and drive to Load 1
@@ -158,7 +161,10 @@ public class BlueFarOnlyWall extends LinearOpMode {
                                 // Drive forward SLOWLY intaking Artifacts from wall
                                 new ParallelAction(
                                         IntakeLoad1,
-                                        intake.autoIntake3Front(),
+                                        new SequentialAction(
+                                                intake.autoIntake3Front(),
+                                                intake.autoIntake3Front()
+                                        ),
                                         intake.autoFarColors()
                                 ),
 
