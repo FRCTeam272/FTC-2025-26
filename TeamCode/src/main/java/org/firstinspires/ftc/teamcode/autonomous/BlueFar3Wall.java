@@ -40,18 +40,18 @@ public class BlueFar3Wall extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // Launch Preload
-    double launchX = 55;
+    double launchX = 53;
     double launchY = -15;
     double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5); // -5 blue, +3 red
 
     // Launch Load1
-    double launch1X = 55;
+    double launch1X = 53;
     double launch1Y = -15;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)-2);
 
     // Launch Load2
-    double launch2X = 55;
-    double launch2Y = -22;
+    double launch2X = 53;
+    double launch2Y = -15;
     double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Launch Load3
@@ -66,17 +66,17 @@ public class BlueFar3Wall extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = -65;
+    double getload1Y = -65.5;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
-    double load2X = 16;
+    double load2X = 17.5;
     double load2Y = -30;
     double load2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
-    double getload2X = 16;
-    double getload2Y = -65;
+    double getload2X = 17.5;
+    double getload2Y = -65.5;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start

@@ -4,9 +4,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,8 +19,8 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueFarPreloadOnly", group="Auto")
-public class BlueFarPreloadOnly extends LinearOpMode {
+@Autonomous (name="RedFarDoNothing", group="Auto")
+public class RedFarDoNothing extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,23 +34,13 @@ public class BlueFarPreloadOnly extends LinearOpMode {
 
     // Starting Coordinates
     double startX = 62;
-    double startY = -15;
+    double startY = 15;
     double startH = Math.toRadians(180);
 
-    // Look at Motif
-    double motifX = 50;
-    double motifY = -15;
-    double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
-
-    // Launch Preload
-    double launchX = 55;
-    double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5); // -5 blue, +3 red
-
     // End auto off a launch line, facing away from Driver
-    double endX = 55;
-    double endY = -36;
-    double endH = Math.toRadians(270); //Red=90, Blue = 270
+    double endX = 58;
+    double endY = 40;
+    double endH = Math.toRadians(180);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -62,7 +50,7 @@ public class BlueFarPreloadOnly extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -77,29 +65,18 @@ public class BlueFarPreloadOnly extends LinearOpMode {
         // TODO Build Trajectories - paste from MeepMeep, separating out by movement,
         // because robot will do other actions timed by where in the trajectory it is
 
-        //drive to motif view position
-        TrajectoryActionBuilder goToMotif = drive.actionBuilder(StartPose)
-                .strafeToLinearHeading(new Vector2d(motifX, motifY), motifH)
-                ;
-        Action GoToMotif = goToMotif.build();
-
-        //drive to preload launch position
-        TrajectoryActionBuilder goToLaunchPreload = goToMotif.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
-                ;
-        Action GoToLaunchPreload = goToLaunchPreload.build();
-
-        //end Auto off a launch line, facing away from driver
-        TrajectoryActionBuilder endAuto = goToLaunchPreload.endTrajectory().fresh()
+        //drive to end position
+        TrajectoryActionBuilder goToEnd = drive.actionBuilder(StartPose)
                 .strafeToLinearHeading(new Vector2d(endX, endY), endH)
+                .turnTo(Math.toRadians(Constants.Util.angleToMotifDegrees(endX,endY)))
+                .waitSeconds(1)
+                .turnTo(Math.toRadians(90)) //Red=90, Blue = 270
                 ;
-        Action EndAuto = endAuto.build();
-
+        Action GoToEnd = goToEnd.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
-            //vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
@@ -118,25 +95,8 @@ public class BlueFarPreloadOnly extends LinearOpMode {
                 new ParallelAction( //leds update during entire auto - run in parallel to everything else
                         leds.updateAuto(),
                         vision.autoScanMotif(),
-                        launcher.autoSpinUp(),
-                        new SequentialAction(
-                                intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
-                                launcher.autoSetRPMFar(),
+                        GoToEnd
 
-                                //go to motif scan position and be still for 1 second while spinning up wheel
-                                GoToMotif,
-                                new SleepAction(2),
-
-                                // drive to launch position
-                                GoToLaunchPreload,
-
-                                // launch Preload - 3 Artifacts from far position
-                                intake.autoLaunch3Fast(),
-
-                                //stop launcher and drive to end position off launch lines
-                                launcher.autoStop(),
-                                EndAuto
-                        )
                 )));
 
         // Stores ending pose for use by Teleop

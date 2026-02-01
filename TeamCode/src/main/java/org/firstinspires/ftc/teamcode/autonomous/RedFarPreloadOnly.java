@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,8 +20,8 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueFarPreloadOnly", group="Auto")
-public class BlueFarPreloadOnly extends LinearOpMode {
+@Autonomous (name="RedFarPreloadOnly", group="Auto")
+public class RedFarPreloadOnly extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,23 +35,23 @@ public class BlueFarPreloadOnly extends LinearOpMode {
 
     // Starting Coordinates
     double startX = 62;
-    double startY = -15;
+    double startY = 15;
     double startH = Math.toRadians(180);
 
     // Look at Motif
     double motifX = 50;
-    double motifY = -15;
+    double motifY = 15;
     double motifH = Math.toRadians(Constants.Util.angleToMotifDegrees(motifX,motifY));
 
     // Launch Preload
     double launchX = 55;
-    double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5); // -5 blue, +3 red
+    double launchY = 15;
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+3); // -5 blue, +3 red
 
     // End auto off a launch line, facing away from Driver
     double endX = 55;
-    double endY = -36;
-    double endH = Math.toRadians(270); //Red=90, Blue = 270
+    double endY = 36;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -62,7 +61,7 @@ public class BlueFarPreloadOnly extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
