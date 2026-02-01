@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
+
 @Autonomous (name="RedFarDoNothing", group="Auto")
 public class RedFarDoNothing extends LinearOpMode {
 

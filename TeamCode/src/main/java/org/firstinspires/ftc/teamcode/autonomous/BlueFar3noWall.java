@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
+
 @Autonomous (name="BlueFar3noWall", group="Auto")
 public class BlueFar3noWall extends LinearOpMode {
 
