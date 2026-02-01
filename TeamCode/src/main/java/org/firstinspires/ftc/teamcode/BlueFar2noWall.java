@@ -73,16 +73,6 @@ public class BlueFar2noWall extends LinearOpMode {
     double getload2Y = -65.5;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
-    // Go to Pickup Load 3 Start
-    double load3X = -8;
-    double load3Y = -30;
-    double load3H = Math.toRadians(270); //Red=90, Blue=270
-
-    // Go to Pickup Load 3 End while Intaking
-    double getload3X = -8;
-    double getload3Y = -61.5;
-    double getload3H = Math.toRadians(270); //Red=90, Blue=270
-
     // End auto off a launch line, facing away from Driver
     double endX = 0;
     double endY = -36;
@@ -153,26 +143,8 @@ public class BlueFar2noWall extends LinearOpMode {
                 ;
         Action GoToLaunchLoad2 = goToLaunchLoad2.build();
 
-        //drive to position to load 3rd set of artifacts
-        TrajectoryActionBuilder goToIntakeLoad3 = goToLaunchLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(load3X, load3Y), load3H)
-                ;
-        Action GoToIntakeLoad3 = goToIntakeLoad3.build();
-
-        //get load 2, slowly
-        TrajectoryActionBuilder  intakeLoad3 = goToIntakeLoad3.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload3X, getload3Y), getload3H, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
-                ;
-        Action IntakeLoad3 = intakeLoad3.build();
-
-        //drive back to launch position
-        TrajectoryActionBuilder goToLaunchLoad3 = intakeLoad3.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launch3X, launch3Y), launch3H)
-                ;
-        Action GoToLaunchLoad3 = goToLaunchLoad3.build();
-
         //end Auto off a launch line, facing away from driver
-        TrajectoryActionBuilder endAuto = goToLaunchLoad3.endTrajectory().fresh()
+        TrajectoryActionBuilder endAuto = goToLaunchLoad2.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(endX, endY), endH)
                 ;
         Action EndAuto = endAuto.build();
@@ -244,22 +216,6 @@ public class BlueFar2noWall extends LinearOpMode {
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
                                 intake.autoLaunch3Fast(),
-                                launcher.autoSetRPMNear(),
-
-                                //stop Launcher and drive to Load 2 at the wall
-                                GoToIntakeLoad3,
-
-                                // Drive forward SLOWLY intaking Artifacts from the wall.
-                                new ParallelAction(
-                                        IntakeLoad3,
-                                        intake.autoIntake3Front(),
-                                        intake.autoWallColors()
-                                ),
-                                GoToLaunchLoad3,
-
-                                // launch 3 Artifacts from near position, checking launcher wheel speed between each launch
-                                intake.autoLaunch3Fast(),
-
 
                                 //stop launcher and drive to end position off launch lines
                                 launcher.autoStop(),
