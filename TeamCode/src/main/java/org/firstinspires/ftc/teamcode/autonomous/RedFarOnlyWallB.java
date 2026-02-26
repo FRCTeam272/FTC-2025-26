@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,8 +20,8 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueFarOnlyWallB", group="Auto")
-public class BlueFarOnlyWallB extends LinearOpMode {
+@Autonomous (name="RedFarOnlyWallB", group="Auto")
+public class RedFarOnlyWallB extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,48 +35,48 @@ public class BlueFarOnlyWallB extends LinearOpMode {
 
     // Starting Coordinates
     double startX = 62;
-    double startY = -15;
+    double startY = 15;
     double startH = Math.toRadians(180);
 
     // Launch Preload
-    double launchX = 54;
-    double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5.25);
+    double launchX = 56;
+    double launchY = 15;
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+3.25);
 
     // Launch Load1
-    double launch1X = 55;
-    double launch1Y = -15;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)-2);
+    double launch1X = 56;
+    double launch1Y = 15;
+    double launch1H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch1X, launch1Y));
 
     // Launch Load2
-    double launch2X = 55;
-    double launch2Y = -15;
-    double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
+    double launch2X = 56;
+    double launch2Y = 15;
+    double launch2H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Wall Load Start
     double load1wallX = 62;
-    double load1wallY = -42;
-    double load1wallH = Math.toRadians(270); //Red=110, Blue=250
+    double load1wallY = 42;
+    double load1wallH = Math.toRadians(90); //Red=110, Blue=250
 
     // Go to Pickup Wall Load End while Intaking
     double getload1wallX = 62.5;
-    double getload1wallY = -65;
-    double getload1wallH = Math.toRadians(270); //Red=110, Blue=250
+    double getload1wallY = 65;
+    double getload1wallH = Math.toRadians(90); //Red=110, Blue=250
 
     // Go to Pickup Wall Load Start
     double load2wallX = 62.5;
-    double load2wallY = -42;
-    double load2wallH = Math.toRadians(270); //Red=110, Blue=250
+    double load2wallY = 42;
+    double load2wallH = Math.toRadians(90); //Red=110, Blue=250
 
     // Go to Pickup Wall Load End while Intaking
     double getload2wallX = 62;
-    double getload2wallY = -65;
-    double getload2wallH = Math.toRadians(270); //Red=110, Blue=250
+    double getload2wallY = 65;
+    double getload2wallH = Math.toRadians(90); //Red=110, Blue=250
 
     // End auto off a launch line, facing away from Driver
     double endX = 65;
-    double endY = -36;
-    double endH = Math.toRadians(270); //Red=90, Blue = 270
+    double endY = 36;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -87,7 +86,7 @@ public class BlueFarOnlyWallB extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -118,7 +117,7 @@ public class BlueFarOnlyWallB extends LinearOpMode {
         TrajectoryActionBuilder  intakeLoad1 = goToIntakeLoad1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(getload1wallX, getload1wallY), getload1wallH) //drive SLOWLY to position to loading 1st set of artifacts
                 .strafeToLinearHeading(new Vector2d(load1wallX, load1wallY), load1wallH)
-                .strafeToLinearHeading(new Vector2d(getload1wallX-2, getload1wallY), getload1wallH)
+                .strafeToLinearHeading(new Vector2d(getload1wallX+2, getload1wallY), getload1wallH)
                 ;
         Action IntakeLoad1 = intakeLoad1.build();
 

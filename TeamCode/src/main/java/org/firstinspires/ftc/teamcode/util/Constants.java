@@ -18,7 +18,7 @@ public final class Constants {
         public static double INTAKE_POWER = 0.5;
         public static double REVERSE_INTAKE_POWER = -0.5;
         public static double DISTANCE_FOR_POSSESSION_FRONT = 4.5; //TUNE!!!!! max range is 10
-        public static double DISTANCE_FOR_POSSESSION_MID = 6.5;
+        public static double DISTANCE_FOR_POSSESSION_MID = 4.5;
         public static double DISTANCE_FOR_POSSESSION_REAR = 5.5; //TUNE!!!!! max range is 10
     }
 

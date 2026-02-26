@@ -223,7 +223,7 @@ public class LauncherSubsystemV3 {
     public class AutoSetRPMFar implements Action {
         @Override
         public boolean run (@NonNull TelemetryPacket packet) {
-            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM+5);
+            setTargetRPM(Constants.launcherConstants.FAR_ZONE_LAUNCH_RPM);
             return false;
         }
     }
@@ -235,7 +235,7 @@ public class LauncherSubsystemV3 {
     public class AutoSetRPMNear implements Action {
         @Override
         public boolean run (@NonNull TelemetryPacket packet) {
-            setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM+60);
+            setTargetRPM(Constants.launcherConstants.MID_ZONE_LAUNCH_RPM+30); //60
             return false;
         }
     }
