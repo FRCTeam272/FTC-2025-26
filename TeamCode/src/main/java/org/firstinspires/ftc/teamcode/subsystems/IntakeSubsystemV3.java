@@ -96,7 +96,7 @@ public class IntakeSubsystemV3 {
         intakeFront = hardwareMap.get(DcMotor.class, "intakeFront");
         intakeRear = hardwareMap.get(DcMotor.class, "intakeRear");
 
-        intakeFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeFront.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -512,7 +512,7 @@ public class IntakeSubsystemV3 {
      * ============== AUTONOMOUS ACTIONS ==============
      **/
 
-    // Automatically intakes 3 artifacts from front. Times out after 5 seconds
+    // Automatically intakes 3 artifacts from front. Times out after 1.5 seconds
     public class AutoIntake3Front implements Action {
         //check if initialized
         private boolean initialized = false;
@@ -582,6 +582,77 @@ public class IntakeSubsystemV3 {
 
     //---------------------------------------------------------------
 
+
+    // Automatically intakes 3 artifacts from front. Times out after 2.5 seconds
+    public class AutoIntake3FrontLong implements Action {
+        //check if initialized
+        private boolean initialized = false;
+        private ElapsedTime timer = new ElapsedTime();
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            // powers on intake, if it is not on
+            if (!initialized) { // turn on all front intaking servos
+                MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_FRONT;
+                clearIntakeLoadColors();
+                clearIntakePossessions();
+                inboundFront();
+                outboundRear();
+                inboundTransfer();
+                timer.reset();
+                initialized = true; //so that it skips this part next rerun
+            }
+
+            if (timer.time() > 2) { //stop intakes if it's been intaking longer than ## seconds
+                stopIntake();
+                stopTransfer();
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                return false;
+            }
+
+            if (!possessionRear) { //check for rear possession
+//                    if (midPossession()) {
+//                        // Check for color passing through Mid
+//                        if (colorInSlotRear == MatchSettings.ArtifactColor.UNKNOWN) {
+//                            colorInSlotRear = colorDetected(midColorSens);
+//                        }
+//                    }
+
+                if (rearPossession() && !possessionRear) {
+                    stopRear();
+                    possessionRear = true;
+                }
+                return true;  // rerun if sensor doesn't read possession
+            }
+
+            if (possessionRear && !possessionMid) { //check for mid possession
+                if (midPossession()) {
+                    possessionMid = true;
+                    colorInSlotMid = colorDetected(midColorSens);
+                }
+                return true; //rerun if sensor doesn't read anything
+            }
+
+            if (possessionMid && !possessionFront) { // check for front possession
+                if (frontPossession()) {
+                    possessionFront = true;
+                    stopIntake(); //otherwise, turn off motors
+                    stopTransfer();
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                    return false;
+                }
+            }
+
+            return false; // rerun if sensors don't read anything
+        }
+    }
+
+    public Action autoIntake3FrontLong() {
+        return new AutoIntake3FrontLong();
+    }
+
+    //---------------------------------------------------------------
+
     //temp for auto before the launcher is final - spits out balls from the intake for 3 seconds
     public class AutoSpitOut implements Action {
         private boolean initialized = false;
@@ -596,7 +667,7 @@ public class IntakeSubsystemV3 {
                 timer.reset();
                 initialized = true;
                 return true;
-            } else if (timer.seconds() < 2) {
+            } else if (timer.seconds() < 3) {
                 return true;
             } else {
                 stopIntake();

@@ -43,16 +43,16 @@ public class BlueFar2Wall extends LinearOpMode {
     // Launch Preload
     double launchX = 53;
     double launchY = -15;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-5); // -5 blue, +3 red
+    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY)-4.65); // -5 blue, +3 red
 
     // Launch Load1
     double launch1X = 53;
     double launch1Y = -15;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)-2);
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)+1);
 
     // Launch Load3
     double launch3X = 55;
-    double launch3Y = -22;
+    double launch3Y = -19;
     double launch3H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch3X, launch3Y));
 
     // Go to Pickup Load1 Start
@@ -62,18 +62,18 @@ public class BlueFar2Wall extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = 37;
-    double getload1Y = -65.5;
+    double getload1Y = -64.5;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Wall Load Start
-    double load3wallX = 48;
-    double load3wallY = -64.5;
-    double load3wallH = Math.toRadians(310); //Red=50, Blue=310
+    double load3wallX = 64.5; //side to side toward goal
+    double load3wallY = -63.75; //forward
+    double load3wallH = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Wall Load End while Intaking
     double getload3wallX = 68;
-    double getload3wallY = -64.5;
-    double getload3wallH = Math.toRadians(310); //Red=50, Blue=310
+    double getload3wallY = -63.25;
+    double getload3wallH = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;
@@ -211,7 +211,7 @@ public class BlueFar2Wall extends LinearOpMode {
                                 // Drive forward SLOWLY intaking Artifacts from the wall.
                                 new ParallelAction(
                                         IntakeLoad3,
-                                        intake.autoIntake3Front(),
+                                        intake.autoIntake3FrontLong(),
                                         intake.autoWallColors()
                                 ),
                                 GoToLaunchLoad3,
