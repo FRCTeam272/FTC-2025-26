@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,8 +20,8 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueNearPreloadOnly", group="Auto")
-public class BlueNearPreloadOnly extends LinearOpMode {
+@Autonomous (name="RedNearPreloadOnly", group="Auto")
+public class RedNearPreloadOnly extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,18 +35,18 @@ public class BlueNearPreloadOnly extends LinearOpMode {
 
     // Starting Coordinates
     double startX = -60;
-    double startY = -39.5;
+    double startY = 39.5;
     double startH = Math.toRadians(180);
 
     // Launch Position Preload
     double launchX = -48;
-    double launchY = -12;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY));
+    double launchY = 12;
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY));
 
     // End auto off a launch line, facing away from Driver
     double endX = -54;
-    double endY = -20;
-    double endH = Math.toRadians(270); //Red=90, Blue = 270
+    double endY = 20;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -57,7 +56,7 @@ public class BlueNearPreloadOnly extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);

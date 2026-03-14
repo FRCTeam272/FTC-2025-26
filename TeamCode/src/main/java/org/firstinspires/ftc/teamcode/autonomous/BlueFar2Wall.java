@@ -68,12 +68,12 @@ public class BlueFar2Wall extends LinearOpMode {
     // Go to Pickup Wall Load Start
     double load3wallX = 64.5; //side to side toward goal
     double load3wallY = -63.75; //forward
-    double load3wallH = Math.toRadians(275); //Red=90, Blue=270
+    double load3wallH = Math.toRadians(275); //Red=85, Blue=275
 
     // Go to Pickup Wall Load End while Intaking
     double getload3wallX = 68;
     double getload3wallY = -63.25;
-    double getload3wallH = Math.toRadians(275); //Red=90, Blue=270
+    double getload3wallH = Math.toRadians(275); //Red=85, Blue=275
 
     // End auto off a launch line, facing away from Driver
     double endX = 36;

@@ -34,7 +34,7 @@ public class BlueNearDoNothing extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = -62;
+    double startX = -60;
     double startY = -39.5;
     double startH = Math.toRadians(180);
 

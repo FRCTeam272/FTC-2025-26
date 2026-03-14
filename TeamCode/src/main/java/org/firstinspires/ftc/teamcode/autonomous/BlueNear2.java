@@ -34,7 +34,7 @@ public class BlueNear2 extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = -62;
+    double startX = -60;
     double startY = -39.5;
     double startH = Math.toRadians(180);
 
@@ -60,7 +60,7 @@ public class BlueNear2 extends LinearOpMode {
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = -7;
-    double getload1Y = -60.5;
+    double getload1Y = -59;
     double getload1H = Math.toRadians(270); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start
@@ -70,7 +70,7 @@ public class BlueNear2 extends LinearOpMode {
 
     // Go to Pickup Load 2 End while Intaking
     double getload2X = 18.5;
-    double getload2Y = -66;
+    double getload2Y = -64;
     double getload2H = Math.toRadians(270); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver

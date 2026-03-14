@@ -21,8 +21,9 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueNear2Gate", group="Auto")
-public class BlueNear2Gate extends LinearOpMode {
+
+@Autonomous (name="RedFar2Wall", group="Auto")
+public class RedFar2Wall extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -35,59 +36,49 @@ public class BlueNear2Gate extends LinearOpMode {
     //TODO - Coordinate List (Pasted from MeepMeep!)
 
     // Starting Coordinates
-    double startX = -60; //changed for new intake position - was 62
-    double startY = -39.5;
+    double startX = 62;
+    double startY = 15;
     double startH = Math.toRadians(180);
 
-    // Launch Position Preload
-    double launchX = -12;
-    double launchY = -12;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY) +180);
+    // Launch Preload
+    double launchX = 53;
+    double launchY = 15;
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+4.65); // -5 blue, +3 red
 
-    // Launch Position Load1
-    double launch1X = -12;
-    double launch1Y = -12;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
+    // Launch Load1
+    double launch1X = 53;
+    double launch1Y = 15;
+    double launch1H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch1X, launch1Y)-1);
 
-    // Launch Position Load2
-    double launch2X = -12;
-    double launch2Y = -12;
-    double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
+    // Launch Load3
+    double launch3X = 55;
+    double launch3Y = 22;
+    double launch3H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch3X, launch3Y));
 
     // Go to Pickup Load1 Start
-    double load1X = -7;
-    double load1Y = -30;
-    double load1H = Math.toRadians(270); //Red=90, Blue=270
+    double load1X = 37;
+    double load1Y = 30;
+    double load1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
-    double getload1X = -7;
-    double getload1Y = -59;
-    double getload1H = Math.toRadians(270); //Red=90, Blue=270
+    double getload1X = 37;
+    double getload1Y = 64.5;
+    double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
-    // Go to Pickup Load 2 Start (middle hatch mark, go here first!)
-    double load2X = 18.5;
-    double load2Y = -30;
-    double load2H = Math.toRadians(270); //Red=90, Blue=270
+    // Go to Pickup Wall Load Start
+    double load3wallX = 64.5;
+    double load3wallY = 63.75;
+    double load3wallH = Math.toRadians(85); //Red=85, Blue=275
 
-    // Go to Pickup Load 2 End while Intaking
-    double getload2X = 18.5;
-    double getload2Y = -64;
-    double getload2H = Math.toRadians(270); //Red=90, Blue=270
-
-    // Go to Gate Press Start
-    double gatestartX = 9;
-    double gatestartY = -45;
-    double gatestartH = Math.toRadians(270); //Red=90, Blue=270
-
-    // Go to Gate Press
-    double gatepressX = 9;
-    double gatepressY = -60;
-    double gatepressH = Math.toRadians(270); //Red=90, Blue=270
+    // Go to Pickup Wall Load End while Intaking
+    double getload3wallX = 68;
+    double getload3wallY = 63.25;
+    double getload3wallH = Math.toRadians(85); //Red=85, Blue=275
 
     // End auto off a launch line, facing away from Driver
-    double endX = 0;
-    double endY = -36;
-    double endH = Math.toRadians(270); //Red=90, Blue = 270
+    double endX = 36;
+    double endY = 24;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -97,7 +88,7 @@ public class BlueNear2Gate extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -114,63 +105,48 @@ public class BlueNear2Gate extends LinearOpMode {
 
         //drive to preload launch position
         TrajectoryActionBuilder goToLaunchPreload = drive.actionBuilder(StartPose)
-                .setReversed(true)
-                .splineTo(new Vector2d(launchX,launchY),launchH) //drive to preload shooting position
-        ;
+                .strafeToLinearHeading(new Vector2d(launchX, launchY), launchH)
+                ;
         Action GoToLaunchPreload = goToLaunchPreload.build();
 
-        //drive to position to load middle set of artifacts
+        //drive to position to load 1st set of artifacts
         TrajectoryActionBuilder goToIntakeLoad1 = goToLaunchPreload.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(load2X,load2Y),load2H) //drive to position to load 1st set of artifacts
+                .strafeToLinearHeading(new Vector2d(load1X,load1Y),load1H) //drive to position to load 1st set of artifacts
                 ;
         Action GoToIntakeLoad1 = goToIntakeLoad1.build();
 
         //get load one, slowly
-        TrajectoryActionBuilder  intakeLoad1 = goToIntakeLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload2X,getload2Y),getload2H, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
+        TrajectoryActionBuilder  intakeLoad1= goToIntakeLoad1.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(getload1X,getload1Y),getload1H, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
         Action IntakeLoad1 = intakeLoad1.build();
 
-        //drive to Gate press start
-        TrajectoryActionBuilder goToGateStart = intakeLoad1.endTrajectory().fresh()
-                .setReversed(true)
-                .splineToConstantHeading(new Vector2d(gatestartX,gatestartY),gatestartH)
-                ;
-        Action GoToGateStart = goToGateStart.build();
-
-        // press Gate
-        TrajectoryActionBuilder pressGate = goToGateStart.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(gatepressX,gatepressY), gatepressH)
-                ;
-        Action PressGate = pressGate.build();
-
         //drive back to launch position
-        TrajectoryActionBuilder goToLaunchLoad1 = pressGate.endTrajectory().fresh()
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(launch1X,launch1Y,launch1H),Math.toRadians(135)) //-135 Red
+        TrajectoryActionBuilder goToLaunchLoad1 = intakeLoad1.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(launch1X, launch1Y), launch1H)
                 ;
         Action GoToLaunchLoad1 = goToLaunchLoad1.build();
 
-        //drive to position to load front hatch set of artifacts
-        TrajectoryActionBuilder goToIntakeLoad2 = goToLaunchLoad1.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(load1X, load1Y), load1H)
+        //drive to position to load 3rd set of artifacts
+        TrajectoryActionBuilder goToIntakeLoad3 = goToLaunchLoad1.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(load3wallX, load3wallY), load3wallH)
                 ;
-        Action GoToIntakeLoad2 = goToIntakeLoad2.build();
+        Action GoToIntakeLoad3 = goToIntakeLoad3.build();
 
-        //get load2, slowly
-        TrajectoryActionBuilder  intakeLoad2 = goToIntakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(getload1X, getload1Y), getload1H, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
+        //get load 2, slowly
+        TrajectoryActionBuilder  intakeLoad3 = goToIntakeLoad3.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(getload3wallX, getload3wallY), getload3wallH, new TranslationalVelConstraint(50.0)) //drive SLOWLY to position to loading 1st set of artifacts
                 ;
-        Action IntakeLoad2 = intakeLoad2.build();
+        Action IntakeLoad3 = intakeLoad3.build();
 
         //drive back to launch position
-        TrajectoryActionBuilder goToLaunchLoad2 = intakeLoad2.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(launch2X, launch2Y), launch2H)
+        TrajectoryActionBuilder goToLaunchLoad3 = intakeLoad3.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(launch3X, launch3Y), launch3H)
                 ;
-        Action GoToLaunchLoad2 = goToLaunchLoad2.build();
+        Action GoToLaunchLoad3 = goToLaunchLoad3.build();
 
         //end Auto off a launch line, facing away from driver
-        TrajectoryActionBuilder endAuto = goToLaunchLoad2.endTrajectory().fresh()
+        TrajectoryActionBuilder endAuto = goToLaunchLoad3.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(endX, endY), endH)
                 ;
         Action EndAuto = endAuto.build();
@@ -179,6 +155,7 @@ public class BlueNear2Gate extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Position during Init", StartPose);
             telemetry.update();
+            //vision.scanMotifTagSequence();
         }
 
         telemetry.addData("Starting Position", StartPose);
@@ -194,19 +171,23 @@ public class BlueNear2Gate extends LinearOpMode {
 
 
         Actions.runBlocking(new SequentialAction( //overall sequential action that continues for length of Auton
-                new ParallelAction( //leds update during entire auto & vision scans until it saves the motif - run in parallel to everything else
+                new ParallelAction( //leds update during entire auto - run in parallel to everything else
                         leds.updateAuto(),
                         vision.autoScanMotif(),
                         launcher.autoSpinUp(),
                         new SequentialAction(
                                 intake.autoResetAutoTimer(), // so that launching can be canceled to get Leave every time
-                                launcher.autoSetRPMNear(),
-                                // spin to launch position
+                                launcher.autoSetRPMFar(),
+
+                                //go to motif scan position and be still for 1 second while spinning up wheel
+
+
+                                // drive to launch position
                                 GoToLaunchPreload,
+                                new SleepAction(1.5),
 
-                                // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
+                                // launch Preload - 3 Artifacts from far position
                                 intake.autoLaunch3Fast(),
-
 
                                 // stop launcher and drive to Load 1
                                 GoToIntakeLoad1,
@@ -215,33 +196,29 @@ public class BlueNear2Gate extends LinearOpMode {
                                 new ParallelAction(
                                         IntakeLoad1,
                                         intake.autoIntake3Front(),
-                                        intake.autoCloseColors()
+                                        intake.autoFarColors()
                                 ),
 
-                                GoToGateStart,
-                                PressGate,
-
-                                new SleepAction(0.25), //tune pause at gate press
-
                                 // spin up launcher and drive to launch position for Load 1
-                                GoToLaunchLoad1,
+                               GoToLaunchLoad1,
 
                                 // launch 3 Artifacts from far position
                                 intake.autoLaunch3Fast(),
 
                                 //stop Launcher and drive to Load 2 at the wall
-                                GoToIntakeLoad2,
+                                GoToIntakeLoad3,
 
                                 // Drive forward SLOWLY intaking Artifacts from the wall.
                                 new ParallelAction(
-                                        IntakeLoad2,
-                                        intake.autoIntake3Front(),
-                                        intake.autoMidColors()
+                                        IntakeLoad3,
+                                        intake.autoIntake3FrontLong(),
+                                        intake.autoWallColors()
                                 ),
-                                GoToLaunchLoad2,
+                                GoToLaunchLoad3,
 
                                 // launch 3 Artifacts from far position, checking launcher wheel speed between each launch
                                 intake.autoLaunch3Fast(),
+
 
                                 //stop launcher and drive to end position off launch lines
                                 launcher.autoStop(),

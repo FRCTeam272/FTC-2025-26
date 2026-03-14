@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MatchSettings;
 
 
-@Autonomous (name="BlueNear2Gate", group="Auto")
-public class BlueNear2Gate extends LinearOpMode {
+@Autonomous (name="RedNear2Gate", group="Auto")
+public class RedNear2Gate extends LinearOpMode {
 
     private MatchSettings matchSettings;
 
@@ -36,58 +36,58 @@ public class BlueNear2Gate extends LinearOpMode {
 
     // Starting Coordinates
     double startX = -60; //changed for new intake position - was 62
-    double startY = -39.5;
+    double startY = 39.5;
     double startH = Math.toRadians(180);
 
     // Launch Position Preload
     double launchX = -12;
-    double launchY = -12;
-    double launchH = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launchX, launchY) +180);
+    double launchY = 12;
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY) +180);
 
     // Launch Position Load1
     double launch1X = -12;
-    double launch1Y = -12;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y));
+    double launch1Y = 12;
+    double launch1H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch1X, launch1Y));
 
     // Launch Position Load2
     double launch2X = -12;
-    double launch2Y = -12;
-    double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
+    double launch2Y = 12;
+    double launch2H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start
     double load1X = -7;
-    double load1Y = -30;
-    double load1H = Math.toRadians(270); //Red=90, Blue=270
+    double load1Y = 30;
+    double load1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load1 End while Intaking
     double getload1X = -7;
-    double getload1Y = -59;
-    double getload1H = Math.toRadians(270); //Red=90, Blue=270
+    double getload1Y = 59;
+    double getload1H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 Start (middle hatch mark, go here first!)
     double load2X = 18.5;
-    double load2Y = -30;
-    double load2H = Math.toRadians(270); //Red=90, Blue=270
+    double load2Y = 30;
+    double load2H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Load 2 End while Intaking
     double getload2X = 18.5;
-    double getload2Y = -64;
-    double getload2H = Math.toRadians(270); //Red=90, Blue=270
+    double getload2Y = 64;
+    double getload2H = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Gate Press Start
     double gatestartX = 9;
-    double gatestartY = -45;
-    double gatestartH = Math.toRadians(270); //Red=90, Blue=270
+    double gatestartY = 45;
+    double gatestartH = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Gate Press
     double gatepressX = 9;
-    double gatepressY = -60;
-    double gatepressH = Math.toRadians(270); //Red=90, Blue=270
+    double gatepressY = 60;
+    double gatepressH = Math.toRadians(90); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = 0;
-    double endY = -36;
-    double endH = Math.toRadians(270); //Red=90, Blue = 270
+    double endY = 36;
+    double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -97,7 +97,7 @@ public class BlueNear2Gate extends LinearOpMode {
 
         // Initialize blackboard with default values to ensure clean state
         // This prevents stale data from previous runs from affecting the current run
-        matchSettings.setAllianceColor(MatchSettings.AllianceColor.BLUE);
+        matchSettings.setAllianceColor(MatchSettings.AllianceColor.RED);
 
         // Initializing Robot
         Pose2d StartPose = new Pose2d(startX,startY,startH);
@@ -147,7 +147,7 @@ public class BlueNear2Gate extends LinearOpMode {
         //drive back to launch position
         TrajectoryActionBuilder goToLaunchLoad1 = pressGate.endTrajectory().fresh()
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(launch1X,launch1Y,launch1H),Math.toRadians(135)) //-135 Red
+                .splineToLinearHeading(new Pose2d(launch1X,launch1Y,launch1H),Math.toRadians(-135)) //-135 Red
                 ;
         Action GoToLaunchLoad1 = goToLaunchLoad1.build();
 
