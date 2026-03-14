@@ -52,7 +52,7 @@ public class BlueFar2NoWall extends LinearOpMode {
 
     // Launch Load2
     double launch2X = 53;
-    double launch2Y = -15;
+    double launch2Y = -19;
     double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Load1 Start

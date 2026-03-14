@@ -52,7 +52,7 @@ public class RedFar2Wall extends LinearOpMode {
 
     // Launch Load3
     double launch3X = 55;
-    double launch3Y = 22;
+    double launch3Y = 19;
     double launch3H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch3X, launch3Y));
 
     // Go to Pickup Load1 Start

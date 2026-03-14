@@ -39,43 +39,43 @@ public class RedFarOnlyWallB extends LinearOpMode {
     double startH = Math.toRadians(180);
 
     // Launch Preload
-    double launchX = 56;
+    double launchX = 54;
     double launchY = 15;
-    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+3.25);
+    double launchH = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launchX, launchY)+4.65);
 
     // Launch Load1
-    double launch1X = 56;
+    double launch1X = 55;
     double launch1Y = 15;
-    double launch1H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch1X, launch1Y));
+    double launch1H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch1X, launch1Y)+1);
 
     // Launch Load2
-    double launch2X = 56;
-    double launch2Y = 15;
+    double launch2X = 55;
+    double launch2Y = 19;
     double launch2H = Math.toRadians(Constants.Util.angleToRedGoalDegrees(launch2X, launch2Y));
 
     // Go to Pickup Wall Load Start
-    double load1wallX = 62;
-    double load1wallY = 42;
-    double load1wallH = Math.toRadians(90); //Red=110, Blue=250
+    double load1wallX = 64.5;
+    double load1wallY = 63.75;
+    double load1wallH = Math.toRadians(85); //Red=85, Blue=275
 
     // Go to Pickup Wall Load End while Intaking
-    double getload1wallX = 62.5;
-    double getload1wallY = 65;
-    double getload1wallH = Math.toRadians(90); //Red=110, Blue=250
+    double getload1wallX = 68;
+    double getload1wallY = 63.75;
+    double getload1wallH = Math.toRadians(85); //Red=85, Blue=275
 
     // Go to Pickup Wall Load Start
-    double load2wallX = 62.5;
-    double load2wallY = 42;
-    double load2wallH = Math.toRadians(90); //Red=110, Blue=250
+    double load2wallX = 64.5;
+    double load2wallY = 62;
+    double load2wallH = Math.toRadians(90); //Red=90, Blue=270
 
     // Go to Pickup Wall Load End while Intaking
-    double getload2wallX = 62;
-    double getload2wallY = 65;
-    double getload2wallH = Math.toRadians(90); //Red=110, Blue=250
+    double getload2wallX = 68;
+    double getload2wallY = 62;
+    double getload2wallH = Math.toRadians(90); //Red=90, Blue=270
 
     // End auto off a launch line, facing away from Driver
     double endX = 65;
-    double endY = 36;
+    double endY = -36;
     double endH = Math.toRadians(90); //Red=90, Blue = 270
 
     @Override
@@ -116,8 +116,6 @@ public class RedFarOnlyWallB extends LinearOpMode {
         //get wall load, slowly
         TrajectoryActionBuilder  intakeLoad1 = goToIntakeLoad1.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(getload1wallX, getload1wallY), getload1wallH) //drive SLOWLY to position to loading 1st set of artifacts
-                .strafeToLinearHeading(new Vector2d(load1wallX, load1wallY), load1wallH)
-                .strafeToLinearHeading(new Vector2d(getload1wallX+2, getload1wallY), getload1wallH)
                 ;
         Action IntakeLoad1 = intakeLoad1.build();
 
@@ -194,10 +192,7 @@ public class RedFarOnlyWallB extends LinearOpMode {
                                 new ParallelAction(
                                         IntakeLoad1,
                                         new SequentialAction(
-                                                intake.autoIntake3Front(),
-                                                intake.autoIntake3Front(),
-                                                intake.autoIntake3Front(),
-                                                intake.autoIntake3Front()
+                                                intake.autoIntake3FrontLong()
                                         )
                                 ),
 
@@ -214,10 +209,8 @@ public class RedFarOnlyWallB extends LinearOpMode {
                                 new ParallelAction(
                                         IntakeLoad2,
                                         new SequentialAction(
-                                                intake.autoIntake3Front(),
-                                                intake.autoIntake3Front(),
-                                                intake.autoIntake3Front(),
-                                                intake.autoIntake3Front()
+                                                intake.autoIntake3FrontLong(),
+                                                intake.autoIntake3FrontLong()
                                         )
                                 ),
 

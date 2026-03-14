@@ -51,13 +51,13 @@ public class BlueFar3noWall extends LinearOpMode {
     double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)-2);
 
     // Launch Load2
-    double launch2X = 53;
-    double launch2Y = -15;
+    double launch2X = 55;
+    double launch2Y = -19;
     double launch2H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch2X, launch2Y));
 
     // Launch Load3
-    double launch3X = -12;
-    double launch3Y = -15;
+    double launch3X = -55;
+    double launch3Y = -22;
     double launch3H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch3X, launch3Y));
 
     // Go to Pickup Load1 Start
