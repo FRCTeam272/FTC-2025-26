@@ -114,6 +114,24 @@ public class LauncherSubsystemV3 {
         applyPIDF();
     }
 
+    public void demoFSM() {
+
+        switch (MatchSettings.launcherState) {
+            case STOPPED:
+                setTargetRPM(0);
+                break;
+
+            case SPINNING:
+                setTargetRPM(Constants.launcherConstants.DEMO_LAUNCH_RPM);
+                break;
+            default:
+                MatchSettings.launcherState= MatchSettings.LauncherState.STOPPED;
+        }
+
+
+        applyPIDF();
+    }
+
 
     /** Applies current launcher velocity PIDF coefficients */
     public void applyPIDF() {

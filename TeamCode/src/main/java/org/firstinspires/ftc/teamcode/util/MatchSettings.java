@@ -151,6 +151,7 @@ public class MatchSettings {
     public enum AllianceColor {
         RED,
         BLUE,
+        DEMO,
         UNKNOWN
     }
 

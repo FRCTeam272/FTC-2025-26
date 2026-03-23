@@ -298,6 +298,84 @@ public class IntakeSubsystemV3 {
         }
     }
 
+    public void demoFSM(Gamepad gamepad1) {
+
+        //cancel intaking/transfer & STOP button
+        if (gamepad1.x) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.launcherState = MatchSettings.LauncherState.STOPPED;
+            MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+        }
+
+        if (gamepad1.a) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.launcherState = MatchSettings.LauncherState.STOPPED;
+            MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_FRONT;
+        }
+
+        if (gamepad1.right_bumper) {
+            stopIntake();
+            stopTransfer();
+            initialized = false;
+            MatchSettings.launcherState = MatchSettings.LauncherState.STOPPED;
+            MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
+        }
+
+
+        switch (MatchSettings.intakeState) {
+            case STOPPED:
+                initialized = false;
+                // waiting for input
+                if (gamepad1.a) {
+                    MatchSettings.intakeState = MatchSettings.IntakeState.INTAKING_FRONT;
+                } else if (gamepad1.right_bumper) {
+                    MatchSettings.intakeState = MatchSettings.IntakeState.LAUNCHING_1_SIMPLE;
+                }
+                break;
+            case INTAKING_FRONT:
+                if (!initialized) { // powers on intake, if it is not on
+                    inboundFront(); // turn on all front intake motor
+                    inboundRear();
+                    inboundTransfer();
+                    initialized = true;
+                }
+//
+                if (rearPossession()  || frontPossession() || midPossession()) {
+                   stopIntake();
+                   stopTransfer();
+                   MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                }
+                break;
+
+            case LAUNCHING_1_SIMPLE:
+                if (!initialized) {
+                    initialized = true;
+                    launchTimer.reset();
+                    MatchSettings.launcherState = MatchSettings.LauncherState.SPINNING;
+                }
+                if (launchTimer.seconds() >= 1 && launchTimer.seconds() <= 3 && launcherBeamBreak.getState()) {
+                    inboundFront();
+                    inboundRear();
+                    outboundTransfer();
+                }
+                if (!launcherBeamBreak.getState() || launchTimer.seconds() >= 3) {
+                    stopIntake();
+                    stopTransfer();
+                    initialized = false;
+                    MatchSettings.launcherState = MatchSettings.LauncherState.STOPPED;
+                    MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+                }
+                break;
+
+            default: // should never be reached
+                MatchSettings.intakeState = MatchSettings.IntakeState.STOPPED;
+        }
+    }
+
     //============== CONTROL METHODS ==============\\
 
     // COLOR SENSOR METHODS ==========================\\
