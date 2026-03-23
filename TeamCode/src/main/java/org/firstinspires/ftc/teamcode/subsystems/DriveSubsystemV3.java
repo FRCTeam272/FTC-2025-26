@@ -182,7 +182,7 @@ public class DriveSubsystemV3 {
         // Clamp output to avoid excessive speed
         double maxPower = 0.7;
         //double alignmentThreshold = 0.05; // radians, (2.86 degrees) adjust as needed
-        double alignmentThreshold = Math.toRadians(1); //  adjust as needed
+        double alignmentThreshold = Math.toRadians(0.5); //  adjust as needed
         double turnPower = 0.0;
 
         if (Math.abs(bearingRadians) > alignmentThreshold) {

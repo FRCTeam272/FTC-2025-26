@@ -48,7 +48,7 @@ public class BlueFar2Wall extends LinearOpMode {
     // Launch Load1
     double launch1X = 53;
     double launch1Y = -15;
-    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)+1);
+    double launch1H = Math.toRadians(Constants.Util.angleToBlueGoalDegrees(launch1X, launch1Y)-0.5);
 
     // Launch Load3
     double launch3X = 55;
